@@ -183,20 +183,46 @@ class _CardWidgetState extends State<CardWidget> {
                   ...card.buttons.map((btn) {
                     final isAdd = btn.value >= 0;
                     final color = isAdd ? addColor : subtractColor;
-                    final label =
+                    final numLabel =
                         '${isAdd ? "+" : ""}${btn.value == btn.value.truncateToDouble() ? btn.value.toInt() : btn.value}';
                     return Padding(
                       padding: const EdgeInsets.only(right: 8),
-                      child: FilledButton(
-                        style: FilledButton.styleFrom(backgroundColor: color),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: color,
+                          foregroundColor: Colors.white,
+                          elevation: 3,
+                          shadowColor: color.withAlpha(150),
+                          side: BorderSide(
+                            color: Colors.white.withAlpha(80),
+                            width: 1,
+                          ),
+                          shape: const StadiumBorder(),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 10),
+                        ),
                         onPressed: () => _record(context, btn.value),
-                        child: Text(label),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(numLabel),
+                            const SizedBox(width: 4),
+                            const Icon(Icons.chevron_right, size: 14),
+                          ],
+                        ),
                       ),
                     );
                   }),
-                  OutlinedButton(
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 3,
+                      shape: const StadiumBorder(),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                    ),
                     onPressed: () => _showCustomDialog(context),
-                    child: const Text('カスタム'),
+                    icon: const Icon(Icons.edit, size: 14),
+                    label: const Text('カスタム'),
                   ),
                 ],
               ),
