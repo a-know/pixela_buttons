@@ -132,29 +132,40 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
     final controller = TextEditingController();
     final value = await showDialog<double>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('固定値ボタンを追加'),
-        content: TextField(
-          controller: controller,
-          keyboardType: const TextInputType.numberWithOptions(
-              decimal: true, signed: true),
-          decoration: const InputDecoration(
-            labelText: '値（正: 加算 / 負: 減算）',
-            border: OutlineInputBorder(),
-          ),
-          autofocus: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('キャンセル'),
-          ),
-          FilledButton(
-            onPressed: () =>
-                Navigator.of(ctx).pop(double.tryParse(controller.text)),
-            child: const Text('追加'),
-          ),
-        ],
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) {
+          final parsed = double.tryParse(controller.text);
+          final hasInput = controller.text.isNotEmpty;
+          final isInvalid = hasInput && parsed == null;
+
+          return AlertDialog(
+            title: const Text('固定値ボタンを追加'),
+            content: TextField(
+              controller: controller,
+              keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true, signed: true),
+              decoration: InputDecoration(
+                labelText: '値（正: 加算 / 負: 減算）',
+                border: const OutlineInputBorder(),
+                errorText: isInvalid ? '数値を入力してください' : null,
+              ),
+              autofocus: true,
+              onChanged: (_) => setDialogState(() {}),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('キャンセル'),
+              ),
+              FilledButton(
+                onPressed: parsed != null
+                    ? () => Navigator.of(ctx).pop(parsed)
+                    : null,
+                child: const Text('追加'),
+              ),
+            ],
+          );
+        },
       ),
     );
     if (value != null) {
