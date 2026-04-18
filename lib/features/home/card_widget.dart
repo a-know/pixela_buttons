@@ -7,7 +7,7 @@ import '../../core/storage/card_storage.dart';
 import '../../core/theme/app_theme.dart';
 import 'record_dialog.dart';
 
-class CardWidget extends StatelessWidget {
+class CardWidget extends StatefulWidget {
   final CardConfig card;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
@@ -18,6 +18,34 @@ class CardWidget extends StatelessWidget {
     required this.onEdit,
     required this.onDelete,
   });
+
+  @override
+  State<CardWidget> createState() => _CardWidgetState();
+}
+
+class _CardWidgetState extends State<CardWidget> {
+  CardConfig get card => widget.card;
+
+  String? _todayValue;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchTodayValue();
+  }
+
+  Future<void> _fetchTodayValue() async {
+    try {
+      final username = await CardStorage.getUsername() ?? '';
+      final value = await pixelaClient.getTodayValue(username, card.graphId);
+      if (mounted) setState(() => _todayValue = _formatValue(value ?? 0));
+    } catch (_) {
+      if (mounted) setState(() => _todayValue = '--');
+    }
+  }
+
+  String _formatValue(double v) =>
+      v == v.truncateToDouble() ? v.toInt().toString() : v.toString();
 
   Color get _addColor {
     try {
@@ -36,6 +64,7 @@ class CardWidget extends StatelessWidget {
         await pixelaClient.subtractPixel(username, card.graphId, value.abs());
       }
       if (context.mounted) await RecordDialog.show(context, card, value);
+      _fetchTodayValue();
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -126,8 +155,8 @@ class CardWidget extends StatelessWidget {
                 PopupMenuButton<String>(
                   icon: const Icon(Icons.more_vert, size: 18),
                   onSelected: (v) {
-                    if (v == 'edit') onEdit();
-                    if (v == 'delete') onDelete();
+                    if (v == 'edit') widget.onEdit();
+                    if (v == 'delete') widget.onDelete();
                   },
                   itemBuilder: (_) => const [
                     PopupMenuItem(value: 'edit', child: Text('編集')),
@@ -140,7 +169,9 @@ class CardWidget extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 40),
               child: Text(
-                '単位: ${card.unit}',
+                _todayValue != null
+                    ? '単位: ${card.unit}　今日: $_todayValue${card.unit}'
+                    : '単位: ${card.unit}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
