@@ -35,7 +35,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: const Text('トークンを変更'),
+          title: const Text('保存済みトークンを変更'),
           content: TextField(
             controller: controller,
             obscureText: obscure,
@@ -87,7 +87,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('ログアウト'),
-        content: const Text('ログアウトするとカード設定も削除されます。よろしいですか？'),
+        content: const Text('ログアウトします。カード設定は保持され、再ログイン時に復元されます。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
@@ -106,8 +106,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     if (confirmed == true) {
       await SecureStorage.deleteToken();
-      await CardStorage.saveUsername('');
-      await CardStorage.saveCards([]);
+      await CardStorage.clearUsername();
       if (mounted) context.go('/onboarding');
     }
   }
@@ -127,7 +126,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const Divider(),
           ListTile(
             leading: const Icon(Icons.key_outlined),
-            title: const Text('トークンを変更'),
+            title: const Text('アプリに保存済みのトークンを変更'),
             trailing: const Icon(Icons.chevron_right),
             onTap: _showChangeTokenDialog,
           ),
