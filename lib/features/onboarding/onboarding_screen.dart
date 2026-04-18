@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/api/pixela_client.dart';
@@ -57,8 +58,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       await CardStorage.saveUsername(username);
 
       if (mounted) context.go('/home');
+    } on DioException catch (e) {
+      setState(() {
+        if (e.response?.statusCode == 400 || e.response?.statusCode == 401) {
+          _errorMessage = 'ユーザー名またはトークンが正しくありません。';
+        } else if (e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.receiveTimeout) {
+          _errorMessage = '接続がタイムアウトしました。ネットワークを確認してください。';
+        } else if (e.type == DioExceptionType.connectionError) {
+          _errorMessage = 'ネットワークに接続できません。';
+        } else {
+          _errorMessage = 'エラーが発生しました（${e.response?.statusCode ?? "不明"}）。';
+        }
+      });
     } on Exception catch (e) {
-      setState(() => _errorMessage = e.toString());
+      setState(() => _errorMessage = 'エラーが発生しました: $e');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

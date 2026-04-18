@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -60,8 +61,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
       await CardStorage.saveUsername(username);
 
       if (mounted) context.go('/home');
+    } on DioException catch (e) {
+      setState(() {
+        final msg = e.response?.data?['message'] as String?;
+        if (msg != null) {
+          _errorMessage = msg;
+        } else if (e.type == DioExceptionType.connectionError) {
+          _errorMessage = 'ネットワークに接続できません。';
+        } else {
+          _errorMessage = '登録に失敗しました（${e.response?.statusCode ?? "不明"}）。';
+        }
+      });
     } on Exception catch (e) {
-      setState(() => _errorMessage = e.toString());
+      setState(() => _errorMessage = '登録に失敗しました: $e');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
