@@ -6,7 +6,7 @@ import 'core/storage/card_storage.dart';
 import 'core/storage/secure_storage.dart';
 import 'core/theme/app_theme.dart';
 import 'features/button_edit/button_edit_screen.dart';
-import 'features/home/home_screen.dart';
+import 'features/main_shell.dart';
 import 'features/onboarding/onboarding_screen.dart';
 import 'features/register/register_screen.dart';
 
@@ -32,7 +32,7 @@ final _router = GoRouter(
     ),
     GoRoute(
       path: '/home',
-      builder: (context, _) => const HomeScreen(),
+      builder: (context, _) => const MainShell(),
     ),
     GoRoute(
       path: '/button-edit',
