@@ -78,19 +78,22 @@ class PixelaClient {
 
   Future<void> addPixel(
       String username, String graphId, double value) async {
-    await _dio.post(
+    await _dio.put(
       ApiEndpoints.add(username, graphId),
-      data: {'quantity': value.toString()},
+      data: {'quantity': _quantityString(value)},
     );
   }
 
   Future<void> subtractPixel(
       String username, String graphId, double value) async {
-    await _dio.post(
+    await _dio.put(
       ApiEndpoints.subtract(username, graphId),
-      data: {'quantity': value.toString()},
+      data: {'quantity': _quantityString(value)},
     );
   }
+
+  String _quantityString(double value) =>
+      value == value.truncateToDouble() ? value.toInt().toString() : value.toString();
 
   Future<String> getGraphSvg(String username, String graphId, {bool darkMode = false}) async {
     final response = await _dio.get(

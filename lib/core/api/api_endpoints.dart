@@ -6,7 +6,7 @@ class ApiEndpoints {
   static String pixel(String username, String graphId) =>
       '/v1/users/$username/graphs/$graphId/pixels';
   static String pixelToday(String username, String graphId) =>
-      '/v1/users/$username/graphs/$graphId/pixels/today';
+      '/v1/users/$username/graphs/$graphId/today';
   static String add(String username, String graphId) =>
       '/v1/users/$username/graphs/$graphId/add';
   static String subtract(String username, String graphId) =>
