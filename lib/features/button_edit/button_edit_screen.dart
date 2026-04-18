@@ -2,6 +2,7 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../main_shell.dart';
 import '../../core/models/button_config.dart';
 import '../../core/models/card_config.dart';
 import '../../core/storage/card_storage.dart';
@@ -9,8 +10,9 @@ import 'graph_select_screen.dart';
 
 class ButtonEditScreen extends StatefulWidget {
   final CardConfig? existing;
+  final GraphInfo? preSelectedGraph;
 
-  const ButtonEditScreen({super.key, this.existing});
+  const ButtonEditScreen({super.key, this.existing, this.preSelectedGraph});
 
   @override
   State<ButtonEditScreen> createState() => _ButtonEditScreenState();
@@ -41,6 +43,9 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
       _buttons = List.from(c.buttons);
       _selectedGraph =
           GraphInfo(id: c.graphId, name: c.displayName, unit: c.unit);
+    } else if (widget.preSelectedGraph != null) {
+      _selectedGraph = widget.preSelectedGraph;
+      _displayNameController.text = widget.preSelectedGraph!.name;
     }
   }
 
@@ -204,7 +209,10 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
     }
     await CardStorage.saveCards(cards);
 
-    if (mounted) context.pop();
+    if (mounted) {
+      homeTabNotifier.value++;
+      context.go('/home');
+    }
   }
 
   @override

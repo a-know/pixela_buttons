@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'core/api/pixela_client.dart';
 import 'core/models/card_config.dart';
+import 'features/button_edit/graph_select_screen.dart';
 import 'core/storage/card_storage.dart';
 import 'core/storage/secure_storage.dart';
 import 'core/theme/app_theme.dart';
@@ -36,9 +37,12 @@ final _router = GoRouter(
     ),
     GoRoute(
       path: '/button-edit',
-      builder: (_, state) => ButtonEditScreen(
-        existing: state.extra as CardConfig?,
-      ),
+      builder: (_, state) {
+        final extra = state.extra;
+        if (extra is CardConfig) return ButtonEditScreen(existing: extra);
+        if (extra is GraphInfo) return ButtonEditScreen(preSelectedGraph: extra);
+        return const ButtonEditScreen();
+      },
     ),
   ],
 );

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../core/api/pixela_client.dart';
 import '../../core/storage/card_storage.dart';
+import '../button_edit/graph_select_screen.dart';
 
 class GraphsScreen extends StatefulWidget {
   const GraphsScreen({super.key});
@@ -81,6 +83,15 @@ class _GraphsScreenState extends State<GraphsScreen> {
                             '${g['id']}  ·  単位: ${g['unit']}  ·  ${g['type']}',
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
+                          trailing: const Icon(Icons.add_circle_outline),
+                          onTap: () {
+                            final graph = GraphInfo(
+                              id: g['id'] as String,
+                              name: g['name'] as String,
+                              unit: g['unit'] as String,
+                            );
+                            context.push('/button-edit', extra: graph);
+                          },
                         );
                       },
                     ),

@@ -3,6 +3,9 @@ import 'home/home_screen.dart';
 import 'graphs/graphs_screen.dart';
 import 'settings/settings_screen.dart';
 
+// 外部からホームタブへの切り替えと再読み込みをトリガーする
+final homeTabNotifier = ValueNotifier<int>(0);
+
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
 
@@ -12,23 +15,53 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
+  int _homeVersion = 0;
 
-  final _screens = const [
-    HomeScreen(),
-    GraphsScreen(),
-    SettingsScreen(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    homeTabNotifier.addListener(_onHomeTabNotified);
+  }
+
+  @override
+  void dispose() {
+    homeTabNotifier.removeListener(_onHomeTabNotified);
+    super.dispose();
+  }
+
+  void _onHomeTabNotified() {
+    setState(() {
+      _currentIndex = 0;
+      _homeVersion++;
+    });
+  }
+
+  void _onTabSelected(int index) {
+    if (index == 0 && _currentIndex != 0) {
+      // ホームタブに切り替わるとき最新データを読み込む
+      setState(() {
+        _currentIndex = 0;
+        _homeVersion++;
+      });
+    } else {
+      setState(() => _currentIndex = index);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-        children: _screens,
+        children: [
+          HomeScreen(key: ValueKey(_homeVersion)),
+          const GraphsScreen(),
+          const SettingsScreen(),
+        ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
-        onDestinationSelected: (i) => setState(() => _currentIndex = i),
+        onDestinationSelected: _onTabSelected,
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),

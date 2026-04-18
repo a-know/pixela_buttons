@@ -68,10 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.add),
             tooltip: 'ボタンを追加',
-            onPressed: () async {
-              await context.push('/button-edit');
-              _loadCards();
-            },
+            onPressed: () => context.push('/button-edit'),
           ),
         ],
       ),
@@ -105,10 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   key: ValueKey(card.id),
                   child: CardWidget(
                     card: card,
-                    onEdit: () async {
-                      await context.push('/button-edit', extra: card);
-                      _loadCards();
-                    },
+                    onEdit: () => context.push('/button-edit', extra: card),
                     onDelete: () => _deleteCard(card.id),
                   ),
                 );
