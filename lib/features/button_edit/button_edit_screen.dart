@@ -1,3 +1,4 @@
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -18,10 +19,10 @@ class ButtonEditScreen extends StatefulWidget {
 class _ButtonEditScreenState extends State<ButtonEditScreen> {
   final _formKey = GlobalKey<FormState>();
   final _displayNameController = TextEditingController();
-  final _emojiController = TextEditingController();
 
   GraphInfo? _selectedGraph;
   Color _selectedColor = const Color(0xFF1D9E75);
+  String _selectedEmoji = '';
   List<ButtonConfig> _buttons = [];
 
   bool get _isEdit => widget.existing != null;
@@ -32,7 +33,7 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
     if (_isEdit) {
       final c = widget.existing!;
       _displayNameController.text = c.displayName;
-      _emojiController.text = c.emoji;
+      _selectedEmoji = c.emoji;
       try {
         _selectedColor =
             Color(int.parse(c.color.replaceFirst('#', 'FF'), radix: 16));
@@ -46,8 +47,48 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
   @override
   void dispose() {
     _displayNameController.dispose();
-    _emojiController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickEmoji() async {
+    await showModalBottomSheet(
+      context: context,
+      builder: (ctx) => SizedBox(
+        height: 350,
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 16),
+                  child: Text('emoji を選択'),
+                ),
+                if (_selectedEmoji.isNotEmpty)
+                  TextButton(
+                    onPressed: () {
+                      setState(() => _selectedEmoji = '');
+                      Navigator.of(ctx).pop();
+                    },
+                    child: const Text('クリア'),
+                  ),
+              ],
+            ),
+            Expanded(
+              child: EmojiPicker(
+                onEmojiSelected: (_, emoji) {
+                  setState(() => _selectedEmoji = emoji.emoji);
+                  Navigator.of(ctx).pop();
+                },
+                config: const Config(
+                  emojiViewConfig: EmojiViewConfig(columns: 8),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _pickGraph() async {
@@ -137,7 +178,7 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
       id: widget.existing?.id,
       graphId: _selectedGraph!.id,
       displayName: _displayNameController.text.trim(),
-      emoji: _emojiController.text.trim(),
+      emoji: _selectedEmoji,
       color: colorHex,
       unit: _selectedGraph!.unit,
       buttons: _buttons,
@@ -200,12 +241,27 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
             const SizedBox(height: 16),
 
             // Emoji
-            TextFormField(
-              controller: _emojiController,
-              decoration: const InputDecoration(
-                labelText: 'emoji（任意）',
-                border: OutlineInputBorder(),
+            ListTile(
+              title: const Text('emoji（任意）'),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    _selectedEmoji.isEmpty ? '未設定' : _selectedEmoji,
+                    style: TextStyle(
+                      fontSize: _selectedEmoji.isEmpty ? 14 : 24,
+                      color: _selectedEmoji.isEmpty ? Colors.grey : null,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Icon(Icons.chevron_right),
+                ],
               ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+                side: BorderSide(color: Colors.grey.shade300),
+              ),
+              onTap: _pickEmoji,
             ),
             const SizedBox(height: 16),
 
