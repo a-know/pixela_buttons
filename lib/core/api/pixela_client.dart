@@ -14,6 +14,11 @@ class PixelaClient {
       onRequest: _attachToken,
       onError: _handleError,
     ));
+    _dio.interceptors.add(LogInterceptor(
+      requestHeader: true,
+      responseBody: true,
+      logPrint: (o) => print(o),
+    ));
   }
 
   Future<void> _attachToken(

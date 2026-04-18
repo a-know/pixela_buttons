@@ -45,10 +45,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       final username = _usernameController.text.trim();
       final token = _tokenController.text.trim();
 
-      // Verify credentials by fetching graphs
-      await pixelaClient.getGraphs(username);
-
+      // Save token first so the interceptor can attach it, then verify
       await SecureStorage.saveToken(token);
+      try {
+        await pixelaClient.getGraphs(username);
+      } catch (e) {
+        await SecureStorage.deleteToken();
+        rethrow;
+      }
+
       await CardStorage.saveUsername(username);
 
       if (mounted) context.go('/home');

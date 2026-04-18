@@ -1,4 +1,6 @@
 # Miscellaneous
+.DS_Store
+.idea/
 *.class
 *.lock
 *.log
