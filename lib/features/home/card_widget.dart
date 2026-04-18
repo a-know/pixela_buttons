@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/api/api_endpoints.dart';
 import '../../core/api/pixela_client.dart';
@@ -27,11 +28,19 @@ class _CardWidgetState extends State<CardWidget> {
   CardConfig get card => widget.card;
 
   String? _todayValue;
+  String? _svgData;
 
   @override
   void initState() {
     super.initState();
     _fetchTodayValue();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final isDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+    _fetchSvg(isDark);
   }
 
   Future<void> _fetchTodayValue() async {
@@ -42,6 +51,14 @@ class _CardWidgetState extends State<CardWidget> {
     } catch (_) {
       if (mounted) setState(() => _todayValue = '--');
     }
+  }
+
+  Future<void> _fetchSvg(bool isDark) async {
+    try {
+      final username = await CardStorage.getUsername() ?? '';
+      final svg = await pixelaClient.getGraphSvg(username, card.graphId, darkMode: isDark);
+      if (mounted) setState(() => _svgData = svg);
+    } catch (_) {}
   }
 
   String _formatValue(double v) =>
@@ -65,6 +82,9 @@ class _CardWidgetState extends State<CardWidget> {
       }
       if (context.mounted) await RecordDialog.show(context, card, value);
       _fetchTodayValue();
+      if (context.mounted) {
+        _fetchSvg(MediaQuery.platformBrightnessOf(context) == Brightness.dark);
+      }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -165,9 +185,36 @@ class _CardWidgetState extends State<CardWidget> {
                 ),
               ],
             ),
+            const SizedBox(height: 8),
+            FutureBuilder<String?>(
+              future: CardStorage.getUsername(),
+              builder: (ctx, snap) => GestureDetector(
+                onTap: () => _openGraph(snap.data ?? ''),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: SizedBox(
+                    height: 80,
+                    child: _svgData != null
+                    ? SvgPicture.string(
+                        _svgData!,
+                        width: double.infinity,
+                        fit: BoxFit.fitWidth,
+                        placeholderBuilder: (_) => const SizedBox.shrink(),
+                      )
+                    : const Center(
+                        child: SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                  ),
+                ),
+              ),
+            ),
             const SizedBox(height: 4),
             Padding(
-              padding: const EdgeInsets.only(left: 40),
+              padding: const EdgeInsets.only(left: 4),
               child: Text(
                 _todayValue != null
                     ? '単位: ${card.unit}　今日: $_todayValue${card.unit}'

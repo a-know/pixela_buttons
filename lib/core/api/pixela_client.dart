@@ -92,6 +92,18 @@ class PixelaClient {
     );
   }
 
+  Future<String> getGraphSvg(String username, String graphId, {bool darkMode = false}) async {
+    final response = await _dio.get(
+      '${ApiEndpoints.graphs(username)}/$graphId',
+      queryParameters: {
+        'transparent': 'true',
+        if (darkMode) 'mode': 'dark',
+      },
+      options: Options(responseType: ResponseType.plain),
+    );
+    return response.data as String;
+  }
+
   Future<double?> getTodayValue(String username, String graphId) async {
     final response = await _dio.get(
       ApiEndpoints.pixelToday(username, graphId),
