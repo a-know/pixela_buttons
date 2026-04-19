@@ -173,5 +173,10 @@
   "tabGraphs": "Graphs",
   "tabSettings": "Settings",
 
-  "screenTimezoneSearch": "Search Timezone"
+  "screenTimezoneSearch": "Search Timezone",
+
+  "labelLanguage": "Language",
+  "languageSystem": "Follow system",
+  "languageJa": "日本語",
+  "languageEn": "English"
 }

@@ -335,4 +335,16 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get screenTimezoneSearch => 'タイムゾーンを検索...';
+
+  @override
+  String get labelLanguage => '言語';
+
+  @override
+  String get languageSystem => 'システムに合わせる';
+
+  @override
+  String get languageJa => '日本語';
+
+  @override
+  String get languageEn => 'English';
 }

@@ -113,5 +113,10 @@
   "tabGraphs": "グラフ",
   "tabSettings": "設定",
 
-  "screenTimezoneSearch": "タイムゾーンを検索..."
+  "screenTimezoneSearch": "タイムゾーンを検索...",
+
+  "labelLanguage": "言語",
+  "languageSystem": "システムに合わせる",
+  "languageJa": "日本語",
+  "languageEn": "English"
 }

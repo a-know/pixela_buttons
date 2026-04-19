@@ -709,6 +709,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search Timezone'**
   String get screenTimezoneSearch;
+
+  /// No description provided for @labelLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get labelLanguage;
+
+  /// No description provided for @languageSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow system'**
+  String get languageSystem;
+
+  /// No description provided for @languageJa.
+  ///
+  /// In en, this message translates to:
+  /// **'日本語'**
+  String get languageJa;
+
+  /// No description provided for @languageEn.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageEn;
 }
 
 class _AppLocalizationsDelegate

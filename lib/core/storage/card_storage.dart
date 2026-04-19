@@ -39,4 +39,20 @@ class CardStorage {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_usernameKey);
   }
+
+  static const _localeKey = 'app_locale';
+
+  static Future<String?> getLocale() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_localeKey);
+  }
+
+  static Future<void> saveLocale(String? languageCode) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (languageCode == null) {
+      await prefs.remove(_localeKey);
+    } else {
+      await prefs.setString(_localeKey, languageCode);
+    }
+  }
 }

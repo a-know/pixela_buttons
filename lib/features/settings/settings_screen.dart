@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:pixela_buttons/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import '../../app.dart';
 import '../../core/api/pixela_client.dart';
 import '../../core/storage/card_storage.dart';
 import '../../core/storage/secure_storage.dart';
@@ -132,6 +133,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: Text(l10n.labelChangeToken),
             trailing: const Icon(Icons.chevron_right),
             onTap: _showChangeTokenDialog,
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.language_outlined),
+            title: Text(l10n.labelLanguage),
+            trailing: DropdownButton<String?>(
+              value: localeNotifier.value?.languageCode,
+              underline: const SizedBox.shrink(),
+              items: [
+                DropdownMenuItem(value: null, child: Text(l10n.languageSystem)),
+                DropdownMenuItem(value: 'ja', child: Text(l10n.languageJa)),
+                DropdownMenuItem(value: 'en', child: Text(l10n.languageEn)),
+              ],
+              onChanged: (code) async {
+                localeNotifier.value = code != null ? Locale(code) : null;
+                await CardStorage.saveLocale(code);
+              },
+            ),
           ),
           const Divider(),
           ListTile(

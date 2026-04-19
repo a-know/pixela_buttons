@@ -15,6 +15,9 @@ import 'features/register/register_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
+// null = システム設定に従う
+final localeNotifier = ValueNotifier<Locale?>(null);
+
 final _router = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/loading',
@@ -61,7 +64,22 @@ class _PixelaButtonsAppState extends State<PixelaButtonsApp> {
   void initState() {
     super.initState();
     pixelaClient.onUnauthorized = _onUnauthorized;
+    localeNotifier.addListener(_onLocaleChanged);
+    _loadSavedLocale();
   }
+
+  @override
+  void dispose() {
+    localeNotifier.removeListener(_onLocaleChanged);
+    super.dispose();
+  }
+
+  Future<void> _loadSavedLocale() async {
+    final code = await CardStorage.getLocale();
+    if (code != null) localeNotifier.value = Locale(code);
+  }
+
+  void _onLocaleChanged() => setState(() {});
 
   void _onUnauthorized() {
     final ctx = _rootNavigatorKey.currentContext;
@@ -76,6 +94,7 @@ class _PixelaButtonsAppState extends State<PixelaButtonsApp> {
       title: 'Pixela Buttons',
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
+      locale: localeNotifier.value,
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
