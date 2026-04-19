@@ -83,7 +83,8 @@ class _CardWidgetState extends State<CardWidget> {
       if (context.mounted) await RecordDialog.show(context, card, value);
       _fetchTodayValue();
       if (context.mounted) {
-        _fetchSvg(MediaQuery.platformBrightnessOf(context) == Brightness.dark);
+        final isDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+        _fetchSvg(isDark);
       }
     } catch (e) {
       if (context.mounted) {

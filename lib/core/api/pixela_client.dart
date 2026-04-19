@@ -123,8 +123,15 @@ class PixelaClient {
       queryParameters: {
         'transparent': 'true',
         if (darkMode) 'mode': 'dark',
+        'nocache': DateTime.now().microsecondsSinceEpoch,
       },
-      options: Options(responseType: ResponseType.plain),
+      options: Options(
+        responseType: ResponseType.plain,
+        headers: {
+          'Cache-Control': 'no-cache, no-store',
+          'Pragma': 'no-cache',
+        },
+      ),
     );
     return response.data as String;
   }
