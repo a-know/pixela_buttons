@@ -89,6 +89,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 48),
+              Image.asset(
+                MediaQuery.platformBrightnessOf(context) == Brightness.dark
+                    ? 'assets/images/pixela_icon_monochrome.png'
+                    : 'assets/images/pixela_icon_color.png',
+                height: 64,
+              ),
+              const SizedBox(height: 16),
               Text(
                 l10n.appTitle,
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
