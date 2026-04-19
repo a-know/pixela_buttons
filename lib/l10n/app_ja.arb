@@ -2,7 +2,7 @@
   "@@locale": "ja",
 
   "appTitle": "Pixela Buttons",
-  "appTagline": "Pixelaアカウントで始める",
+  "appTagline": "Pixela への記録をワンタップで",
 
   "fieldRequired": "入力してください",
   "errorInvalidCredentials": "ユーザー名またはトークンが正しくありません。",

@@ -12,7 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Pixela Buttons';
 
   @override
-  String get appTagline => 'Get started with your Pixela account';
+  String get appTagline => 'Record to Pixela with one tap';
 
   @override
   String get fieldRequired => 'Required';

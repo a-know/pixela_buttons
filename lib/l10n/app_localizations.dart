@@ -107,7 +107,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTagline.
   ///
   /// In en, this message translates to:
-  /// **'Get started with your Pixela account'**
+  /// **'Record to Pixela with one tap'**
   String get appTagline;
 
   /// No description provided for @fieldRequired.

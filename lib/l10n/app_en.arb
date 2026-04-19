@@ -2,7 +2,7 @@
   "@@locale": "en",
 
   "appTitle": "Pixela Buttons",
-  "appTagline": "Get started with your Pixela account",
+  "appTagline": "Record to Pixela with one tap",
 
   "fieldRequired": "Required",
   "errorInvalidCredentials": "Username or token is incorrect.",

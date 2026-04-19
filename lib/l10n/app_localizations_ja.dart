@@ -12,7 +12,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get appTitle => 'Pixela Buttons';
 
   @override
-  String get appTagline => 'Pixelaアカウントで始める';
+  String get appTagline => 'Pixela への記録をワンタップで';
 
   @override
   String get fieldRequired => '入力してください';
