@@ -52,6 +52,28 @@ class PixelaClient {
     handler.next(err);
   }
 
+  Future<void> createGraph({
+    required String username,
+    required String id,
+    required String name,
+    required String unit,
+    required String type,
+    required String color,
+    String? timezone,
+  }) async {
+    await _dio.post(
+      ApiEndpoints.graphs(username),
+      data: {
+        'id': id,
+        'name': name,
+        'unit': unit,
+        'type': type,
+        'color': color,
+        'timezone': timezone,
+      },
+    );
+  }
+
   Future<List<Map<String, dynamic>>> getGraphs(String username) async {
     final response = await _dio.get(ApiEndpoints.graphs(username));
     final graphs = response.data['graphs'] as List<dynamic>;

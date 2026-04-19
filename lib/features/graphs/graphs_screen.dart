@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/api/pixela_client.dart';
 import '../../core/storage/card_storage.dart';
 import '../button_edit/graph_select_screen.dart';
+import 'graph_create_screen.dart';
 
 class GraphsScreen extends StatefulWidget {
   const GraphsScreen({super.key});
@@ -42,8 +43,15 @@ class _GraphsScreenState extends State<GraphsScreen> {
         title: const Text('グラフ'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _fetchGraphs,
+            icon: const Icon(Icons.add),
+            tooltip: 'グラフを作成',
+            onPressed: () async {
+              final created = await Navigator.of(context).push<bool>(
+                MaterialPageRoute(
+                    builder: (_) => const GraphCreateScreen()),
+              );
+              if (created == true) _fetchGraphs();
+            },
           ),
         ],
       ),
@@ -63,9 +71,18 @@ class _GraphsScreenState extends State<GraphsScreen> {
             )
           : _graphs == null
               ? const Center(child: CircularProgressIndicator())
-              : _graphs!.isEmpty
-                  ? const Center(child: Text('グラフがありません'))
+              : RefreshIndicator(
+                  onRefresh: _fetchGraphs,
+                  child: _graphs!.isEmpty
+                  ? const SingleChildScrollView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      child: SizedBox(
+                        height: 200,
+                        child: Center(child: Text('グラフがありません')),
+                      ),
+                    )
                   : ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
                       itemCount: _graphs!.length,
                       separatorBuilder: (context, _) => const Divider(height: 1),
                       itemBuilder: (ctx, i) {
@@ -95,6 +112,7 @@ class _GraphsScreenState extends State<GraphsScreen> {
                         );
                       },
                     ),
+                ),
     );
   }
 
