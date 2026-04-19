@@ -66,21 +66,22 @@ class PixelaClient {
     required String color,
     String? timezone,
   }) async {
-    await _dio.post(
-      ApiEndpoints.graphs(username),
-      data: {
-        'id': id,
-        'name': name,
-        'unit': unit,
-        'type': type,
-        'color': color,
-        'timezone': timezone,
-      },
-    );
+    await _requestWithRetry(() => _dio.post(
+          ApiEndpoints.graphs(username),
+          data: {
+            'id': id,
+            'name': name,
+            'unit': unit,
+            'type': type,
+            'color': color,
+            'timezone': timezone,
+          },
+        ));
   }
 
   Future<List<Map<String, dynamic>>> getGraphs(String username) async {
-    final response = await _dio.get(ApiEndpoints.graphs(username));
+    final response = await _requestWithRetry(
+        () => _dio.get(ApiEndpoints.graphs(username)));
     final graphs = response.data['graphs'] as List<dynamic>;
     return graphs.cast<Map<String, dynamic>>();
   }
@@ -91,16 +92,16 @@ class PixelaClient {
     required bool agreeTermsOfService,
     required bool notMinor,
   }) async {
-    await _dio.post(
-      ApiEndpoints.createUser(),
-      data: {
-        'token': token,
-        'username': username,
-        'agreeTermsOfService': agreeTermsOfService ? 'yes' : 'no',
-        'notMinor': notMinor ? 'yes' : 'no',
-      },
-      options: Options(headers: {'X-USER-TOKEN': token}),
-    );
+    await _requestWithRetry(() => _dio.post(
+          ApiEndpoints.createUser(),
+          data: {
+            'token': token,
+            'username': username,
+            'agreeTermsOfService': agreeTermsOfService ? 'yes' : 'no',
+            'notMinor': notMinor ? 'yes' : 'no',
+          },
+          options: Options(headers: {'X-USER-TOKEN': token}),
+        ));
   }
 
   Future<void> addPixel(
@@ -123,28 +124,27 @@ class PixelaClient {
       value == value.truncateToDouble() ? value.toInt().toString() : value.toString();
 
   Future<String> getGraphSvg(String username, String graphId, {bool darkMode = false}) async {
-    final response = await _dio.get(
-      '${ApiEndpoints.graphs(username)}/$graphId',
-      queryParameters: {
-        'transparent': 'true',
-        if (darkMode) 'mode': 'dark',
-        'nocache': DateTime.now().microsecondsSinceEpoch,
-      },
-      options: Options(
-        responseType: ResponseType.plain,
-        headers: {
-          'Cache-Control': 'no-cache, no-store',
-          'Pragma': 'no-cache',
-        },
-      ),
-    );
+    final response = await _requestWithRetry(() => _dio.get(
+          '${ApiEndpoints.graphs(username)}/$graphId',
+          queryParameters: {
+            'transparent': 'true',
+            if (darkMode) 'mode': 'dark',
+            'nocache': DateTime.now().microsecondsSinceEpoch,
+          },
+          options: Options(
+            responseType: ResponseType.plain,
+            headers: {
+              'Cache-Control': 'no-cache, no-store',
+              'Pragma': 'no-cache',
+            },
+          ),
+        ));
     return response.data as String;
   }
 
   Future<double?> getTodayValue(String username, String graphId) async {
-    final response = await _dio.get(
-      ApiEndpoints.pixelToday(username, graphId),
-    );
+    final response = await _requestWithRetry(
+        () => _dio.get(ApiEndpoints.pixelToday(username, graphId)));
     final quantity = response.data['quantity'];
     return double.tryParse(quantity.toString());
   }
