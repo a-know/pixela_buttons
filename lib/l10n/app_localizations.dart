@@ -218,6 +218,18 @@ abstract class AppLocalizations {
   /// **'Terms of Service'**
   String get linkTermsOfService;
 
+  /// No description provided for @labelAgreeTermsSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **''**
+  String get labelAgreeTermsSuffix;
+
+  /// No description provided for @termsOfServiceUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'https://github.com/a-know/Pixela/wiki/Terms-of-Service'**
+  String get termsOfServiceUrl;
+
   /// No description provided for @labelNotMinor.
   ///
   /// In en, this message translates to:

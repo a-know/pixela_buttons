@@ -166,10 +166,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () => launchUrl(
-                                Uri.parse('https://pixe.la/terms'),
+                                Uri.parse(l10n.termsOfServiceUrl),
                                 mode: LaunchMode.externalApplication,
                               ),
                       ),
+                      TextSpan(text: l10n.labelAgreeTermsSuffix),
                     ],
                   ),
                 ),

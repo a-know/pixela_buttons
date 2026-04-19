@@ -73,6 +73,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get linkTermsOfService => '利用規約';
 
   @override
+  String get labelAgreeTermsSuffix => 'に同意する';
+
+  @override
+  String get termsOfServiceUrl =>
+      'https://github.com/a-know/Pixela/wiki/%E5%88%A9%E7%94%A8%E8%A6%8F%E7%B4%84%EF%BC%88Terms-of-Service-Japanese-Version%EF%BC%89';
+
+  @override
   String get labelNotMinor => '18歳以上である、または保護者の同意を得ている';
 
   @override

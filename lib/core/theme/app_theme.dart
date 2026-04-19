@@ -7,6 +7,7 @@ class AppTheme {
           brightness: Brightness.light,
         ),
         useMaterial3: true,
+        appBarTheme: const AppBarTheme(centerTitle: true),
       );
 
   static ThemeData get dark => ThemeData(
@@ -15,6 +16,7 @@ class AppTheme {
           brightness: Brightness.dark,
         ),
         useMaterial3: true,
+        appBarTheme: const AppBarTheme(centerTitle: true),
       );
 
   static Color darkenColor(Color color, [double amount = 0.3]) {

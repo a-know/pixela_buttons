@@ -76,6 +76,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get linkTermsOfService => 'Terms of Service';
 
   @override
+  String get labelAgreeTermsSuffix => '';
+
+  @override
+  String get termsOfServiceUrl =>
+      'https://github.com/a-know/Pixela/wiki/Terms-of-Service';
+
+  @override
   String get labelNotMinor => 'I am 18 or older, or have parental consent';
 
   @override
