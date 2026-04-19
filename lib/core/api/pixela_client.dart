@@ -34,22 +34,27 @@ class PixelaClient {
       return;
     }
 
-    // 503 + isRejected: true → retry indefinitely with 500ms interval
-    if (err.response?.statusCode == 503) {
-      final data = err.response?.data;
-      if (data is Map && data['isRejected'] == true) {
-        await Future.delayed(const Duration(milliseconds: 500));
-        try {
-          final response = await _dio.fetch(err.requestOptions);
-          handler.resolve(response);
-          return;
-        } catch (e) {
-          // falls through to retry again on next error intercept
+    handler.next(err);
+  }
+
+  Future<Response<dynamic>> _requestWithRetry(
+      Future<Response<dynamic>> Function() request) async {
+    const maxRetries = 30;
+    for (var i = 0; i <= maxRetries; i++) {
+      try {
+        return await request();
+      } on DioException catch (e) {
+        if (i < maxRetries &&
+            e.response?.statusCode == 503 &&
+            e.response?.data is Map &&
+            (e.response?.data as Map)['isRejected'] == true) {
+          await Future.delayed(const Duration(milliseconds: 500));
+          continue;
         }
+        rethrow;
       }
     }
-
-    handler.next(err);
+    throw StateError('unreachable');
   }
 
   Future<void> createGraph({
@@ -100,18 +105,18 @@ class PixelaClient {
 
   Future<void> addPixel(
       String username, String graphId, double value) async {
-    await _dio.put(
-      ApiEndpoints.add(username, graphId),
-      data: {'quantity': _quantityString(value)},
-    );
+    await _requestWithRetry(() => _dio.put(
+          ApiEndpoints.add(username, graphId),
+          data: {'quantity': _quantityString(value)},
+        ));
   }
 
   Future<void> subtractPixel(
       String username, String graphId, double value) async {
-    await _dio.put(
-      ApiEndpoints.subtract(username, graphId),
-      data: {'quantity': _quantityString(value)},
-    );
+    await _requestWithRetry(() => _dio.put(
+          ApiEndpoints.subtract(username, graphId),
+          data: {'quantity': _quantityString(value)},
+        ));
   }
 
   String _quantityString(double value) =>
