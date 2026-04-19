@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pixela_buttons/l10n/app_localizations.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -47,8 +48,8 @@ class _TimezonePickerScreenState extends State<TimezonePickerScreen> {
         title: TextField(
           controller: _searchController,
           autofocus: true,
-          decoration: const InputDecoration(
-            hintText: 'タイムゾーンを検索...',
+          decoration: InputDecoration(
+            hintText: AppLocalizations.of(context)!.screenTimezoneSearch,
             border: InputBorder.none,
           ),
         ),

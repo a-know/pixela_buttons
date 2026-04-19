@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:pixela_buttons/l10n/app_localizations.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import '../../core/api/pixela_client.dart';
 import '../../core/storage/card_storage.dart';
@@ -79,7 +80,7 @@ class _GraphCreateScreenState extends State<GraphCreateScreen> {
     } on DioException catch (e) {
       setState(() {
         final msg = e.response?.data?['message'] as String?;
-        _errorMessage = msg ?? 'エラーが発生しました（${e.response?.statusCode}）';
+        _errorMessage = msg ?? AppLocalizations.of(context)!.errorGeneric(e.response?.statusCode?.toString() ?? '?');
       });
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -90,7 +91,7 @@ class _GraphCreateScreenState extends State<GraphCreateScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('グラフを作成'),
+        title: Text(AppLocalizations.of(context)!.screenCreateGraph),
         actions: [
           TextButton(
             onPressed: _isLoading ? null : _create,
@@ -100,11 +101,13 @@ class _GraphCreateScreenState extends State<GraphCreateScreen> {
                     height: 18,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text('作成'),
+                : Text(AppLocalizations.of(context)!.buttonCreate),
           ),
         ],
       ),
-      body: Form(
+      body: Builder(builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        return Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(16),
@@ -124,68 +127,63 @@ class _GraphCreateScreenState extends State<GraphCreateScreen> {
                 ),
               ),
 
-            // ID
             TextFormField(
               controller: _idController,
-              decoration: const InputDecoration(
-                labelText: 'グラフID *',
-                border: OutlineInputBorder(),
-                helperText: '小文字英字で始まる2〜17文字（英数字・ハイフン）',
+              decoration: InputDecoration(
+                labelText: l10n.fieldGraphId,
+                border: const OutlineInputBorder(),
+                helperText: l10n.fieldGraphIdHelper,
               ),
               validator: (v) {
-                if (v == null || v.trim().isEmpty) return '入力してください';
-                if (!_idRegex.hasMatch(v.trim())) return '小文字英字で始まる2〜17文字（英数字・ハイフンのみ）';
+                if (v == null || v.trim().isEmpty) return l10n.fieldRequired;
+                if (!_idRegex.hasMatch(v.trim())) return l10n.fieldGraphIdError;
                 return null;
               },
             ),
             const SizedBox(height: 16),
 
-            // 名前
             TextFormField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'グラフ名 *',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.fieldGraphName,
+                border: const OutlineInputBorder(),
               ),
               validator: (v) =>
-                  v == null || v.trim().isEmpty ? '入力してください' : null,
+                  v == null || v.trim().isEmpty ? l10n.fieldRequired : null,
             ),
             const SizedBox(height: 16),
 
-            // 単位
             TextFormField(
               controller: _unitController,
-              decoration: const InputDecoration(
-                labelText: '単位 *',
-                border: OutlineInputBorder(),
-                helperText: '例: km、commit、kg',
+              decoration: InputDecoration(
+                labelText: l10n.fieldUnit,
+                border: const OutlineInputBorder(),
+                helperText: l10n.fieldUnitHelper,
               ),
               validator: (v) =>
-                  v == null || v.trim().isEmpty ? '入力してください' : null,
+                  v == null || v.trim().isEmpty ? l10n.fieldRequired : null,
             ),
             const SizedBox(height: 16),
 
-            // タイプ
             DropdownButtonFormField<String>(
               initialValue: _type,
-              decoration: const InputDecoration(
-                labelText: 'タイプ *',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.fieldType,
+                border: const OutlineInputBorder(),
               ),
-              items: const [
-                DropdownMenuItem(value: 'int', child: Text('int（整数）')),
-                DropdownMenuItem(value: 'float', child: Text('float（小数）')),
+              items: [
+                DropdownMenuItem(value: 'int', child: Text(l10n.typeInt)),
+                DropdownMenuItem(value: 'float', child: Text(l10n.typeFloat)),
               ],
               onChanged: (v) => setState(() => _type = v!),
             ),
             const SizedBox(height: 16),
 
-            // カラー
             DropdownButtonFormField<String>(
               initialValue: _color,
-              decoration: const InputDecoration(
-                labelText: 'カラー *',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.fieldColor,
+                border: const OutlineInputBorder(),
               ),
               items: _colorOptions
                   .map((c) => DropdownMenuItem(
@@ -204,10 +202,9 @@ class _GraphCreateScreenState extends State<GraphCreateScreen> {
             ),
             const SizedBox(height: 16),
 
-            // タイムゾーン
             ListTile(
-              title: const Text('タイムゾーン'),
-              subtitle: Text(_timezone.isEmpty ? '未設定' : _timezone),
+              title: Text(l10n.fieldTimezone),
+              subtitle: Text(_timezone.isEmpty ? l10n.timezoneNotSet : _timezone),
               trailing: const Icon(Icons.chevron_right),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -224,7 +221,8 @@ class _GraphCreateScreenState extends State<GraphCreateScreen> {
             ),
           ],
         ),
-      ),
+      );
+      }),
     );
   }
 }

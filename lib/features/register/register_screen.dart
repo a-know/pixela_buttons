@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:pixela_buttons/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/api/pixela_client.dart';
@@ -35,9 +36,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _register() async {
+    final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
     if (!_agreeTerms || !_notMinor) {
-      setState(() => _errorMessage = 'すべての項目に同意してください');
+      setState(() => _errorMessage = l10n.errorAgreeAll);
       return;
     }
 
@@ -67,13 +69,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         if (msg != null) {
           _errorMessage = msg;
         } else if (e.type == DioExceptionType.connectionError) {
-          _errorMessage = 'ネットワークに接続できません。';
+          _errorMessage = l10n.errorNoNetwork;
         } else {
-          _errorMessage = '登録に失敗しました（${e.response?.statusCode ?? "不明"}）。';
+          _errorMessage = l10n.errorRegisterFailed(e.response?.statusCode?.toString() ?? '?');
         }
       });
     } on Exception catch (e) {
-      setState(() => _errorMessage = '登録に失敗しました: $e');
+      setState(() => _errorMessage = l10n.errorRegisterUnknown(e.toString()));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -81,8 +83,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('新規登録')),
+      appBar: AppBar(title: Text(l10n.screenRegister)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -110,16 +113,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: [
                     TextFormField(
                       controller: _usernameController,
-                      decoration: const InputDecoration(
-                        labelText: 'ユーザー名',
-                        border: OutlineInputBorder(),
-                        helperText: '小文字英字で始まる2〜33文字（英数字・ハイフン）',
+                      decoration: InputDecoration(
+                        labelText: l10n.fieldUsername,
+                        border: const OutlineInputBorder(),
+                        helperText: l10n.fieldUsernameHelper,
                       ),
                       validator: (v) {
-                        if (v == null || v.trim().isEmpty) return '入力してください';
-                        if (!_usernameRegex.hasMatch(v.trim())) {
-                          return '小文字英字で始まる2〜33文字（英数字・ハイフンのみ）';
-                        }
+                        if (v == null || v.trim().isEmpty) return l10n.fieldRequired;
+                        if (!_usernameRegex.hasMatch(v.trim())) return l10n.fieldUsernameError;
                         return null;
                       },
                     ),
@@ -128,9 +129,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       controller: _tokenController,
                       obscureText: _obscureToken,
                       decoration: InputDecoration(
-                        labelText: 'トークン',
+                        labelText: l10n.fieldToken,
                         border: const OutlineInputBorder(),
-                        helperText: '8〜128文字（ASCII印字可能文字）',
+                        helperText: l10n.fieldTokenHelper,
                         suffixIcon: IconButton(
                           icon: Icon(_obscureToken
                               ? Icons.visibility_off
@@ -140,10 +141,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       validator: (v) {
-                        if (v == null || v.trim().isEmpty) return '入力してください';
-                        if (!_tokenRegex.hasMatch(v.trim())) {
-                          return '8〜128文字のASCII印字可能文字';
-                        }
+                        if (v == null || v.trim().isEmpty) return l10n.fieldRequired;
+                        if (!_tokenRegex.hasMatch(v.trim())) return l10n.fieldTokenError;
                         return null;
                       },
                     ),
@@ -158,9 +157,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   text: TextSpan(
                     style: Theme.of(context).textTheme.bodyMedium,
                     children: [
-                      const TextSpan(text: 'Pixelaの'),
+                      TextSpan(text: l10n.labelAgreeTerms),
                       TextSpan(
-                        text: '利用規約',
+                        text: l10n.linkTermsOfService,
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.primary,
                           decoration: TextDecoration.underline,
@@ -171,7 +170,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 mode: LaunchMode.externalApplication,
                               ),
                       ),
-                      const TextSpan(text: 'に同意する'),
                     ],
                   ),
                 ),
@@ -181,7 +179,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               CheckboxListTile(
                 value: _notMinor,
                 onChanged: (v) => setState(() => _notMinor = v ?? false),
-                title: const Text('18歳以上である、または保護者の同意を得ている'),
+                title: Text(l10n.labelNotMinor),
                 controlAffinity: ListTileControlAffinity.leading,
                 contentPadding: EdgeInsets.zero,
               ),
@@ -196,7 +194,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('登録する'),
+                      : Text(l10n.buttonRegister),
                 ),
               ),
             ],

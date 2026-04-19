@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:pixela_buttons/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/api/pixela_client.dart';
 import '../../core/storage/card_storage.dart';
@@ -27,6 +28,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _showChangeTokenDialog() async {
+    final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController();
     bool obscure = true;
     String? errorText;
@@ -35,12 +37,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: const Text('保存済みトークンを変更'),
+          title: Text(l10n.dialogChangeTokenTitle),
           content: TextField(
             controller: controller,
             obscureText: obscure,
             decoration: InputDecoration(
-              labelText: '新しいトークン',
+              labelText: l10n.fieldNewToken,
               border: const OutlineInputBorder(),
               errorText: errorText,
               suffixIcon: IconButton(
@@ -52,16 +54,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('キャンセル'),
+              child: Text(l10n.buttonCancel),
             ),
             FilledButton(
               onPressed: () async {
                 final token = controller.text.trim();
                 if (token.isEmpty) {
-                  setDialogState(() => errorText = '入力してください');
+                  setDialogState(() => errorText = l10n.fieldRequired);
                   return;
                 }
-                // Verify new token
                 await SecureStorage.saveToken(token);
                 try {
                   await pixelaClient.getGraphs(_username ?? '');
@@ -70,11 +71,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   await SecureStorage.deleteToken();
                   setDialogState(() => errorText =
                       e.response?.statusCode == 400 || e.response?.statusCode == 401
-                          ? 'トークンが正しくありません'
-                          : 'エラーが発生しました');
+                          ? l10n.errorTokenIncorrect
+                          : l10n.errorTokenGeneric);
                 }
               },
-              child: const Text('保存'),
+              child: Text(l10n.buttonSave),
             ),
           ],
         ),
@@ -83,22 +84,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _logout() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('ログアウト'),
-        content: const Text('ログアウトします。カード設定は保持され、再ログイン時に復元されます。'),
+        title: Text(l10n.dialogLogoutTitle),
+        content: Text(l10n.dialogLogoutMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('キャンセル'),
+            child: Text(l10n.buttonCancel),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: Theme.of(ctx).colorScheme.error,
             ),
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('ログアウト'),
+            child: Text(l10n.buttonLogout),
           ),
         ],
       ),
@@ -113,20 +115,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('設定')),
+      appBar: AppBar(title: Text(l10n.screenSettings)),
       body: ListView(
         children: [
           const SizedBox(height: 8),
           ListTile(
             leading: const Icon(Icons.person_outline),
-            title: const Text('ユーザー名'),
+            title: Text(l10n.labelUsernameItem),
             subtitle: Text(_username ?? ''),
           ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.key_outlined),
-            title: const Text('アプリに保存済みのトークンを変更'),
+            title: Text(l10n.labelChangeToken),
             trailing: const Icon(Icons.chevron_right),
             onTap: _showChangeTokenDialog,
           ),
@@ -135,7 +138,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             leading: Icon(Icons.logout,
                 color: Theme.of(context).colorScheme.error),
             title: Text(
-              'ログアウト',
+              l10n.labelLogout,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
             onTap: _logout,

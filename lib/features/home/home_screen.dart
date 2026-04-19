@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pixela_buttons/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/models/card_config.dart';
 import '../../core/storage/card_storage.dart';
@@ -26,19 +27,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _deleteCard(String id) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('削除の確認'),
-        content: const Text('このカードを削除しますか？'),
+        title: Text(l10n.confirmDeleteTitle),
+        content: Text(l10n.confirmDeleteMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('キャンセル'),
+            child: Text(l10n.buttonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('削除'),
+            child: Text(l10n.buttonDelete),
           ),
         ],
       ),
@@ -61,13 +63,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pixela Buttons'),
+        title: Text(l10n.screenHome),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            tooltip: 'ボタンを追加',
+            tooltip: l10n.tooltipAddButton,
             onPressed: () => context.push('/button-edit'),
           ),
         ],
@@ -81,14 +84,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       size: 64, color: Colors.grey),
                   const SizedBox(height: 16),
                   Text(
-                    'ボタンがまだありません',
+                    l10n.emptyHomeMessage,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: Colors.grey,
                         ),
                   ),
                   const SizedBox(height: 8),
-                  const Text('右上の ＋ から追加してください',
-                      style: TextStyle(color: Colors.grey)),
+                  Text(l10n.emptyHomeSubMessage,
+                      style: const TextStyle(color: Colors.grey)),
                 ],
               ),
             )

@@ -1,0 +1,177 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Pixela Buttons",
+  "appTagline": "Get started with your Pixela account",
+
+  "fieldRequired": "Required",
+  "errorInvalidCredentials": "Username or token is incorrect.",
+  "errorTimeout": "Connection timed out. Please check your network.",
+  "errorNoNetwork": "Cannot connect to the network.",
+  "errorGeneric": "An error occurred ({statusCode}).",
+  "@errorGeneric": {
+    "placeholders": {
+      "statusCode": { "type": "String" }
+    }
+  },
+  "errorUnknown": "An error occurred: {detail}",
+  "@errorUnknown": {
+    "placeholders": {
+      "detail": { "type": "String" }
+    }
+  },
+
+  "buttonStart": "Get Started",
+  "linkCreateAccount": "Don't have an account? Sign up here",
+  "tokenInvalidBanner": "Your token has been invalidated. Please set it again.",
+
+  "screenRegister": "Sign Up",
+  "fieldUsername": "Username",
+  "fieldUsernameHelper": "2–17 characters starting with a lowercase letter (letters, digits, hyphens)",
+  "fieldUsernameError": "2–17 characters, starting with lowercase letter (letters, digits, hyphens only)",
+  "fieldToken": "Token",
+  "fieldTokenHelper": "8–128 printable ASCII characters",
+  "fieldTokenError": "8–128 printable ASCII characters",
+  "labelAgreeTerms": "I agree to Pixela''s ",
+  "linkTermsOfService": "Terms of Service",
+  "labelNotMinor": "I am 18 or older, or have parental consent",
+  "errorAgreeAll": "Please agree to all items",
+  "buttonRegister": "Register",
+  "errorRegisterFailed": "Registration failed ({statusCode}).",
+  "@errorRegisterFailed": {
+    "placeholders": {
+      "statusCode": { "type": "String" }
+    }
+  },
+  "errorRegisterUnknown": "Registration failed: {detail}",
+  "@errorRegisterUnknown": {
+    "placeholders": {
+      "detail": { "type": "String" }
+    }
+  },
+
+  "screenHome": "Pixela Buttons",
+  "tooltipAddButton": "Add button",
+  "labelUnit": "Unit: {unit}",
+  "@labelUnit": {
+    "placeholders": {
+      "unit": { "type": "String" }
+    }
+  },
+  "labelToday": "Today: {value}{unit}",
+  "@labelToday": {
+    "placeholders": {
+      "value": { "type": "String" },
+      "unit": { "type": "String" }
+    }
+  },
+  "labelUnitToday": "Unit: {unit}   Today: {value}{unit}",
+  "@labelUnitToday": {
+    "placeholders": {
+      "unit": { "type": "String" },
+      "value": { "type": "String" }
+    }
+  },
+  "buttonCustom": "Custom",
+  "tooltipOpenGraph": "Open graph",
+  "menuEdit": "Edit",
+  "menuDelete": "Delete",
+  "emptyHomeMessage": "No buttons yet",
+  "emptyHomeSubMessage": "Tap + in the top right to add one",
+  "customDialogTitle": "Enter custom value",
+  "customDialogHelper": "Positive: add   Negative: subtract",
+  "buttonRecord": "Record",
+  "buttonCancel": "Cancel",
+  "confirmDeleteTitle": "Confirm deletion",
+  "confirmDeleteMessage": "Delete this card?",
+  "buttonDelete": "Delete",
+  "errorRecord": "Error: {detail}",
+  "@errorRecord": {
+    "placeholders": {
+      "detail": { "type": "String" }
+    }
+  },
+
+  "dialogRecordedTitle": "Recorded",
+  "dialogRecordedMessage": "{value} recorded",
+  "@dialogRecordedMessage": {
+    "placeholders": {
+      "value": { "type": "String" }
+    }
+  },
+  "dialogTodayTotal": "Today''s total: {value}{unit}",
+  "@dialogTodayTotal": {
+    "placeholders": {
+      "value": { "type": "String" },
+      "unit": { "type": "String" }
+    }
+  },
+  "dialogTodayFailed": "Failed to retrieve total",
+  "buttonOk": "OK",
+
+  "screenButtonEdit": "Edit Button",
+  "screenButtonAdd": "Add Button",
+  "buttonSave": "Save",
+  "labelGraph": "Graph",
+  "labelGraphPlaceholder": "Tap to select",
+  "labelGraphSubtitle": "{name}\n{id}  ·  Unit: {unit}",
+  "@labelGraphSubtitle": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "id": { "type": "String" },
+      "unit": { "type": "String" }
+    }
+  },
+  "fieldDisplayName": "Display name",
+  "fieldEmoji": "Emoji (optional)",
+  "emojiNotSet": "Not set",
+  "labelButtonColor": "Button color (add)",
+  "labelFixedButtons": "Fixed buttons",
+  "tooltipAddFixedButton": "Add button",
+  "noFixedButtons": "No buttons",
+  "addFixedButtonTitle": "Add fixed button",
+  "addFixedButtonHelper": "Positive: add   Negative: subtract",
+  "addFixedButtonError": "Please enter a number",
+  "buttonAdd": "Add",
+  "snackSelectGraph": "Please select a graph",
+  "emojiPickerTitle": "Select emoji",
+  "emojiPickerClear": "Clear",
+
+  "screenGraphs": "Graphs",
+  "tooltipCreateGraph": "Create graph",
+  "noGraphs": "No graphs",
+  "errorRetry": "Retry",
+
+  "screenCreateGraph": "Create Graph",
+  "buttonCreate": "Create",
+  "fieldGraphId": "Graph ID *",
+  "fieldGraphIdHelper": "2–17 chars starting with lowercase letter (letters, digits, hyphens)",
+  "fieldGraphIdError": "2–17 chars, starting with lowercase letter (letters, digits, hyphens only)",
+  "fieldGraphName": "Graph name *",
+  "fieldUnit": "Unit *",
+  "fieldUnitHelper": "e.g. km, commit, kg",
+  "fieldType": "Type *",
+  "typeInt": "int (integer)",
+  "typeFloat": "float (decimal)",
+  "fieldColor": "Color *",
+  "fieldTimezone": "Timezone",
+  "timezoneNotSet": "Not set",
+
+  "screenSettings": "Settings",
+  "labelUsernameItem": "Username",
+  "labelChangeToken": "Change saved token",
+  "labelLogout": "Log Out",
+  "dialogChangeTokenTitle": "Change Saved Token",
+  "fieldNewToken": "New token",
+  "errorTokenIncorrect": "Token is incorrect",
+  "errorTokenGeneric": "An error occurred",
+  "dialogLogoutTitle": "Log Out",
+  "dialogLogoutMessage": "You will be logged out. Card settings will be preserved and restored on next login.",
+  "buttonLogout": "Log Out",
+
+  "tabHome": "Home",
+  "tabGraphs": "Graphs",
+  "tabSettings": "Settings",
+
+  "screenTimezoneSearch": "Search Timezone"
+}

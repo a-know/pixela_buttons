@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pixela_buttons/l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/api/api_endpoints.dart';
@@ -89,40 +90,41 @@ class _CardWidgetState extends State<CardWidget> {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('エラー: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorRecord(e.toString()))),
         );
       }
     }
   }
 
   Future<void> _showCustomDialog(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController();
     final value = await showDialog<double>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('カスタム値を入力'),
+        title: Text(l10n.customDialogTitle),
         content: TextField(
           controller: controller,
           keyboardType: const TextInputType.numberWithOptions(
               decimal: true, signed: true),
           decoration: InputDecoration(
-            labelText: '値（${card.unit}）',
+            labelText: card.unit,
             border: const OutlineInputBorder(),
-            helperText: '正の数: 加算　負の数: 減算',
+            helperText: l10n.customDialogHelper,
           ),
           autofocus: true,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('キャンセル'),
+            child: Text(l10n.buttonCancel),
           ),
           FilledButton(
             onPressed: () {
               final v = double.tryParse(controller.text);
               Navigator.of(ctx).pop(v);
             },
-            child: const Text('記録'),
+            child: Text(l10n.buttonRecord),
           ),
         ],
       ),
@@ -170,7 +172,7 @@ class _CardWidgetState extends State<CardWidget> {
                   builder: (ctx, snap) => IconButton(
                     icon: const Icon(Icons.open_in_new, size: 18),
                     onPressed: () => _openGraph(snap.data ?? ''),
-                    tooltip: 'グラフを開く',
+                    tooltip: AppLocalizations.of(context)!.tooltipOpenGraph,
                   ),
                 ),
                 PopupMenuButton<String>(
@@ -179,10 +181,13 @@ class _CardWidgetState extends State<CardWidget> {
                     if (v == 'edit') widget.onEdit();
                     if (v == 'delete') widget.onDelete();
                   },
-                  itemBuilder: (_) => const [
-                    PopupMenuItem(value: 'edit', child: Text('編集')),
-                    PopupMenuItem(value: 'delete', child: Text('削除')),
-                  ],
+                  itemBuilder: (ctx) {
+                    final l10n = AppLocalizations.of(ctx)!;
+                    return [
+                      PopupMenuItem(value: 'edit', child: Text(l10n.menuEdit)),
+                      PopupMenuItem(value: 'delete', child: Text(l10n.menuDelete)),
+                    ];
+                  },
                 ),
               ],
             ),
@@ -218,8 +223,8 @@ class _CardWidgetState extends State<CardWidget> {
               padding: const EdgeInsets.only(left: 4),
               child: Text(
                 _todayValue != null
-                    ? '単位: ${card.unit}　今日: $_todayValue${card.unit}'
-                    : '単位: ${card.unit}',
+                    ? AppLocalizations.of(context)!.labelUnitToday(card.unit, _todayValue!)
+                    : AppLocalizations.of(context)!.labelUnit(card.unit),
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
@@ -270,7 +275,7 @@ class _CardWidgetState extends State<CardWidget> {
                     ),
                     onPressed: () => _showCustomDialog(context),
                     icon: const Icon(Icons.edit, size: 14),
-                    label: const Text('カスタム'),
+                    label: Text(AppLocalizations.of(context)!.buttonCustom),
                   ),
                 ],
               ),

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:pixela_buttons/l10n/app_localizations.dart';
 import '../../core/api/pixela_client.dart';
 import '../../core/models/card_config.dart';
 import '../../core/storage/card_storage.dart';
@@ -65,15 +66,16 @@ class _RecordDialogState extends State<RecordDialog> {
   String _formatValue(double v) =>
       v == v.truncateToDouble() ? v.toInt().toString() : v.toString();
 
-  String get _recordLabel {
+  String _recordLabel(AppLocalizations l10n) {
     final sign = widget.value >= 0 ? '+' : '';
     return '$sign${_formatValue(widget.value)}${widget.card.unit}';
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: const Text('記録しました'),
+      title: Text(l10n.dialogRecordedTitle),
       content: _loading
           ? const SizedBox(
               height: 60,
@@ -83,13 +85,13 @@ class _RecordDialogState extends State<RecordDialog> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('$_recordLabel を記録しました',
+                Text(l10n.dialogRecordedMessage(_recordLabel(l10n)),
                     style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 8),
                 if (_todayFailed)
-                  const Text('累計値の取得に失敗しました')
+                  Text(l10n.dialogTodayFailed)
                 else
-                  Text('今日の合計: $_todayValue${widget.card.unit}'),
+                  Text(l10n.dialogTodayTotal(_todayValue!, widget.card.unit)),
               ],
             ),
       actions: [
@@ -98,7 +100,7 @@ class _RecordDialogState extends State<RecordDialog> {
             _autoCloseTimer?.cancel();
             Navigator.of(context).pop();
           },
-          child: const Text('OK'),
+          child: Text(l10n.buttonOk),
         ),
       ],
     );

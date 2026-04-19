@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pixela_buttons/l10n/app_localizations.dart';
 import 'core/api/pixela_client.dart';
 import 'core/models/card_config.dart';
 import 'features/button_edit/graph_select_screen.dart';
@@ -62,10 +64,10 @@ class _PixelaButtonsAppState extends State<PixelaButtonsApp> {
   }
 
   void _onUnauthorized() {
-    _rootNavigatorKey.currentContext?.go(
-      '/onboarding',
-      extra: 'トークンが無効になったため、再度設定してください',
-    );
+    final ctx = _rootNavigatorKey.currentContext;
+    if (ctx == null) return;
+    final msg = AppLocalizations.of(ctx)?.tokenInvalidBanner ?? '';
+    ctx.go('/onboarding', extra: msg);
   }
 
   @override
@@ -74,6 +76,16 @@ class _PixelaButtonsAppState extends State<PixelaButtonsApp> {
       title: 'Pixela Buttons',
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'),
+        Locale('ja'),
+      ],
       routerConfig: _router,
     );
   }

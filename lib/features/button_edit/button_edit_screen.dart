@@ -1,6 +1,7 @@
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:pixela_buttons/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../main_shell.dart';
 import '../../core/models/button_config.dart';
@@ -56,6 +57,7 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
   }
 
   Future<void> _pickEmoji() async {
+    final l10n = AppLocalizations.of(context)!;
     await showModalBottomSheet(
       context: context,
       builder: (ctx) => SizedBox(
@@ -65,9 +67,9 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 16),
-                  child: Text('emoji を選択'),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: Text(l10n.emojiPickerTitle),
                 ),
                 if (_selectedEmoji.isNotEmpty)
                   TextButton(
@@ -75,7 +77,7 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
                       setState(() => _selectedEmoji = '');
                       Navigator.of(ctx).pop();
                     },
-                    child: const Text('クリア'),
+                    child: Text(l10n.emojiPickerClear),
                   ),
               ],
             ),
@@ -111,11 +113,12 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
   }
 
   Future<void> _pickColor() async {
+    final l10n = AppLocalizations.of(context)!;
     Color color = _selectedColor;
     await showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('ボタンの色'),
+        title: Text(l10n.labelButtonColor),
         content: ColorPicker(
           color: color,
           onColorChanged: (c) => color = c,
@@ -125,7 +128,7 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
         actions: [
           FilledButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('決定'),
+            child: Text(l10n.buttonOk),
           ),
         ],
       ),
@@ -134,6 +137,7 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
   }
 
   void _addButton() async {
+    final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController();
     final value = await showDialog<double>(
       context: context,
@@ -144,15 +148,15 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
           final isInvalid = hasInput && parsed == null;
 
           return AlertDialog(
-            title: const Text('固定値ボタンを追加'),
+            title: Text(l10n.addFixedButtonTitle),
             content: TextField(
               controller: controller,
               keyboardType: const TextInputType.numberWithOptions(
                   decimal: true, signed: true),
               decoration: InputDecoration(
-                labelText: '値（正: 加算 / 負: 減算）',
+                labelText: l10n.addFixedButtonHelper,
                 border: const OutlineInputBorder(),
-                errorText: isInvalid ? '数値を入力してください' : null,
+                errorText: isInvalid ? l10n.addFixedButtonError : null,
               ),
               autofocus: true,
               onChanged: (_) => setDialogState(() {}),
@@ -160,13 +164,13 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('キャンセル'),
+                child: Text(l10n.buttonCancel),
               ),
               FilledButton(
                 onPressed: parsed != null
                     ? () => Navigator.of(ctx).pop(parsed)
                     : null,
-                child: const Text('追加'),
+                child: Text(l10n.buttonAdd),
               ),
             ],
           );
@@ -182,7 +186,7 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedGraph == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('グラフを選択してください')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.snackSelectGraph)),
       );
       return;
     }
@@ -219,26 +223,27 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEdit ? 'ボタンを編集' : 'ボタンを追加'),
+        title: Text(_isEdit ? AppLocalizations.of(context)!.screenButtonEdit : AppLocalizations.of(context)!.screenButtonAdd),
         actions: [
           TextButton(
             onPressed: _save,
-            child: const Text('保存'),
+            child: Text(AppLocalizations.of(context)!.buttonSave),
           ),
         ],
       ),
-      body: Form(
+      body: Builder(builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        return Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
             // Graph selection
             ListTile(
-              title: const Text('グラフ'),
+              title: Text(l10n.labelGraph),
               subtitle: _selectedGraph == null
-                  ? const Text('タップして選択', style: TextStyle(color: Colors.grey))
-                  : Text(
-                      '${_selectedGraph!.name}\n${_selectedGraph!.id}  ·  単位: ${_selectedGraph!.unit}'),
+                  ? Text(l10n.labelGraphPlaceholder, style: const TextStyle(color: Colors.grey))
+                  : Text(l10n.labelGraphSubtitle(_selectedGraph!.name, _selectedGraph!.id, _selectedGraph!.unit)),
               trailing: const Icon(Icons.chevron_right),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -250,23 +255,23 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
             // Display name
             TextFormField(
               controller: _displayNameController,
-              decoration: const InputDecoration(
-                labelText: '表示名',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.fieldDisplayName,
+                border: const OutlineInputBorder(),
               ),
               validator: (v) =>
-                  v == null || v.trim().isEmpty ? '入力してください' : null,
+                  v == null || v.trim().isEmpty ? l10n.fieldRequired : null,
             ),
             const SizedBox(height: 16),
 
             // Emoji
             ListTile(
-              title: const Text('emoji（任意）'),
+              title: Text(l10n.fieldEmoji),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    _selectedEmoji.isEmpty ? '未設定' : _selectedEmoji,
+                    _selectedEmoji.isEmpty ? l10n.emojiNotSet : _selectedEmoji,
                     style: TextStyle(
                       fontSize: _selectedEmoji.isEmpty ? 14 : 24,
                       color: _selectedEmoji.isEmpty ? Colors.grey : null,
@@ -286,7 +291,7 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
 
             // Color picker
             ListTile(
-              title: const Text('ボタン色（加算）'),
+              title: Text(l10n.labelButtonColor),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -314,20 +319,20 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('固定値ボタン',
+                Text(l10n.labelFixedButtons,
                     style: Theme.of(context).textTheme.titleSmall),
                 IconButton(
                   icon: const Icon(Icons.add),
                   onPressed: _addButton,
-                  tooltip: 'ボタンを追加',
+                  tooltip: l10n.tooltipAddFixedButton,
                 ),
               ],
             ),
             if (_buttons.isEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: Text('ボタンがありません',
-                    style: TextStyle(color: Colors.grey)),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text(l10n.noFixedButtons,
+                    style: const TextStyle(color: Colors.grey)),
               )
             else
               ReorderableListView.builder(
@@ -360,7 +365,8 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
               ),
           ],
         ),
-      ),
+      );
+      }),
     );
   }
 }

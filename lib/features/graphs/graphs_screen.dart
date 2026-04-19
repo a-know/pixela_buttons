@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pixela_buttons/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/api/pixela_client.dart';
 import '../../core/storage/card_storage.dart';
@@ -40,11 +41,11 @@ class _GraphsScreenState extends State<GraphsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('グラフ'),
+        title: Text(AppLocalizations.of(context)!.screenGraphs),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            tooltip: 'グラフを作成',
+            tooltip: AppLocalizations.of(context)!.tooltipCreateGraph,
             onPressed: () async {
               final created = await Navigator.of(context).push<bool>(
                 MaterialPageRoute(
@@ -60,11 +61,11 @@ class _GraphsScreenState extends State<GraphsScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('エラー: $_error'),
+                  Text(AppLocalizations.of(context)!.errorGeneric(_error ?? '')),
                   const SizedBox(height: 16),
                   FilledButton(
                     onPressed: _fetchGraphs,
-                    child: const Text('再試行'),
+                    child: Text(AppLocalizations.of(context)!.errorRetry),
                   ),
                 ],
               ),
@@ -74,11 +75,11 @@ class _GraphsScreenState extends State<GraphsScreen> {
               : RefreshIndicator(
                   onRefresh: _fetchGraphs,
                   child: _graphs!.isEmpty
-                  ? const SingleChildScrollView(
-                      physics: AlwaysScrollableScrollPhysics(),
+                  ? SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
                       child: SizedBox(
                         height: 200,
-                        child: Center(child: Text('グラフがありません')),
+                        child: Center(child: Text(AppLocalizations.of(context)!.noGraphs)),
                       ),
                     )
                   : ListView.separated(
@@ -97,7 +98,7 @@ class _GraphsScreenState extends State<GraphsScreen> {
                           ),
                           title: Text(g['name'] as String? ?? ''),
                           subtitle: Text(
-                            '${g['id']}  ·  単位: ${g['unit']}  ·  ${g['type']}',
+                            '${g['id']}  ·  ${AppLocalizations.of(context)!.labelUnit(g['unit'] as String? ?? '')}  ·  ${g['type']}',
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                           trailing: const Icon(Icons.add_circle_outline),

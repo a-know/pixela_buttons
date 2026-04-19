@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:pixela_buttons/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/api/pixela_client.dart';
 import '../../core/storage/card_storage.dart';
@@ -42,11 +43,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       _errorMessage = null;
     });
 
+    final l10n = AppLocalizations.of(context)!;
     try {
       final username = _usernameController.text.trim();
       final token = _tokenController.text.trim();
 
-      // Save token first so the interceptor can attach it, then verify
       await SecureStorage.saveToken(token);
       try {
         await pixelaClient.getGraphs(username);
@@ -56,23 +57,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       }
 
       await CardStorage.saveUsername(username);
-
       if (mounted) context.go('/home');
     } on DioException catch (e) {
       setState(() {
         if (e.response?.statusCode == 400 || e.response?.statusCode == 401) {
-          _errorMessage = 'ユーザー名またはトークンが正しくありません。';
+          _errorMessage = l10n.errorInvalidCredentials;
         } else if (e.type == DioExceptionType.connectionTimeout ||
             e.type == DioExceptionType.receiveTimeout) {
-          _errorMessage = '接続がタイムアウトしました。ネットワークを確認してください。';
+          _errorMessage = l10n.errorTimeout;
         } else if (e.type == DioExceptionType.connectionError) {
-          _errorMessage = 'ネットワークに接続できません。';
+          _errorMessage = l10n.errorNoNetwork;
         } else {
-          _errorMessage = 'エラーが発生しました（${e.response?.statusCode ?? "不明"}）。';
+          _errorMessage = l10n.errorGeneric(e.response?.statusCode?.toString() ?? '?');
         }
       });
     } on Exception catch (e) {
-      setState(() => _errorMessage = 'エラーが発生しました: $e');
+      setState(() => _errorMessage = l10n.errorUnknown(e.toString()));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -80,6 +80,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -89,7 +90,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             children: [
               const SizedBox(height: 48),
               Text(
-                'Pixela Buttons',
+                l10n.appTitle,
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -97,7 +98,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Pixelaアカウントで始める',
+                l10n.appTagline,
                 style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
@@ -123,19 +124,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   children: [
                     TextFormField(
                       controller: _usernameController,
-                      decoration: const InputDecoration(
-                        labelText: 'ユーザー名',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.fieldUsername,
+                        border: const OutlineInputBorder(),
                       ),
                       validator: (v) =>
-                          v == null || v.trim().isEmpty ? '入力してください' : null,
+                          v == null || v.trim().isEmpty ? l10n.fieldRequired : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _tokenController,
                       obscureText: _obscureToken,
                       decoration: InputDecoration(
-                        labelText: 'トークン',
+                        labelText: l10n.fieldToken,
                         border: const OutlineInputBorder(),
                         suffixIcon: IconButton(
                           icon: Icon(_obscureToken
@@ -146,7 +147,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                       ),
                       validator: (v) =>
-                          v == null || v.trim().isEmpty ? '入力してください' : null,
+                          v == null || v.trim().isEmpty ? l10n.fieldRequired : null,
                     ),
                     const SizedBox(height: 24),
                     SizedBox(
@@ -159,7 +160,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 width: 20,
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               )
-                            : const Text('はじめる'),
+                            : Text(l10n.buttonStart),
                       ),
                     ),
                   ],
@@ -168,7 +169,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () => context.push('/register'),
-                child: const Text('アカウントをお持ちでない方はこちら'),
+                child: Text(l10n.linkCreateAccount),
               ),
             ],
           ),
