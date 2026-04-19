@@ -66,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.screenHome),
+        title: _AppBarTitle(),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -111,6 +111,27 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
+    );
+  }
+}
+
+class _AppBarTitle extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final isDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+    final icon = isDark
+        ? 'assets/images/pixela_icon_monochrome.png'
+        : 'assets/images/pixela_icon_color.png';
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Text('Pixela'),
+        const SizedBox(width: 6),
+        Image.asset(icon, height: 24),
+        const SizedBox(width: 6),
+        const Text('Buttons'),
+      ],
     );
   }
 }
