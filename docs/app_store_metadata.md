@@ -34,13 +34,13 @@ Pixelaへの記録をワンタップで
 
 ### English
 ```
-Tired of opening a browser every time you record to Pixela? Pixela Buttons puts your most-used graphs right on your home screen — just tap a button and you're done.
+Pixela rejects 25% of API requests for non-supporter users. Pixela Buttons automatically retries them — so every tap always records, without you noticing a thing.
 ```
-（165文字 / 上限170文字）
+（158文字 / 上限170文字）
 
 ### 日本語
 ```
-Pixelaへの記録のたびにブラウザを開いていませんか？Pixela Buttonsはよく使うグラフをカード化してホーム画面に並べられます。ボタンをタップするだけで記録完了。習慣をもっとシンプルに。
+Pixelaは非サポーターのリクエストを25%の確率でリジェクトします。Pixela Buttonsはそれを自動リトライするので、タップすれば必ず記録される体験を提供します。
 ```
 （72文字 / 上限170文字）
 
