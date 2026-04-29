@@ -93,6 +93,7 @@ class _PixelaButtonsAppState extends State<PixelaButtonsApp> {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Pixela Buttons',
+      debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       locale: localeNotifier.value,

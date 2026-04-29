@@ -2,6 +2,35 @@
 
 [Pixela](https://pixe.la/) への記録をワンタップで行えるスマホアプリです。
 
+<!-- App Store バッジ（公開後に追加） -->
+<!-- [![Download on the App Store](https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg)](https://apps.apple.com/app/idXXXXXXXXXX) -->
+
+## アプリについて
+
+Pixela Buttons は、Pixela ユーザー向けのクライアントアプリです。よく使う記録値をボタンとして登録しておくことで、毎日の習慣をワンタップで記録できます。
+
+**主な機能**
+
+- グラフごとにカードを作成し、固定値ボタンを登録
+- カスタムボタンで任意の値を入力（正の数で加算、負の数で減算）
+- カードの並び替え・絵文字・カラーのカスタマイズ
+- Pixela のリクエストリジェクトを自動リトライ（非サポーターでも記録が途切れない）
+- 日本語・英語対応
+
+**動作環境**
+
+- iOS 13.0 以上
+
+## サポート・バグ報告
+
+不具合や要望は [Issues](https://github.com/a-know/pixela_buttons/issues) からご報告ください。
+
+## プライバシーポリシー
+
+https://pixe.la/app_privacy_policy.txt
+
+---
+
 ## 開発環境のセットアップ
 
 ### 必要なもの
