@@ -9,7 +9,8 @@
 .buildlog/
 .history
 
-
+assets/adi-registration.properties
+android/app/src/main/assets/adi-registration.properties
 
 # Flutter repo-specific
 /bin/cache/
