@@ -1,0 +1,7 @@
+# 証明書を保管するプライベートリポジトリの URL に変更してください
+git_url("https://github.com/a-know/pixela-buttons-certs")
+
+storage_mode("git")
+type("appstore")
+app_identifier(["com.a-know.pixelaButtons"])
+username("a.know.dev@gmail.com")
