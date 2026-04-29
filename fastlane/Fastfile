@@ -16,6 +16,7 @@ platform :ios do
     )
 
     sh("cd .. && flutter pub get")
+    sh("cd ../ios && pod install --repo-update")
 
     build_ios_app(
       workspace: "ios/Runner.xcworkspace",
