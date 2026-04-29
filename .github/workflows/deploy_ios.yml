@@ -23,6 +23,9 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      - name: Unlock login keychain
+        run: security unlock-keychain -p "" ~/Library/Keychains/login.keychain-db
+
       - name: Install Flutter dependencies
         run: flutter pub get
 
@@ -43,3 +46,10 @@ jobs:
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
         run: bundle exec fastlane ios deploy
+
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcode-build-logs
+          path: build/ios/logs/
