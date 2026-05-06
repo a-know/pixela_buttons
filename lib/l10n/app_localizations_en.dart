@@ -43,6 +43,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get linkCreateAccount => 'Don\'t have an account? Sign up here';
 
   @override
+  String get linkAboutPixela => 'Learn about Pixela';
+
+  @override
+  String get urlAboutPixela => 'https://help.pixe.la/en/what-is-pixela';
+
+  @override
   String get tokenInvalidBanner =>
       'Your token has been invalidated. Please set it again.';
 
@@ -50,7 +56,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get screenRegister => 'Sign Up';
 
   @override
-  String get fieldUsername => 'Username';
+  String get fieldUsername => 'username';
 
   @override
   String get fieldUsernameHelper =>
@@ -61,7 +67,7 @@ class AppLocalizationsEn extends AppLocalizations {
       '2–17 characters, starting with lowercase letter (letters, digits, hyphens only)';
 
   @override
-  String get fieldToken => 'Token';
+  String get fieldToken => 'token';
 
   @override
   String get fieldTokenHelper => '8–128 printable ASCII characters';

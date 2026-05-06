@@ -22,4 +22,6 @@ class ApiEndpoints {
       '/v1/users/$username/graphs/$graphId';
   static String graphHtml(String username, String graphId) =>
       'https://pixe.la/v1/users/$username/graphs/$graphId.html';
+  static String userProfile(String username) =>
+      'https://pixe.la/@$username';
 }

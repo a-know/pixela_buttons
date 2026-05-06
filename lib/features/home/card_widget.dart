@@ -1,6 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:webview_flutter/webview_flutter.dart';
 import 'package:pixela_buttons/l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -14,12 +17,14 @@ import 'record_dialog.dart';
 
 class CardWidget extends StatefulWidget {
   final CardConfig card;
+  final int index;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
   const CardWidget({
     super.key,
     required this.card,
+    required this.index,
     required this.onEdit,
     required this.onDelete,
   });
@@ -94,6 +99,7 @@ class _CardWidgetState extends State<CardWidget> {
           await pixelaClient.subtractPixel(username, card.graphId, value.abs());
         }
       }
+      HapticFeedback.mediumImpact();
       if (context.mounted) await RecordDialog.show(context, card, value, recordedAt, card.timezone, specificDate: date);
       _fetchTodayValue();
       if (context.mounted) {
@@ -179,8 +185,8 @@ class _CardWidgetState extends State<CardWidget> {
               const SizedBox(height: 8),
               TextField(
                 controller: controller,
-                keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true, signed: true),
+                keyboardType: TextInputType.text,
+                autocorrect: false,
                 decoration: InputDecoration(
                   labelText: card.unit,
                   border: const OutlineInputBorder(),
@@ -211,9 +217,68 @@ class _CardWidgetState extends State<CardWidget> {
     }
   }
 
+  Widget _typeBadge(BuildContext context, String type) {
+    final (bg, fg) = switch (type) {
+      'int'   => (Colors.blue.withAlpha(40), Colors.blue),
+      'float' => (Colors.orange.withAlpha(40), Colors.orange.shade800),
+      _       => (Colors.grey.withAlpha(40), Colors.grey),
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        type,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: fg),
+      ),
+    );
+  }
+
   void _openGraph(String username) {
     final url = ApiEndpoints.graphHtml(username, card.graphId);
     launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+  }
+
+  Size? _parseSvgSize(String svg) {
+    final w = RegExp(r'width="([\d.]+)"').firstMatch(svg)?.group(1);
+    final h = RegExp(r'height="([\d.]+)"').firstMatch(svg)?.group(1);
+    if (w == null || h == null) return null;
+    return Size(double.parse(w), double.parse(h));
+  }
+
+  Future<void> _showRetinaPreview(BuildContext context) async {
+    final isDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+    final username = await CardStorage.getUsername() ?? '';
+    DateTime now;
+    try {
+      now = card.timezone != null
+          ? tz.TZDateTime.now(tz.getLocation(card.timezone!))
+          : DateTime.now();
+    } catch (_) {
+      now = DateTime.now();
+    }
+    final yyyyMMdd = DateFormat('yyyyMMdd').format(now);
+
+    Size? svgSize;
+    try {
+      final svg = await pixelaClient.getGraphSvgRetina(username, card.graphId, yyyyMMdd);
+      svgSize = _parseSvgSize(svg);
+    } catch (_) {}
+
+    if (!context.mounted) return;
+    showDialog(
+      context: context,
+      builder: (ctx) => _RetinaWebViewDialog(
+        username: username,
+        graphId: card.graphId,
+        displayName: card.displayName,
+        yyyyMMdd: yyyyMMdd,
+        svgSize: svgSize,
+        isDark: isDark,
+      ),
+    );
   }
 
   @override
@@ -230,7 +295,10 @@ class _CardWidgetState extends State<CardWidget> {
           children: [
             Row(
               children: [
-                const Icon(Icons.drag_handle, color: Colors.grey),
+                ReorderableDragStartListener(
+                  index: widget.index,
+                  child: const Icon(Icons.drag_handle, color: Colors.grey),
+                ),
                 const SizedBox(width: 8),
                 if (card.emoji.isNotEmpty)
                   Text(card.emoji,
@@ -273,6 +341,7 @@ class _CardWidgetState extends State<CardWidget> {
               future: CardStorage.getUsername(),
               builder: (ctx, snap) => GestureDetector(
                 onTap: () => _openGraph(snap.data ?? ''),
+                onLongPress: () => _showRetinaPreview(context),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: SizedBox(
@@ -298,11 +367,18 @@ class _CardWidgetState extends State<CardWidget> {
             const SizedBox(height: 4),
             Padding(
               padding: const EdgeInsets.only(left: 4),
-              child: Text(
-                _todayValue != null
-                    ? AppLocalizations.of(context)!.labelUnitToday(card.unit, _todayValue!)
-                    : AppLocalizations.of(context)!.labelUnit(card.unit),
-                style: Theme.of(context).textTheme.bodySmall,
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 6,
+                children: [
+                  if (card.graphType != null) _typeBadge(context, card.graphType!),
+                  Text(
+                    _todayValue != null
+                        ? AppLocalizations.of(context)!.labelUnitToday(card.unit, _todayValue!)
+                        : AppLocalizations.of(context)!.labelUnit(card.unit),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 8),
@@ -359,6 +435,97 @@ class _CardWidgetState extends State<CardWidget> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _RetinaWebViewDialog extends StatefulWidget {
+  final String username;
+  final String graphId;
+  final String displayName;
+  final String yyyyMMdd;
+  final Size? svgSize;
+  final bool isDark;
+
+  const _RetinaWebViewDialog({
+    required this.username,
+    required this.graphId,
+    required this.displayName,
+    required this.yyyyMMdd,
+    this.svgSize,
+    this.isDark = false,
+  });
+
+  @override
+  State<_RetinaWebViewDialog> createState() => _RetinaWebViewDialogState();
+}
+
+class _RetinaWebViewDialogState extends State<_RetinaWebViewDialog> {
+  late final WebViewController _controller;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    final base = '${ApiEndpoints.baseUrl}/v1/users/${widget.username}/graphs/${widget.graphId}/${widget.yyyyMMdd}/retina';
+    final url = widget.isDark ? '$base?appearance=dark' : base;
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(NavigationDelegate(
+        onPageFinished: (_) {
+          if (mounted) setState(() => _loading = false);
+        },
+      ))
+      ..loadRequest(Uri.parse(url));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screen = MediaQuery.of(context).size;
+    final maxW = screen.width - 48;
+    final maxH = screen.height * 0.7;
+    double dialogW = maxW;
+    double dialogH = maxH;
+    if (widget.svgSize != null) {
+      final aspect = widget.svgSize!.width / widget.svgSize!.height;
+      dialogH = (dialogW / aspect).clamp(0.0, maxH);
+      if (dialogH == maxH) dialogW = (maxH * aspect).clamp(0.0, maxW);
+    }
+
+    return Dialog(
+      insetPadding: EdgeInsets.zero,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    AppLocalizations.of(context)!.retinaDialogTitle(widget.displayName),
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            width: dialogW,
+            height: dialogH,
+            child: Stack(
+              children: [
+                WebViewWidget(controller: _controller),
+                if (_loading) const Center(child: CircularProgressIndicator()),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

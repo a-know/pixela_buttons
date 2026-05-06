@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:pixela_buttons/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/api/pixela_client.dart';
 import '../../core/storage/card_storage.dart';
 import '../../core/storage/secure_storage.dart';
@@ -131,6 +132,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   children: [
                     TextFormField(
                       controller: _usernameController,
+                      keyboardType: TextInputType.visiblePassword,
+                      autocorrect: false,
+                      enableSuggestions: false,
                       decoration: InputDecoration(
                         labelText: l10n.fieldUsername,
                         border: const OutlineInputBorder(),
@@ -142,6 +146,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     TextFormField(
                       controller: _tokenController,
                       obscureText: _obscureToken,
+                      keyboardType: TextInputType.visiblePassword,
+                      autocorrect: false,
+                      enableSuggestions: false,
                       decoration: InputDecoration(
                         labelText: l10n.fieldToken,
                         border: const OutlineInputBorder(),
@@ -177,6 +184,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               TextButton(
                 onPressed: () => context.push('/register'),
                 child: Text(l10n.linkCreateAccount),
+              ),
+              TextButton.icon(
+                onPressed: () => launchUrl(
+                  Uri.parse(l10n.urlAboutPixela),
+                  mode: LaunchMode.externalApplication,
+                ),
+                icon: const Icon(Icons.help_outline, size: 18),
+                label: Text(l10n.linkAboutPixela),
               ),
             ],
           ),

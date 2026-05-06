@@ -18,6 +18,7 @@ class GraphsScreen extends StatefulWidget {
 class _GraphsScreenState extends State<GraphsScreen> {
   List<Map<String, dynamic>>? _graphs;
   String? _error;
+  final Map<String, double?> _todayValues = {};
 
   @override
   void initState() {
@@ -78,14 +79,37 @@ class _GraphsScreenState extends State<GraphsScreen> {
     setState(() {
       _graphs = null;
       _error = null;
+      _todayValues.clear();
     });
     try {
       final username = await CardStorage.getUsername() ?? '';
       final graphs = await pixelaClient.getGraphs(username);
       setState(() => _graphs = graphs);
+      _fetchTodayValues(username, graphs);
     } catch (e) {
       setState(() => _error = e.toString());
     }
+  }
+
+  Future<void> _fetchTodayValues(String username, List<Map<String, dynamic>> graphs) async {
+    await Future.wait(graphs.map((g) async {
+      final id = g['id'] as String;
+      try {
+        final value = await pixelaClient.getTodayValue(username, id);
+        if (mounted) setState(() => _todayValues[id] = value);
+      } catch (_) {
+        if (mounted) setState(() => _todayValues[id] = null);
+      }
+    }));
+  }
+
+  String _formatValue(double value) {
+    if (value.abs() >= 1000) {
+      final k = value / 1000;
+      return '${k.toStringAsFixed(k.truncateToDouble() == k ? 0 : 1)}k';
+    }
+    if (value.truncateToDouble() == value) return value.toInt().toString();
+    return value.toString();
   }
 
   @override
@@ -158,15 +182,39 @@ class _GraphsScreenState extends State<GraphsScreen> {
                           child: ListTile(
                             leading: CircleAvatar(
                               backgroundColor: _parseColor(g['color'] as String?),
-                              child: Text(
-                                (g['name'] as String? ?? '?')[0].toUpperCase(),
-                                style: const TextStyle(color: Colors.white),
-                              ),
+                              child: _todayValues.containsKey(g['id'])
+                                  ? _todayValues[g['id']] != null
+                                      ? FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4),
+                                            child: Text(
+                                              _formatValue(_todayValues[g['id']]!),
+                                              style: const TextStyle(color: Colors.white, fontSize: 14),
+                                            ),
+                                          ),
+                                        )
+                                      : const Text('-', style: TextStyle(color: Colors.white))
+                                  : const SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    ),
                             ),
                             title: Text(g['name'] as String? ?? ''),
-                            subtitle: Text(
-                              '${g['id']}  ·  ${l10n.labelUnit(g['unit'] as String? ?? '')}  ·  ${g['type']}',
-                              style: Theme.of(context).textTheme.bodySmall,
+                            subtitle: Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: 6,
+                              children: [
+                                _typeBadge(context, g['type'] as String? ?? ''),
+                                Text(
+                                  '${g['id']}  ·  ${l10n.labelUnit(g['unit'] as String? ?? '')}',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ],
                             ),
                             trailing: const Icon(Icons.add_circle_outline),
                             onTap: () {
@@ -174,6 +222,7 @@ class _GraphsScreenState extends State<GraphsScreen> {
                                 id: g['id'] as String,
                                 name: g['name'] as String,
                                 unit: g['unit'] as String,
+                                graphType: g['type'] as String?,
                               );
                               context.push('/button-edit', extra: graph);
                             },
@@ -182,6 +231,25 @@ class _GraphsScreenState extends State<GraphsScreen> {
                       },
                     ),
                 ),
+    );
+  }
+
+  Widget _typeBadge(BuildContext context, String type) {
+    final (bg, fg) = switch (type) {
+      'int'   => (Colors.blue.withAlpha(40), Colors.blue),
+      'float' => (Colors.orange.withAlpha(40), Colors.orange.shade800),
+      _       => (Colors.grey.withAlpha(40), Colors.grey),
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        type,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: fg),
+      ),
     );
   }
 

@@ -43,13 +43,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get linkCreateAccount => 'アカウントをお持ちでない方はこちら';
 
   @override
+  String get linkAboutPixela => 'Pixelaについて知る';
+
+  @override
+  String get urlAboutPixela => 'https://help.pixe.la/ja/what-is-pixela';
+
+  @override
   String get tokenInvalidBanner => 'トークンが無効になったため、再度設定してください';
 
   @override
   String get screenRegister => '新規登録';
 
   @override
-  String get fieldUsername => 'ユーザー名';
+  String get fieldUsername => 'username';
 
   @override
   String get fieldUsernameHelper => '小文字英字で始まる2〜17文字（英数字・ハイフン）';
@@ -58,7 +64,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get fieldUsernameError => '小文字英字で始まる2〜17文字（英数字・ハイフンのみ）';
 
   @override
-  String get fieldToken => 'トークン';
+  String get fieldToken => 'token';
 
   @override
   String get fieldTokenHelper => '8〜128文字（ASCII印字可能文字）';

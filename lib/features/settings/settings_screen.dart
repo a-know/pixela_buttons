@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../app.dart';
 import '../../core/api/pixela_client.dart';
 import '../../core/storage/card_storage.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../core/api/api_endpoints.dart';
 import '../../core/storage/secure_storage.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -42,6 +44,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           content: TextField(
             controller: controller,
             obscureText: obscure,
+            keyboardType: TextInputType.visiblePassword,
+            autocorrect: false,
+            enableSuggestions: false,
             decoration: InputDecoration(
               labelText: l10n.fieldNewToken,
               border: const OutlineInputBorder(),
@@ -167,6 +172,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             leading: const Icon(Icons.person_outline),
             title: Text(l10n.labelUsernameItem),
             subtitle: Text(_username ?? ''),
+            trailing: const Icon(Icons.open_in_new, size: 18),
+            onTap: _username != null
+                ? () => launchUrl(
+                      Uri.parse(ApiEndpoints.userProfile(_username!)),
+                      mode: LaunchMode.externalApplication,
+                    )
+                : null,
           ),
           const Divider(),
           ListTile(

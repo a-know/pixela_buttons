@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../storage/secure_storage.dart';
 import 'api_endpoints.dart';
 
@@ -7,6 +8,14 @@ typedef OnUnauthorized = void Function();
 class PixelaClient {
   late final Dio _dio;
   OnUnauthorized? onUnauthorized;
+  String? _userAgent;
+
+  Future<String> _getUserAgent() async {
+    if (_userAgent != null) return _userAgent!;
+    final info = await PackageInfo.fromPlatform();
+    _userAgent = 'PixelaButtons/${info.version} Flutter';
+    return _userAgent!;
+  }
 
   PixelaClient() {
     _dio = Dio(BaseOptions(baseUrl: ApiEndpoints.baseUrl));
@@ -22,6 +31,7 @@ class PixelaClient {
     if (token != null) {
       options.headers['X-USER-TOKEN'] = token;
     }
+    options.headers['User-Agent'] = await _getUserAgent();
     handler.next(options);
   }
 
@@ -148,6 +158,14 @@ class PixelaClient {
 
   String _quantityString(double value) =>
       value == value.truncateToDouble() ? value.toInt().toString() : value.toString();
+
+  Future<String> getGraphSvgRetina(String username, String graphId, String yyyyMMdd) async {
+    final response = await _requestWithRetry(() => _dio.get(
+          '/v1/users/$username/graphs/$graphId/$yyyyMMdd/retina',
+          options: Options(responseType: ResponseType.plain),
+        ));
+    return response.data as String;
+  }
 
   Future<String> getGraphSvg(String username, String graphId, {bool darkMode = false}) async {
     final response = await _requestWithRetry(() => _dio.get(

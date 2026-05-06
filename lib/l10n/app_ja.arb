@@ -13,13 +13,15 @@
 
   "buttonStart": "はじめる",
   "linkCreateAccount": "アカウントをお持ちでない方はこちら",
+  "linkAboutPixela": "Pixelaについて知る",
+  "urlAboutPixela": "https://help.pixe.la/ja/what-is-pixela",
   "tokenInvalidBanner": "トークンが無効になったため、再度設定してください",
 
   "screenRegister": "新規登録",
-  "fieldUsername": "ユーザー名",
+  "fieldUsername": "username",
   "fieldUsernameHelper": "小文字英字で始まる2〜17文字（英数字・ハイフン）",
   "fieldUsernameError": "小文字英字で始まる2〜17文字（英数字・ハイフンのみ）",
-  "fieldToken": "トークン",
+  "fieldToken": "token",
   "fieldTokenHelper": "8〜128文字（ASCII印字可能文字）",
   "fieldTokenError": "8〜128文字のASCII印字可能文字",
   "labelAgreeTerms": "Pixelaの",
@@ -128,6 +130,8 @@
   "tabSettings": "設定",
 
   "screenTimezoneSearch": "タイムゾーンを検索...",
+
+  "retinaDialogTitle": "今日のRetina - {name}",
 
   "labelLanguage": "言語",
   "languageSystem": "システムに合わせる",

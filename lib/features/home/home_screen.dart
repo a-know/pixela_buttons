@@ -95,6 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           : ReorderableListView.builder(
               padding: const EdgeInsets.only(bottom: 88),
+              buildDefaultDragHandles: false,
               itemCount: _cards.length,
               onReorder: _reorder,
               itemBuilder: (ctx, i) {
@@ -103,6 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   key: ValueKey(card.id),
                   child: CardWidget(
                     card: card,
+                    index: i,
                     onEdit: () => context.push('/button-edit', extra: card),
                     onDelete: () => _deleteCard(card.id),
                   ),

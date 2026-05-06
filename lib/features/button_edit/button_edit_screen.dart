@@ -43,7 +43,7 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
       } catch (_) {}
       _buttons = List.from(c.buttons);
       _selectedGraph =
-          GraphInfo(id: c.graphId, name: c.displayName, unit: c.unit, timezone: c.timezone);
+          GraphInfo(id: c.graphId, name: c.displayName, unit: c.unit, timezone: c.timezone, graphType: c.graphType);
     } else if (widget.preSelectedGraph != null) {
       _selectedGraph = widget.preSelectedGraph;
       _displayNameController.text = widget.preSelectedGraph!.name;
@@ -151,8 +151,8 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
             title: Text(l10n.addFixedButtonTitle),
             content: TextField(
               controller: controller,
-              keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true, signed: true),
+              keyboardType: TextInputType.text,
+              autocorrect: false,
               decoration: InputDecoration(
                 labelText: l10n.addFixedButtonHelper,
                 border: const OutlineInputBorder(),
@@ -202,6 +202,7 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
       color: colorHex,
       unit: _selectedGraph!.unit,
       timezone: _selectedGraph!.timezone,
+      graphType: _selectedGraph!.graphType,
       buttons: _buttons,
     );
 

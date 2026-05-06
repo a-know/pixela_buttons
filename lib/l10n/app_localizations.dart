@@ -158,6 +158,18 @@ abstract class AppLocalizations {
   /// **'Don\'t have an account? Sign up here'**
   String get linkCreateAccount;
 
+  /// No description provided for @linkAboutPixela.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn about Pixela'**
+  String get linkAboutPixela;
+
+  /// No description provided for @urlAboutPixela.
+  ///
+  /// In en, this message translates to:
+  /// **'https://help.pixe.la/en/what-is-pixela'**
+  String get urlAboutPixela;
+
   /// No description provided for @tokenInvalidBanner.
   ///
   /// In en, this message translates to:
@@ -173,7 +185,7 @@ abstract class AppLocalizations {
   /// No description provided for @fieldUsername.
   ///
   /// In en, this message translates to:
-  /// **'Username'**
+  /// **'username'**
   String get fieldUsername;
 
   /// No description provided for @fieldUsernameHelper.
@@ -191,7 +203,7 @@ abstract class AppLocalizations {
   /// No description provided for @fieldToken.
   ///
   /// In en, this message translates to:
-  /// **'Token'**
+  /// **'token'**
   String get fieldToken;
 
   /// No description provided for @fieldTokenHelper.

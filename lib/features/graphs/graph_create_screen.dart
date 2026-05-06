@@ -129,6 +129,9 @@ class _GraphCreateScreenState extends State<GraphCreateScreen> {
 
             TextFormField(
               controller: _idController,
+              keyboardType: TextInputType.visiblePassword,
+              autocorrect: false,
+              enableSuggestions: false,
               decoration: InputDecoration(
                 labelText: l10n.fieldGraphId,
                 border: const OutlineInputBorder(),
