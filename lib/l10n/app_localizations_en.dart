@@ -192,6 +192,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String dialogDateTotal(String value, String unit) {
+    return 'Total for this day: $value$unit';
+  }
+
+  @override
   String get dialogTodayFailed => 'Failed to retrieve total';
 
   @override

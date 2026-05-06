@@ -116,6 +116,13 @@
       "unit": { "type": "String" }
     }
   },
+  "dialogDateTotal": "Total for this day: {value}{unit}",
+  "@dialogDateTotal": {
+    "placeholders": {
+      "value": { "type": "String" },
+      "unit": { "type": "String" }
+    }
+  },
   "dialogTodayFailed": "Failed to retrieve total",
   "buttonOk": "OK",
 

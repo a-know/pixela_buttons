@@ -58,6 +58,7 @@
   "dialogRecordedMessage": "{value} を記録しました",
   "dialogRecordedDate": "日付: {date}",
   "dialogTodayTotal": "今日の合計: {value}{unit}",
+  "dialogDateTotal": "この日の合計: {value}{unit}",
   "dialogTodayFailed": "累計値の取得に失敗しました",
   "buttonOk": "OK",
 

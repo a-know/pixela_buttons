@@ -410,6 +410,12 @@ abstract class AppLocalizations {
   /// **'Today\'\'s total: {value}{unit}'**
   String dialogTodayTotal(String value, String unit);
 
+  /// No description provided for @dialogDateTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total for this day: {value}{unit}'**
+  String dialogDateTotal(String value, String unit);
+
   /// No description provided for @dialogTodayFailed.
   ///
   /// In en, this message translates to:
