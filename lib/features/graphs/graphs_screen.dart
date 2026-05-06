@@ -164,9 +164,16 @@ class _GraphsScreenState extends State<GraphsScreen> {
                               ),
                             ),
                             title: Text(g['name'] as String? ?? ''),
-                            subtitle: Text(
-                              '${g['id']}  ·  ${l10n.labelUnit(g['unit'] as String? ?? '')}  ·  ${g['type']}',
-                              style: Theme.of(context).textTheme.bodySmall,
+                            subtitle: Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: 6,
+                              children: [
+                                _typeBadge(context, g['type'] as String? ?? ''),
+                                Text(
+                                  '${g['id']}  ·  ${l10n.labelUnit(g['unit'] as String? ?? '')}',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ],
                             ),
                             trailing: const Icon(Icons.add_circle_outline),
                             onTap: () {
@@ -182,6 +189,25 @@ class _GraphsScreenState extends State<GraphsScreen> {
                       },
                     ),
                 ),
+    );
+  }
+
+  Widget _typeBadge(BuildContext context, String type) {
+    final (bg, fg) = switch (type) {
+      'int'   => (Colors.blue.withAlpha(40), Colors.blue),
+      'float' => (Colors.orange.withAlpha(40), Colors.orange.shade800),
+      _       => (Colors.grey.withAlpha(40), Colors.grey),
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        type,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: fg),
+      ),
     );
   }
 
