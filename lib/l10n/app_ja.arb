@@ -84,6 +84,8 @@
   "tooltipCreateGraph": "グラフを作成",
   "noGraphs": "グラフがありません",
   "errorRetry": "再試行",
+  "confirmDeleteGraphTitle": "グラフを削除",
+  "confirmDeleteGraphMessage": "グラフ「{name}」を削除します。記録データもすべて削除されます。この操作は取り消せません。",
 
   "screenCreateGraph": "グラフを作成",
   "buttonCreate": "作成",

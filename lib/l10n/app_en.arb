@@ -149,6 +149,13 @@
   "tooltipCreateGraph": "Create graph",
   "noGraphs": "No graphs",
   "errorRetry": "Retry",
+  "confirmDeleteGraphTitle": "Delete Graph",
+  "confirmDeleteGraphMessage": "Delete graph \"{name}\"? All recorded data will also be deleted. This cannot be undone.",
+  "@confirmDeleteGraphMessage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
 
   "screenCreateGraph": "Create Graph",
   "buttonCreate": "Create",

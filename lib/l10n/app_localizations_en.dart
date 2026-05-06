@@ -265,6 +265,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorRetry => 'Retry';
 
   @override
+  String get confirmDeleteGraphTitle => 'Delete Graph';
+
+  @override
+  String confirmDeleteGraphMessage(String name) {
+    return 'Delete graph \"$name\"? All recorded data will also be deleted. This cannot be undone.';
+  }
+
+  @override
   String get screenCreateGraph => 'Create Graph';
 
   @override

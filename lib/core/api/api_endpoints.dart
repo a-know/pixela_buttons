@@ -11,6 +11,8 @@ class ApiEndpoints {
       '/v1/users/$username/graphs/$graphId/add';
   static String subtract(String username, String graphId) =>
       '/v1/users/$username/graphs/$graphId/subtract';
+  static String graph(String username, String graphId) =>
+      '/v1/users/$username/graphs/$graphId';
   static String graphHtml(String username, String graphId) =>
       'https://pixe.la/v1/users/$username/graphs/$graphId.html';
 }

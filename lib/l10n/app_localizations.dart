@@ -554,6 +554,18 @@ abstract class AppLocalizations {
   /// **'Retry'**
   String get errorRetry;
 
+  /// No description provided for @confirmDeleteGraphTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Graph'**
+  String get confirmDeleteGraphTitle;
+
+  /// No description provided for @confirmDeleteGraphMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete graph \"{name}\"? All recorded data will also be deleted. This cannot be undone.'**
+  String confirmDeleteGraphMessage(String name);
+
   /// No description provided for @screenCreateGraph.
   ///
   /// In en, this message translates to:

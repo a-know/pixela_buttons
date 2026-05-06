@@ -262,6 +262,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorRetry => '再試行';
 
   @override
+  String get confirmDeleteGraphTitle => 'グラフを削除';
+
+  @override
+  String confirmDeleteGraphMessage(String name) {
+    return 'グラフ「$name」を削除します。記録データもすべて削除されます。この操作は取り消せません。';
+  }
+
+  @override
   String get screenCreateGraph => 'グラフを作成';
 
   @override

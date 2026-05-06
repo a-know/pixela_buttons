@@ -79,6 +79,11 @@ class PixelaClient {
         ));
   }
 
+  Future<void> deleteGraph(String username, String graphId) async {
+    await _requestWithRetry(
+        () => _dio.delete(ApiEndpoints.graph(username, graphId)));
+  }
+
   Future<List<Map<String, dynamic>>> getGraphs(String username) async {
     final response = await _requestWithRetry(
         () => _dio.get(ApiEndpoints.graphs(username)));
