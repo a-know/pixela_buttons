@@ -249,6 +249,7 @@ class _CardWidgetState extends State<CardWidget> {
   }
 
   Future<void> _showRetinaPreview(BuildContext context) async {
+    final isDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
     final username = await CardStorage.getUsername() ?? '';
     DateTime now;
     try {
@@ -275,6 +276,7 @@ class _CardWidgetState extends State<CardWidget> {
         displayName: card.displayName,
         yyyyMMdd: yyyyMMdd,
         svgSize: svgSize,
+        isDark: isDark,
       ),
     );
   }
@@ -444,6 +446,7 @@ class _RetinaWebViewDialog extends StatefulWidget {
   final String displayName;
   final String yyyyMMdd;
   final Size? svgSize;
+  final bool isDark;
 
   const _RetinaWebViewDialog({
     required this.username,
@@ -451,6 +454,7 @@ class _RetinaWebViewDialog extends StatefulWidget {
     required this.displayName,
     required this.yyyyMMdd,
     this.svgSize,
+    this.isDark = false,
   });
 
   @override
@@ -464,7 +468,8 @@ class _RetinaWebViewDialogState extends State<_RetinaWebViewDialog> {
   @override
   void initState() {
     super.initState();
-    final url = '${ApiEndpoints.baseUrl}/v1/users/${widget.username}/graphs/${widget.graphId}/${widget.yyyyMMdd}/retina';
+    final base = '${ApiEndpoints.baseUrl}/v1/users/${widget.username}/graphs/${widget.graphId}/${widget.yyyyMMdd}/retina';
+    final url = widget.isDark ? '$base?appearance=dark' : base;
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(NavigationDelegate(
