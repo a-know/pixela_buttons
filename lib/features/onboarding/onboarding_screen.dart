@@ -179,12 +179,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 onPressed: () => context.push('/register'),
                 child: Text(l10n.linkCreateAccount),
               ),
-              TextButton(
+              TextButton.icon(
                 onPressed: () => launchUrl(
                   Uri.parse(l10n.urlAboutPixela),
                   mode: LaunchMode.externalApplication,
                 ),
-                child: Text(l10n.linkAboutPixela),
+                icon: const Icon(Icons.help_outline, size: 18),
+                label: Text(l10n.linkAboutPixela),
               ),
             ],
           ),
