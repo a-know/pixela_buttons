@@ -394,6 +394,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get screenTimezoneSearch => 'タイムゾーンを検索...';
 
   @override
+  String retinaDialogTitle(String name) {
+    return '今日のRetina - $name';
+  }
+
+  @override
   String get labelLanguage => '言語';
 
   @override
