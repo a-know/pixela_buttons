@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:pixela_buttons/l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -94,6 +95,7 @@ class _CardWidgetState extends State<CardWidget> {
           await pixelaClient.subtractPixel(username, card.graphId, value.abs());
         }
       }
+      HapticFeedback.mediumImpact();
       if (context.mounted) await RecordDialog.show(context, card, value, recordedAt, card.timezone, specificDate: date);
       _fetchTodayValue();
       if (context.mounted) {
