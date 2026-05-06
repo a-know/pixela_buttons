@@ -7,8 +7,9 @@ class GraphInfo {
   final String name;
   final String unit;
   final String? timezone;
+  final String? graphType;
 
-  const GraphInfo({required this.id, required this.name, required this.unit, this.timezone});
+  const GraphInfo({required this.id, required this.name, required this.unit, this.timezone, this.graphType});
 }
 
 class GraphSelectScreen extends StatefulWidget {
@@ -41,6 +42,7 @@ class _GraphSelectScreenState extends State<GraphSelectScreen> {
                 name: g['name'] as String,
                 unit: g['unit'] as String,
                 timezone: (tz != null && tz.isNotEmpty) ? tz : null,
+                graphType: g['type'] as String?,
               );
             })
             .toList();

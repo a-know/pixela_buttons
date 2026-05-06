@@ -9,6 +9,7 @@ class CardConfig {
   final String color;
   final String unit;
   final String? timezone;
+  final String? graphType;
   final List<ButtonConfig> buttons;
 
   CardConfig({
@@ -19,6 +20,7 @@ class CardConfig {
     required this.color,
     required this.unit,
     this.timezone,
+    this.graphType,
     List<ButtonConfig>? buttons,
   })  : id = id ?? const Uuid().v4(),
         buttons = buttons ?? [];
@@ -33,6 +35,7 @@ class CardConfig {
       color: json['color'] as String,
       unit: json['unit'] as String,
       timezone: (tz != null && tz.isNotEmpty) ? tz : null,
+      graphType: json['graphType'] as String?,
       buttons: (json['buttons'] as List<dynamic>)
           .map((b) => ButtonConfig.fromJson(b as Map<String, dynamic>))
           .toList(),
@@ -47,6 +50,7 @@ class CardConfig {
         'color': color,
         'unit': unit,
         'timezone': timezone,
+        'graphType': graphType,
         'buttons': buttons.map((b) => b.toJson()).toList(),
       };
 
@@ -57,6 +61,7 @@ class CardConfig {
     String? color,
     String? unit,
     String? timezone,
+    String? graphType,
     List<ButtonConfig>? buttons,
   }) {
     return CardConfig(
@@ -67,6 +72,7 @@ class CardConfig {
       color: color ?? this.color,
       unit: unit ?? this.unit,
       timezone: timezone ?? this.timezone,
+      graphType: graphType ?? this.graphType,
       buttons: buttons ?? this.buttons,
     );
   }

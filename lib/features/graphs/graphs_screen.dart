@@ -222,6 +222,7 @@ class _GraphsScreenState extends State<GraphsScreen> {
                                 id: g['id'] as String,
                                 name: g['name'] as String,
                                 unit: g['unit'] as String,
+                                graphType: g['type'] as String?,
                               );
                               context.push('/button-edit', extra: graph);
                             },

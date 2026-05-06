@@ -211,6 +211,25 @@ class _CardWidgetState extends State<CardWidget> {
     }
   }
 
+  Widget _typeBadge(BuildContext context, String type) {
+    final (bg, fg) = switch (type) {
+      'int'   => (Colors.blue.withAlpha(40), Colors.blue),
+      'float' => (Colors.orange.withAlpha(40), Colors.orange.shade800),
+      _       => (Colors.grey.withAlpha(40), Colors.grey),
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        type,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: fg),
+      ),
+    );
+  }
+
   void _openGraph(String username) {
     final url = ApiEndpoints.graphHtml(username, card.graphId);
     launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
@@ -298,11 +317,18 @@ class _CardWidgetState extends State<CardWidget> {
             const SizedBox(height: 4),
             Padding(
               padding: const EdgeInsets.only(left: 4),
-              child: Text(
-                _todayValue != null
-                    ? AppLocalizations.of(context)!.labelUnitToday(card.unit, _todayValue!)
-                    : AppLocalizations.of(context)!.labelUnit(card.unit),
-                style: Theme.of(context).textTheme.bodySmall,
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 6,
+                children: [
+                  if (card.graphType != null) _typeBadge(context, card.graphType!),
+                  Text(
+                    _todayValue != null
+                        ? AppLocalizations.of(context)!.labelUnitToday(card.unit, _todayValue!)
+                        : AppLocalizations.of(context)!.labelUnit(card.unit),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 8),
