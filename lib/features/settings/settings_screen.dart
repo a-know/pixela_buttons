@@ -42,6 +42,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           content: TextField(
             controller: controller,
             obscureText: obscure,
+            keyboardType: TextInputType.visiblePassword,
+            autocorrect: false,
+            enableSuggestions: false,
             decoration: InputDecoration(
               labelText: l10n.fieldNewToken,
               border: const OutlineInputBorder(),

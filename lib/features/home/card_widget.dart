@@ -179,8 +179,8 @@ class _CardWidgetState extends State<CardWidget> {
               const SizedBox(height: 8),
               TextField(
                 controller: controller,
-                keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true, signed: true),
+                keyboardType: TextInputType.text,
+                autocorrect: false,
                 decoration: InputDecoration(
                   labelText: card.unit,
                   border: const OutlineInputBorder(),

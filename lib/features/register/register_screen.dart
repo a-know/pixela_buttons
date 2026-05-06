@@ -113,6 +113,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: [
                     TextFormField(
                       controller: _usernameController,
+                      keyboardType: TextInputType.visiblePassword,
+                      autocorrect: false,
+                      enableSuggestions: false,
                       decoration: InputDecoration(
                         labelText: l10n.fieldUsername,
                         border: const OutlineInputBorder(),
@@ -128,6 +131,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     TextFormField(
                       controller: _tokenController,
                       obscureText: _obscureToken,
+                      keyboardType: TextInputType.visiblePassword,
+                      autocorrect: false,
+                      enableSuggestions: false,
                       decoration: InputDecoration(
                         labelText: l10n.fieldToken,
                         border: const OutlineInputBorder(),

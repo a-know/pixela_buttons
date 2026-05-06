@@ -151,8 +151,8 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
             title: Text(l10n.addFixedButtonTitle),
             content: TextField(
               controller: controller,
-              keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true, signed: true),
+              keyboardType: TextInputType.text,
+              autocorrect: false,
               decoration: InputDecoration(
                 labelText: l10n.addFixedButtonHelper,
                 border: const OutlineInputBorder(),
