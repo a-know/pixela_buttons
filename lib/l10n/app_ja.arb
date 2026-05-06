@@ -116,6 +116,12 @@
   "dialogLogoutMessage": "ログアウトします。カード設定は保持され、再ログイン時に復元されます。",
   "buttonLogout": "ログアウト",
 
+  "labelDeleteAccount": "アカウントを削除",
+  "dialogDeleteAccountTitle": "アカウントを削除",
+  "dialogDeleteAccountMessage": "アカウント「{username}」を削除します。グラフや記録データを含むPixelaアカウントがすべて削除されます。この操作は取り消せません。",
+  "buttonDeleteAccount": "削除する",
+  "errorDeleteAccountFailed": "アカウントの削除に失敗しました: {detail}",
+
   "tabHome": "ホーム",
   "tabGraphs": "グラフ",
   "tabSettings": "設定",

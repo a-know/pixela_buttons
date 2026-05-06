@@ -728,6 +728,36 @@ abstract class AppLocalizations {
   /// **'Log Out'**
   String get buttonLogout;
 
+  /// No description provided for @labelDeleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get labelDeleteAccount;
+
+  /// No description provided for @dialogDeleteAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get dialogDeleteAccountTitle;
+
+  /// No description provided for @dialogDeleteAccountMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account \"{username}\"? Your Pixela account, including all graphs and recorded data, will be permanently deleted. This cannot be undone.'**
+  String dialogDeleteAccountMessage(String username);
+
+  /// No description provided for @buttonDeleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get buttonDeleteAccount;
+
+  /// No description provided for @errorDeleteAccountFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete account: {detail}'**
+  String errorDeleteAccountFailed(String detail);
+
   /// No description provided for @tabHome.
   ///
   /// In en, this message translates to:

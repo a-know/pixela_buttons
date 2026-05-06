@@ -186,6 +186,22 @@
   "dialogLogoutMessage": "You will be logged out. Card settings will be preserved and restored on next login.",
   "buttonLogout": "Log Out",
 
+  "labelDeleteAccount": "Delete Account",
+  "dialogDeleteAccountTitle": "Delete Account",
+  "dialogDeleteAccountMessage": "Delete account \"{username}\"? Your Pixela account, including all graphs and recorded data, will be permanently deleted. This cannot be undone.",
+  "@dialogDeleteAccountMessage": {
+    "placeholders": {
+      "username": { "type": "String" }
+    }
+  },
+  "buttonDeleteAccount": "Delete",
+  "errorDeleteAccountFailed": "Failed to delete account: {detail}",
+  "@errorDeleteAccountFailed": {
+    "placeholders": {
+      "detail": { "type": "String" }
+    }
+  },
+
   "tabHome": "Home",
   "tabGraphs": "Graphs",
   "tabSettings": "Settings",

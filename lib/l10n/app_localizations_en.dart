@@ -358,6 +358,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buttonLogout => 'Log Out';
 
   @override
+  String get labelDeleteAccount => 'Delete Account';
+
+  @override
+  String get dialogDeleteAccountTitle => 'Delete Account';
+
+  @override
+  String dialogDeleteAccountMessage(String username) {
+    return 'Delete account \"$username\"? Your Pixela account, including all graphs and recorded data, will be permanently deleted. This cannot be undone.';
+  }
+
+  @override
+  String get buttonDeleteAccount => 'Delete';
+
+  @override
+  String errorDeleteAccountFailed(String detail) {
+    return 'Failed to delete account: $detail';
+  }
+
+  @override
   String get tabHome => 'Home';
 
   @override

@@ -2,6 +2,7 @@ class ApiEndpoints {
   static const baseUrl = 'https://pixe.la';
 
   static String createUser() => '/v1/users';
+  static String deleteUser(String username) => '/v1/users/$username';
   static String graphs(String username) => '/v1/users/$username/graphs';
   static String pixel(String username, String graphId) =>
       '/v1/users/$username/graphs/$graphId/pixels';

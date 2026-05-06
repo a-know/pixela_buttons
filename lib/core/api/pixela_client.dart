@@ -91,6 +91,11 @@ class PixelaClient {
     return graphs.cast<Map<String, dynamic>>();
   }
 
+  Future<void> deleteUser(String username) async {
+    await _requestWithRetry(
+        () => _dio.delete(ApiEndpoints.deleteUser(username)));
+  }
+
   Future<void> createUser({
     required String username,
     required String token,

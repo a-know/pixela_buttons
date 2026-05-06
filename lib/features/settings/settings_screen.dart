@@ -84,6 +84,47 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  Future<void> _deleteAccount() async {
+    final l10n = AppLocalizations.of(context)!;
+    final username = _username ?? '';
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.dialogDeleteAccountTitle),
+        content: Text(l10n.dialogDeleteAccountMessage(username)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.buttonCancel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.buttonDeleteAccount),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    try {
+      await pixelaClient.deleteUser(username);
+      await SecureStorage.deleteToken();
+      await CardStorage.clearUsername();
+      await CardStorage.saveCards([]);
+      if (mounted) context.go('/onboarding');
+    } on DioException catch (e) {
+      if (!mounted) return;
+      final detail = e.response?.statusCode?.toString() ?? e.toString();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.errorDeleteAccountFailed(detail))),
+      );
+    }
+  }
+
   Future<void> _logout() async {
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
@@ -161,6 +202,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
             onTap: _logout,
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.delete_forever_outlined,
+                color: Colors.red),
+            title: Text(
+              l10n.labelDeleteAccount,
+              style: const TextStyle(color: Colors.red),
+            ),
+            onTap: _deleteAccount,
           ),
         ],
       ),

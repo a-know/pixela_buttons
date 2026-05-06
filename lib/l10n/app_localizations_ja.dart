@@ -352,6 +352,25 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonLogout => 'ログアウト';
 
   @override
+  String get labelDeleteAccount => 'アカウントを削除';
+
+  @override
+  String get dialogDeleteAccountTitle => 'アカウントを削除';
+
+  @override
+  String dialogDeleteAccountMessage(String username) {
+    return 'アカウント「$username」を削除します。グラフや記録データを含むPixelaアカウントがすべて削除されます。この操作は取り消せません。';
+  }
+
+  @override
+  String get buttonDeleteAccount => '削除する';
+
+  @override
+  String errorDeleteAccountFailed(String detail) {
+    return 'アカウントの削除に失敗しました: $detail';
+  }
+
+  @override
   String get tabHome => 'ホーム';
 
   @override
