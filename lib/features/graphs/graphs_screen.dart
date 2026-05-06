@@ -44,7 +44,7 @@ class _GraphsScreenState extends State<GraphsScreen> {
         title: Text(AppLocalizations.of(context)!.screenGraphs),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
+            icon: const Icon(Icons.add_chart),
             tooltip: AppLocalizations.of(context)!.tooltipCreateGraph,
             onPressed: () async {
               final created = await Navigator.of(context).push<bool>(

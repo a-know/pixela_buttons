@@ -67,13 +67,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: _AppBarTitle(),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            tooltip: l10n.tooltipAddButton,
-            onPressed: () => context.push('/button-edit'),
-          ),
-        ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => context.push('/button-edit'),
+        icon: const Icon(Icons.add),
+        label: Text(l10n.tooltipAddButton),
       ),
       body: _cards.isEmpty
           ? Center(
@@ -96,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             )
           : ReorderableListView.builder(
-              padding: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.only(bottom: 88),
               itemCount: _cards.length,
               onReorder: _reorder,
               itemBuilder: (ctx, i) {
