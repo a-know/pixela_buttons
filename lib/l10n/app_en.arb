@@ -93,6 +93,8 @@
       "detail": { "type": "String" }
     }
   },
+  "errorGraphNotFoundTitle": "Graph Not Found",
+  "errorGraphNotFoundMessage": "This graph may have been deleted on Pixela. Would you like to delete this card too?",
 
   "dialogRecordedTitle": "Recorded",
   "dialogRecordedMessage": "{value} recorded",
@@ -101,8 +103,21 @@
       "value": { "type": "String" }
     }
   },
+  "dialogRecordedDate": "Date: {date}",
+  "@dialogRecordedDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
   "dialogTodayTotal": "Today''s total: {value}{unit}",
   "@dialogTodayTotal": {
+    "placeholders": {
+      "value": { "type": "String" },
+      "unit": { "type": "String" }
+    }
+  },
+  "dialogDateTotal": "Total for this day: {value}{unit}",
+  "@dialogDateTotal": {
     "placeholders": {
       "value": { "type": "String" },
       "unit": { "type": "String" }
@@ -143,6 +158,13 @@
   "tooltipCreateGraph": "Create graph",
   "noGraphs": "No graphs",
   "errorRetry": "Retry",
+  "confirmDeleteGraphTitle": "Delete Graph",
+  "confirmDeleteGraphMessage": "Delete graph \"{name}\"? All recorded data will also be deleted. This cannot be undone.",
+  "@confirmDeleteGraphMessage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
 
   "screenCreateGraph": "Create Graph",
   "buttonCreate": "Create",
@@ -170,6 +192,22 @@
   "dialogLogoutTitle": "Log Out",
   "dialogLogoutMessage": "You will be logged out. Card settings will be preserved and restored on next login.",
   "buttonLogout": "Log Out",
+
+  "labelDeleteAccount": "Delete Account",
+  "dialogDeleteAccountTitle": "Delete Account",
+  "dialogDeleteAccountMessage": "Delete account \"{username}\"? Your Pixela account, including all graphs and recorded data, will be permanently deleted. This cannot be undone.",
+  "@dialogDeleteAccountMessage": {
+    "placeholders": {
+      "username": { "type": "String" }
+    }
+  },
+  "buttonDeleteAccount": "Delete",
+  "errorDeleteAccountFailed": "Failed to delete account: {detail}",
+  "@errorDeleteAccountFailed": {
+    "placeholders": {
+      "detail": { "type": "String" }
+    }
+  },
 
   "tabHome": "Home",
   "tabGraphs": "Graphs",

@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:pixela_buttons/l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -7,6 +9,7 @@ import '../../core/api/pixela_client.dart';
 import '../../core/models/card_config.dart';
 import '../../core/storage/card_storage.dart';
 import '../../core/theme/app_theme.dart';
+import '../main_shell.dart';
 import 'record_dialog.dart';
 
 class CardWidget extends StatefulWidget {
@@ -73,64 +76,138 @@ class _CardWidgetState extends State<CardWidget> {
     }
   }
 
-  Future<void> _record(BuildContext context, double value) async {
+  Future<void> _record(BuildContext context, double value, {DateTime? date}) async {
     final username = await CardStorage.getUsername() ?? '';
     try {
-      if (value >= 0) {
-        await pixelaClient.addPixel(username, card.graphId, value);
+      final recordedAt = date ?? DateTime.now();
+      if (date != null) {
+        final yyyyMMdd = DateFormat('yyyyMMdd').format(date);
+        if (value >= 0) {
+          await pixelaClient.addPixelOnDate(username, card.graphId, yyyyMMdd, value);
+        } else {
+          await pixelaClient.subtractPixelOnDate(username, card.graphId, yyyyMMdd, value.abs());
+        }
       } else {
-        await pixelaClient.subtractPixel(username, card.graphId, value.abs());
+        if (value >= 0) {
+          await pixelaClient.addPixel(username, card.graphId, value);
+        } else {
+          await pixelaClient.subtractPixel(username, card.graphId, value.abs());
+        }
       }
-      if (context.mounted) await RecordDialog.show(context, card, value);
+      if (context.mounted) await RecordDialog.show(context, card, value, recordedAt, card.timezone, specificDate: date);
       _fetchTodayValue();
       if (context.mounted) {
         final isDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
         _fetchSvg(isDark);
       }
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.errorRecord(e.toString()))),
-        );
+      if (!context.mounted) return;
+      if (e is DioException && e.response?.statusCode == 404) {
+        await _handleGraphNotFound(context);
+      } else {
+        final l10n = AppLocalizations.of(context)!;
+        final msg = (e is DioException && e.response?.statusCode != null)
+            ? l10n.errorGeneric(e.response!.statusCode.toString())
+            : l10n.errorUnknown(e.toString());
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
       }
+    }
+  }
+
+  Future<void> _handleGraphNotFound(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    final delete = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.errorGraphNotFoundTitle),
+        content: Text(l10n.errorGraphNotFoundMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.buttonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(l10n.buttonDelete),
+          ),
+        ],
+      ),
+    );
+    if (delete == true) {
+      final cards = await CardStorage.loadCards();
+      await CardStorage.saveCards(cards.where((c) => c.id != card.id).toList());
+      homeTabNotifier.value++;
     }
   }
 
   Future<void> _showCustomDialog(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController();
-    final value = await showDialog<double>(
+    var selectedDate = DateTime.now();
+
+    final result = await showDialog<({double value, DateTime date})>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.customDialogTitle),
-        content: TextField(
-          controller: controller,
-          keyboardType: const TextInputType.numberWithOptions(
-              decimal: true, signed: true),
-          decoration: InputDecoration(
-            labelText: card.unit,
-            border: const OutlineInputBorder(),
-            helperText: l10n.customDialogHelper,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: Text(l10n.customDialogTitle),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.calendar_today_outlined),
+                title: Text(
+                  DateFormat.yMMMd(Localizations.localeOf(ctx).languageCode)
+                      .format(selectedDate),
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: ctx,
+                    initialDate: selectedDate,
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2100),
+                  );
+                  if (picked != null) setDialogState(() => selectedDate = picked);
+                },
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: controller,
+                keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true, signed: true),
+                decoration: InputDecoration(
+                  labelText: card.unit,
+                  border: const OutlineInputBorder(),
+                  helperText: l10n.customDialogHelper,
+                ),
+                autofocus: true,
+              ),
+            ],
           ),
-          autofocus: true,
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text(l10n.buttonCancel),
+            ),
+            FilledButton(
+              onPressed: () {
+                final v = double.tryParse(controller.text);
+                if (v != null) Navigator.of(ctx).pop((value: v, date: selectedDate));
+              },
+              child: Text(l10n.buttonRecord),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(l10n.buttonCancel),
-          ),
-          FilledButton(
-            onPressed: () {
-              final v = double.tryParse(controller.text);
-              Navigator.of(ctx).pop(v);
-            },
-            child: Text(l10n.buttonRecord),
-          ),
-        ],
       ),
     );
-    if (value != null && context.mounted) {
-      await _record(context, value);
+    if (result != null && context.mounted) {
+      await _record(context, result.value, date: result.date);
     }
   }
 

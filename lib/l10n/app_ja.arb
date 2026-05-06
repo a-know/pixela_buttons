@@ -51,10 +51,14 @@
   "confirmDeleteMessage": "このカードを削除しますか？",
   "buttonDelete": "削除",
   "errorRecord": "エラー: {detail}",
+  "errorGraphNotFoundTitle": "グラフが見つかりません",
+  "errorGraphNotFoundMessage": "Pixela上でグラフが削除された可能性があります。このカードも削除しますか？",
 
   "dialogRecordedTitle": "記録しました",
   "dialogRecordedMessage": "{value} を記録しました",
+  "dialogRecordedDate": "日付: {date}",
   "dialogTodayTotal": "今日の合計: {value}{unit}",
+  "dialogDateTotal": "この日の合計: {value}{unit}",
   "dialogTodayFailed": "累計値の取得に失敗しました",
   "buttonOk": "OK",
 
@@ -83,6 +87,8 @@
   "tooltipCreateGraph": "グラフを作成",
   "noGraphs": "グラフがありません",
   "errorRetry": "再試行",
+  "confirmDeleteGraphTitle": "グラフを削除",
+  "confirmDeleteGraphMessage": "グラフ「{name}」を削除します。記録データもすべて削除されます。この操作は取り消せません。",
 
   "screenCreateGraph": "グラフを作成",
   "buttonCreate": "作成",
@@ -110,6 +116,12 @@
   "dialogLogoutTitle": "ログアウト",
   "dialogLogoutMessage": "ログアウトします。カード設定は保持され、再ログイン時に復元されます。",
   "buttonLogout": "ログアウト",
+
+  "labelDeleteAccount": "アカウントを削除",
+  "dialogDeleteAccountTitle": "アカウントを削除",
+  "dialogDeleteAccountMessage": "アカウント「{username}」を削除します。グラフや記録データを含むPixelaアカウントがすべて削除されます。この操作は取り消せません。",
+  "buttonDeleteAccount": "削除する",
+  "errorDeleteAccountFailed": "アカウントの削除に失敗しました: {detail}",
 
   "tabHome": "ホーム",
   "tabGraphs": "グラフ",

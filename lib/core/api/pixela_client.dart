@@ -79,11 +79,21 @@ class PixelaClient {
         ));
   }
 
+  Future<void> deleteGraph(String username, String graphId) async {
+    await _requestWithRetry(
+        () => _dio.delete(ApiEndpoints.graph(username, graphId)));
+  }
+
   Future<List<Map<String, dynamic>>> getGraphs(String username) async {
     final response = await _requestWithRetry(
         () => _dio.get(ApiEndpoints.graphs(username)));
     final graphs = response.data['graphs'] as List<dynamic>;
     return graphs.cast<Map<String, dynamic>>();
+  }
+
+  Future<void> deleteUser(String username) async {
+    await _requestWithRetry(
+        () => _dio.delete(ApiEndpoints.deleteUser(username)));
   }
 
   Future<void> createUser({
@@ -120,6 +130,22 @@ class PixelaClient {
         ));
   }
 
+  Future<void> addPixelOnDate(
+      String username, String graphId, String yyyyMMdd, double value) async {
+    await _requestWithRetry(() => _dio.put(
+          ApiEndpoints.addOnDate(username, graphId, yyyyMMdd),
+          data: {'quantity': _quantityString(value)},
+        ));
+  }
+
+  Future<void> subtractPixelOnDate(
+      String username, String graphId, String yyyyMMdd, double value) async {
+    await _requestWithRetry(() => _dio.put(
+          ApiEndpoints.subtractOnDate(username, graphId, yyyyMMdd),
+          data: {'quantity': _quantityString(value)},
+        ));
+  }
+
   String _quantityString(double value) =>
       value == value.truncateToDouble() ? value.toInt().toString() : value.toString();
 
@@ -140,6 +166,13 @@ class PixelaClient {
           ),
         ));
     return response.data as String;
+  }
+
+  Future<double?> getPixelValue(String username, String graphId, String yyyyMMdd) async {
+    final response = await _requestWithRetry(
+        () => _dio.get(ApiEndpoints.pixelOnDate(username, graphId, yyyyMMdd)));
+    final quantity = response.data['quantity'];
+    return double.tryParse(quantity.toString());
   }
 
   Future<double?> getTodayValue(String username, String graphId) async {

@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pixela_buttons/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/api/pixela_client.dart';
@@ -23,6 +25,55 @@ class _GraphsScreenState extends State<GraphsScreen> {
     _fetchGraphs();
   }
 
+  Future<void> _deleteGraph(Map<String, dynamic> g) async {
+    final l10n = AppLocalizations.of(context)!;
+    final name = g['name'] as String? ?? '';
+    final graphId = g['id'] as String;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.confirmDeleteGraphTitle),
+        content: Text(l10n.confirmDeleteGraphMessage(name)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.buttonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(l10n.buttonDelete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    try {
+      final username = await CardStorage.getUsername() ?? '';
+      await pixelaClient.deleteGraph(username, graphId);
+
+      final cards = await CardStorage.loadCards();
+      final filtered = cards.where((c) => c.graphId != graphId).toList();
+      if (filtered.length < cards.length) {
+        await CardStorage.saveCards(filtered);
+      }
+
+      if (mounted) _fetchGraphs();
+    } catch (e) {
+      if (!mounted) return;
+      final msg = e is DioException
+          ? l10n.errorGeneric(e.response?.statusCode?.toString() ?? '?')
+          : l10n.errorUnknown(e.toString());
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(msg)));
+    }
+  }
+
   Future<void> _fetchGraphs() async {
     setState(() {
       _graphs = null;
@@ -44,7 +95,7 @@ class _GraphsScreenState extends State<GraphsScreen> {
         title: Text(AppLocalizations.of(context)!.screenGraphs),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
+            icon: const Icon(Icons.add_chart),
             tooltip: AppLocalizations.of(context)!.tooltipCreateGraph,
             onPressed: () async {
               final created = await Navigator.of(context).push<bool>(
@@ -88,28 +139,45 @@ class _GraphsScreenState extends State<GraphsScreen> {
                       separatorBuilder: (context, _) => const Divider(height: 1),
                       itemBuilder: (ctx, i) {
                         final g = _graphs![i];
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: _parseColor(g['color'] as String?),
-                            child: Text(
-                              (g['name'] as String? ?? '?')[0].toUpperCase(),
-                              style: const TextStyle(color: Colors.white),
+                        final l10n = AppLocalizations.of(context)!;
+                        return Slidable(
+                          key: ValueKey(g['id']),
+                          endActionPane: ActionPane(
+                            motion: const DrawerMotion(),
+                            extentRatio: 0.25,
+                            children: [
+                              SlidableAction(
+                                onPressed: (_) => _deleteGraph(g),
+                                backgroundColor: Colors.red,
+                                foregroundColor: Colors.white,
+                                icon: Icons.delete_outline,
+                                label: l10n.buttonDelete,
+                              ),
+                            ],
+                          ),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: _parseColor(g['color'] as String?),
+                              child: Text(
+                                (g['name'] as String? ?? '?')[0].toUpperCase(),
+                                style: const TextStyle(color: Colors.white),
+                              ),
                             ),
+                            title: Text(g['name'] as String? ?? ''),
+                            subtitle: Text(
+                              '${g['id']}  ·  ${l10n.labelUnit(g['unit'] as String? ?? '')}  ·  ${g['type']}',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            trailing: const Icon(Icons.add_circle_outline),
+                            onTap: () {
+                              final graph = GraphInfo(
+                                id: g['id'] as String,
+                                name: g['name'] as String,
+                                unit: g['unit'] as String,
+                              );
+                              context.push('/button-edit', extra: graph);
+                            },
                           ),
-                          title: Text(g['name'] as String? ?? ''),
-                          subtitle: Text(
-                            '${g['id']}  ·  ${AppLocalizations.of(context)!.labelUnit(g['unit'] as String? ?? '')}  ·  ${g['type']}',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          trailing: const Icon(Icons.add_circle_outline),
-                          onTap: () {
-                            final graph = GraphInfo(
-                              id: g['id'] as String,
-                              name: g['name'] as String,
-                              unit: g['unit'] as String,
-                            );
-                            context.push('/button-edit', extra: graph);
-                          },
                         );
                       },
                     ),

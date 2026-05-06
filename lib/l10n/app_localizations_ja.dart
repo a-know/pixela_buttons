@@ -164,6 +164,13 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get errorGraphNotFoundTitle => 'グラフが見つかりません';
+
+  @override
+  String get errorGraphNotFoundMessage =>
+      'Pixela上でグラフが削除された可能性があります。このカードも削除しますか？';
+
+  @override
   String get dialogRecordedTitle => '記録しました';
 
   @override
@@ -172,8 +179,18 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String dialogRecordedDate(String date) {
+    return '日付: $date';
+  }
+
+  @override
   String dialogTodayTotal(String value, String unit) {
     return '今日の合計: $value$unit';
+  }
+
+  @override
+  String dialogDateTotal(String value, String unit) {
+    return 'この日の合計: $value$unit';
   }
 
   @override
@@ -257,6 +274,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorRetry => '再試行';
 
   @override
+  String get confirmDeleteGraphTitle => 'グラフを削除';
+
+  @override
+  String confirmDeleteGraphMessage(String name) {
+    return 'グラフ「$name」を削除します。記録データもすべて削除されます。この操作は取り消せません。';
+  }
+
+  @override
   String get screenCreateGraph => 'グラフを作成';
 
   @override
@@ -330,6 +355,25 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get buttonLogout => 'ログアウト';
+
+  @override
+  String get labelDeleteAccount => 'アカウントを削除';
+
+  @override
+  String get dialogDeleteAccountTitle => 'アカウントを削除';
+
+  @override
+  String dialogDeleteAccountMessage(String username) {
+    return 'アカウント「$username」を削除します。グラフや記録データを含むPixelaアカウントがすべて削除されます。この操作は取り消せません。';
+  }
+
+  @override
+  String get buttonDeleteAccount => '削除する';
+
+  @override
+  String errorDeleteAccountFailed(String detail) {
+    return 'アカウントの削除に失敗しました: $detail';
+  }
 
   @override
   String get tabHome => 'ホーム';

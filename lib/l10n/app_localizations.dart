@@ -374,6 +374,18 @@ abstract class AppLocalizations {
   /// **'Error: {detail}'**
   String errorRecord(String detail);
 
+  /// No description provided for @errorGraphNotFoundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Graph Not Found'**
+  String get errorGraphNotFoundTitle;
+
+  /// No description provided for @errorGraphNotFoundMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This graph may have been deleted on Pixela. Would you like to delete this card too?'**
+  String get errorGraphNotFoundMessage;
+
   /// No description provided for @dialogRecordedTitle.
   ///
   /// In en, this message translates to:
@@ -386,11 +398,23 @@ abstract class AppLocalizations {
   /// **'{value} recorded'**
   String dialogRecordedMessage(String value);
 
+  /// No description provided for @dialogRecordedDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date: {date}'**
+  String dialogRecordedDate(String date);
+
   /// No description provided for @dialogTodayTotal.
   ///
   /// In en, this message translates to:
   /// **'Today\'\'s total: {value}{unit}'**
   String dialogTodayTotal(String value, String unit);
+
+  /// No description provided for @dialogDateTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total for this day: {value}{unit}'**
+  String dialogDateTotal(String value, String unit);
 
   /// No description provided for @dialogTodayFailed.
   ///
@@ -548,6 +572,18 @@ abstract class AppLocalizations {
   /// **'Retry'**
   String get errorRetry;
 
+  /// No description provided for @confirmDeleteGraphTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Graph'**
+  String get confirmDeleteGraphTitle;
+
+  /// No description provided for @confirmDeleteGraphMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete graph \"{name}\"? All recorded data will also be deleted. This cannot be undone.'**
+  String confirmDeleteGraphMessage(String name);
+
   /// No description provided for @screenCreateGraph.
   ///
   /// In en, this message translates to:
@@ -697,6 +733,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Log Out'**
   String get buttonLogout;
+
+  /// No description provided for @labelDeleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get labelDeleteAccount;
+
+  /// No description provided for @dialogDeleteAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get dialogDeleteAccountTitle;
+
+  /// No description provided for @dialogDeleteAccountMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account \"{username}\"? Your Pixela account, including all graphs and recorded data, will be permanently deleted. This cannot be undone.'**
+  String dialogDeleteAccountMessage(String username);
+
+  /// No description provided for @buttonDeleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get buttonDeleteAccount;
+
+  /// No description provided for @errorDeleteAccountFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete account: {detail}'**
+  String errorDeleteAccountFailed(String detail);
 
   /// No description provided for @tabHome.
   ///

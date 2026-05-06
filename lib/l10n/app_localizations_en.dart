@@ -167,6 +167,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get errorGraphNotFoundTitle => 'Graph Not Found';
+
+  @override
+  String get errorGraphNotFoundMessage =>
+      'This graph may have been deleted on Pixela. Would you like to delete this card too?';
+
+  @override
   String get dialogRecordedTitle => 'Recorded';
 
   @override
@@ -175,8 +182,18 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String dialogRecordedDate(String date) {
+    return 'Date: $date';
+  }
+
+  @override
   String dialogTodayTotal(String value, String unit) {
     return 'Today\'\'s total: $value$unit';
+  }
+
+  @override
+  String dialogDateTotal(String value, String unit) {
+    return 'Total for this day: $value$unit';
   }
 
   @override
@@ -260,6 +277,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorRetry => 'Retry';
 
   @override
+  String get confirmDeleteGraphTitle => 'Delete Graph';
+
+  @override
+  String confirmDeleteGraphMessage(String name) {
+    return 'Delete graph \"$name\"? All recorded data will also be deleted. This cannot be undone.';
+  }
+
+  @override
   String get screenCreateGraph => 'Create Graph';
 
   @override
@@ -336,6 +361,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get buttonLogout => 'Log Out';
+
+  @override
+  String get labelDeleteAccount => 'Delete Account';
+
+  @override
+  String get dialogDeleteAccountTitle => 'Delete Account';
+
+  @override
+  String dialogDeleteAccountMessage(String username) {
+    return 'Delete account \"$username\"? Your Pixela account, including all graphs and recorded data, will be permanently deleted. This cannot be undone.';
+  }
+
+  @override
+  String get buttonDeleteAccount => 'Delete';
+
+  @override
+  String errorDeleteAccountFailed(String detail) {
+    return 'Failed to delete account: $detail';
+  }
 
   @override
   String get tabHome => 'Home';

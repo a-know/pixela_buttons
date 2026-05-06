@@ -6,8 +6,9 @@ class GraphInfo {
   final String id;
   final String name;
   final String unit;
+  final String? timezone;
 
-  const GraphInfo({required this.id, required this.name, required this.unit});
+  const GraphInfo({required this.id, required this.name, required this.unit, this.timezone});
 }
 
 class GraphSelectScreen extends StatefulWidget {
@@ -33,11 +34,15 @@ class _GraphSelectScreenState extends State<GraphSelectScreen> {
       final data = await pixelaClient.getGraphs(username);
       setState(() {
         _graphs = data
-            .map((g) => GraphInfo(
-                  id: g['id'] as String,
-                  name: g['name'] as String,
-                  unit: g['unit'] as String,
-                ))
+            .map((g) {
+              final tz = g['timezone'] as String?;
+              return GraphInfo(
+                id: g['id'] as String,
+                name: g['name'] as String,
+                unit: g['unit'] as String,
+                timezone: (tz != null && tz.isNotEmpty) ? tz : null,
+              );
+            })
             .toList();
       });
     } catch (e) {
