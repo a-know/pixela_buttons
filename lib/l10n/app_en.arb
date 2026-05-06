@@ -23,6 +23,8 @@
 
   "buttonStart": "Get Started",
   "linkCreateAccount": "Don't have an account? Sign up here",
+  "linkAboutPixela": "Learn about Pixela",
+  "urlAboutPixela": "https://help.pixe.la/en/what-is-pixela",
   "tokenInvalidBanner": "Your token has been invalidated. Please set it again.",
 
   "screenRegister": "Sign Up",

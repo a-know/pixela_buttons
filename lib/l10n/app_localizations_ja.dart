@@ -43,6 +43,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get linkCreateAccount => 'アカウントをお持ちでない方はこちら';
 
   @override
+  String get linkAboutPixela => 'Pixelaについて知る';
+
+  @override
+  String get urlAboutPixela => 'https://help.pixe.la/ja/what-is-pixela';
+
+  @override
   String get tokenInvalidBanner => 'トークンが無効になったため、再度設定してください';
 
   @override

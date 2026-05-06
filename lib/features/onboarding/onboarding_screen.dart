@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:pixela_buttons/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/api/pixela_client.dart';
 import '../../core/storage/card_storage.dart';
 import '../../core/storage/secure_storage.dart';
@@ -177,6 +178,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               TextButton(
                 onPressed: () => context.push('/register'),
                 child: Text(l10n.linkCreateAccount),
+              ),
+              TextButton(
+                onPressed: () => launchUrl(
+                  Uri.parse(l10n.urlAboutPixela),
+                  mode: LaunchMode.externalApplication,
+                ),
+                child: Text(l10n.linkAboutPixela),
               ),
             ],
           ),

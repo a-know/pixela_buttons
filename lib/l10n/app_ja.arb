@@ -13,6 +13,8 @@
 
   "buttonStart": "はじめる",
   "linkCreateAccount": "アカウントをお持ちでない方はこちら",
+  "linkAboutPixela": "Pixelaについて知る",
+  "urlAboutPixela": "https://help.pixe.la/ja/what-is-pixela",
   "tokenInvalidBanner": "トークンが無効になったため、再度設定してください",
 
   "screenRegister": "新規登録",
