@@ -386,6 +386,12 @@ abstract class AppLocalizations {
   /// **'{value} recorded'**
   String dialogRecordedMessage(String value);
 
+  /// No description provided for @dialogRecordedDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date: {date}'**
+  String dialogRecordedDate(String date);
+
   /// No description provided for @dialogTodayTotal.
   ///
   /// In en, this message translates to:

@@ -101,6 +101,12 @@
       "value": { "type": "String" }
     }
   },
+  "dialogRecordedDate": "Date: {date}",
+  "@dialogRecordedDate": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
   "dialogTodayTotal": "Today''s total: {value}{unit}",
   "@dialogTodayTotal": {
     "placeholders": {

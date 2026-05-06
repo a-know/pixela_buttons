@@ -8,6 +8,7 @@ class CardConfig {
   final String emoji;
   final String color;
   final String unit;
+  final String? timezone;
   final List<ButtonConfig> buttons;
 
   CardConfig({
@@ -17,11 +18,13 @@ class CardConfig {
     this.emoji = '',
     required this.color,
     required this.unit,
+    this.timezone,
     List<ButtonConfig>? buttons,
   })  : id = id ?? const Uuid().v4(),
         buttons = buttons ?? [];
 
   factory CardConfig.fromJson(Map<String, dynamic> json) {
+    final tz = json['timezone'] as String?;
     return CardConfig(
       id: json['id'] as String,
       graphId: json['graphId'] as String,
@@ -29,6 +32,7 @@ class CardConfig {
       emoji: json['emoji'] as String? ?? '',
       color: json['color'] as String,
       unit: json['unit'] as String,
+      timezone: (tz != null && tz.isNotEmpty) ? tz : null,
       buttons: (json['buttons'] as List<dynamic>)
           .map((b) => ButtonConfig.fromJson(b as Map<String, dynamic>))
           .toList(),
@@ -42,6 +46,7 @@ class CardConfig {
         'emoji': emoji,
         'color': color,
         'unit': unit,
+        'timezone': timezone,
         'buttons': buttons.map((b) => b.toJson()).toList(),
       };
 
@@ -51,6 +56,7 @@ class CardConfig {
     String? emoji,
     String? color,
     String? unit,
+    String? timezone,
     List<ButtonConfig>? buttons,
   }) {
     return CardConfig(
@@ -60,6 +66,7 @@ class CardConfig {
       emoji: emoji ?? this.emoji,
       color: color ?? this.color,
       unit: unit ?? this.unit,
+      timezone: timezone ?? this.timezone,
       buttons: buttons ?? this.buttons,
     );
   }

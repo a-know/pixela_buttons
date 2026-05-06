@@ -76,12 +76,13 @@ class _CardWidgetState extends State<CardWidget> {
   Future<void> _record(BuildContext context, double value) async {
     final username = await CardStorage.getUsername() ?? '';
     try {
+      final recordedAt = DateTime.now();
       if (value >= 0) {
         await pixelaClient.addPixel(username, card.graphId, value);
       } else {
         await pixelaClient.subtractPixel(username, card.graphId, value.abs());
       }
-      if (context.mounted) await RecordDialog.show(context, card, value);
+      if (context.mounted) await RecordDialog.show(context, card, value, recordedAt, card.timezone);
       _fetchTodayValue();
       if (context.mounted) {
         final isDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:pixela_buttons/l10n/app_localizations.dart';
+import 'package:timezone/timezone.dart' as tz;
 import '../../core/api/pixela_client.dart';
 import '../../core/models/card_config.dart';
 import '../../core/storage/card_storage.dart';
@@ -8,15 +10,23 @@ import '../../core/storage/card_storage.dart';
 class RecordDialog extends StatefulWidget {
   final CardConfig card;
   final double value;
+  final DateTime recordedAt;
+  final String? timezone;
 
-  const RecordDialog({super.key, required this.card, required this.value});
+  const RecordDialog({
+    super.key,
+    required this.card,
+    required this.value,
+    required this.recordedAt,
+    this.timezone,
+  });
 
   static Future<void> show(
-      BuildContext context, CardConfig card, double value) {
+      BuildContext context, CardConfig card, double value, DateTime recordedAt, String? timezone) {
     return showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => RecordDialog(card: card, value: value),
+      builder: (_) => RecordDialog(card: card, value: value, recordedAt: recordedAt, timezone: timezone),
     );
   }
 
@@ -71,6 +81,17 @@ class _RecordDialogState extends State<RecordDialog> {
     return '$sign${_formatValue(widget.value)}${widget.card.unit}';
   }
 
+  DateTime _recordedDate() {
+    final tzId = widget.timezone;
+    if (tzId != null && tzId.isNotEmpty) {
+      try {
+        final location = tz.getLocation(tzId);
+        return tz.TZDateTime.from(widget.recordedAt, location);
+      } catch (_) {}
+    }
+    return widget.recordedAt;
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -87,6 +108,14 @@ class _RecordDialogState extends State<RecordDialog> {
               children: [
                 Text(l10n.dialogRecordedMessage(_recordLabel(l10n)),
                     style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 4),
+                Text(
+                  l10n.dialogRecordedDate(
+                    DateFormat.yMMMd(Localizations.localeOf(context).languageCode)
+                        .format(_recordedDate()),
+                  ),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
                 const SizedBox(height: 8),
                 if (_todayFailed)
                   Text(l10n.dialogTodayFailed)

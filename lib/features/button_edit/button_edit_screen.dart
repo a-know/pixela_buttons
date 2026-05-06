@@ -43,7 +43,7 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
       } catch (_) {}
       _buttons = List.from(c.buttons);
       _selectedGraph =
-          GraphInfo(id: c.graphId, name: c.displayName, unit: c.unit);
+          GraphInfo(id: c.graphId, name: c.displayName, unit: c.unit, timezone: c.timezone);
     } else if (widget.preSelectedGraph != null) {
       _selectedGraph = widget.preSelectedGraph;
       _displayNameController.text = widget.preSelectedGraph!.name;
@@ -201,6 +201,7 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
       emoji: _selectedEmoji,
       color: colorHex,
       unit: _selectedGraph!.unit,
+      timezone: _selectedGraph!.timezone,
       buttons: _buttons,
     );
 

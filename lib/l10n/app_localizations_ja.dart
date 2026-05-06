@@ -172,6 +172,11 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String dialogRecordedDate(String date) {
+    return '日付: $date';
+  }
+
+  @override
   String dialogTodayTotal(String value, String unit) {
     return '今日の合計: $value$unit';
   }
