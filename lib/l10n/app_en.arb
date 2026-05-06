@@ -28,10 +28,10 @@
   "tokenInvalidBanner": "Your token has been invalidated. Please set it again.",
 
   "screenRegister": "Sign Up",
-  "fieldUsername": "Username",
+  "fieldUsername": "username",
   "fieldUsernameHelper": "2–17 characters starting with a lowercase letter (letters, digits, hyphens)",
   "fieldUsernameError": "2–17 characters, starting with lowercase letter (letters, digits, hyphens only)",
-  "fieldToken": "Token",
+  "fieldToken": "token",
   "fieldTokenHelper": "8–128 printable ASCII characters",
   "fieldTokenError": "8–128 printable ASCII characters",
   "labelAgreeTerms": "I agree to Pixela''s ",

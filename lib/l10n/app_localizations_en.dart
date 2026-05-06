@@ -56,7 +56,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get screenRegister => 'Sign Up';
 
   @override
-  String get fieldUsername => 'Username';
+  String get fieldUsername => 'username';
 
   @override
   String get fieldUsernameHelper =>
@@ -67,7 +67,7 @@ class AppLocalizationsEn extends AppLocalizations {
       '2–17 characters, starting with lowercase letter (letters, digits, hyphens only)';
 
   @override
-  String get fieldToken => 'Token';
+  String get fieldToken => 'token';
 
   @override
   String get fieldTokenHelper => '8–128 printable ASCII characters';

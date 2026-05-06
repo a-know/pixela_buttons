@@ -185,7 +185,7 @@ abstract class AppLocalizations {
   /// No description provided for @fieldUsername.
   ///
   /// In en, this message translates to:
-  /// **'Username'**
+  /// **'username'**
   String get fieldUsername;
 
   /// No description provided for @fieldUsernameHelper.
@@ -203,7 +203,7 @@ abstract class AppLocalizations {
   /// No description provided for @fieldToken.
   ///
   /// In en, this message translates to:
-  /// **'Token'**
+  /// **'token'**
   String get fieldToken;
 
   /// No description provided for @fieldTokenHelper.
