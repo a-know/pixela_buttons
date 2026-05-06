@@ -131,6 +131,8 @@
 
   "screenTimezoneSearch": "タイムゾーンを検索...",
 
+  "retinaDialogTitle": "今日のRetina - {name}",
+
   "labelLanguage": "言語",
   "languageSystem": "システムに合わせる",
   "languageJa": "日本語",

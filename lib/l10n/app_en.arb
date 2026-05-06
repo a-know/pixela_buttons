@@ -217,6 +217,13 @@
 
   "screenTimezoneSearch": "Search Timezone",
 
+  "retinaDialogTitle": "Today's Retina - {name}",
+  "@retinaDialogTitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+
   "labelLanguage": "Language",
   "languageSystem": "Follow system",
   "languageJa": "日本語",

@@ -159,6 +159,14 @@ class PixelaClient {
   String _quantityString(double value) =>
       value == value.truncateToDouble() ? value.toInt().toString() : value.toString();
 
+  Future<String> getGraphSvgRetina(String username, String graphId, String yyyyMMdd) async {
+    final response = await _requestWithRetry(() => _dio.get(
+          '/v1/users/$username/graphs/$graphId/$yyyyMMdd/retina',
+          options: Options(responseType: ResponseType.plain),
+        ));
+    return response.data as String;
+  }
+
   Future<String> getGraphSvg(String username, String graphId, {bool darkMode = false}) async {
     final response = await _requestWithRetry(() => _dio.get(
           '${ApiEndpoints.graphs(username)}/$graphId',
