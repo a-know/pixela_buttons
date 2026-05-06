@@ -800,6 +800,12 @@ abstract class AppLocalizations {
   /// **'Search Timezone'**
   String get screenTimezoneSearch;
 
+  /// No description provided for @retinaDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Retina - {name}'**
+  String retinaDialogTitle(String name);
+
   /// No description provided for @labelLanguage.
   ///
   /// In en, this message translates to:
