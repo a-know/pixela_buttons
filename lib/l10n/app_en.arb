@@ -93,6 +93,8 @@
       "detail": { "type": "String" }
     }
   },
+  "errorGraphNotFoundTitle": "Graph Not Found",
+  "errorGraphNotFoundMessage": "This graph may have been deleted on Pixela. Would you like to delete this card too?",
 
   "dialogRecordedTitle": "Recorded",
   "dialogRecordedMessage": "{value} recorded",

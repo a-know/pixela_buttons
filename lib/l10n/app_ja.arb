@@ -51,6 +51,8 @@
   "confirmDeleteMessage": "このカードを削除しますか？",
   "buttonDelete": "削除",
   "errorRecord": "エラー: {detail}",
+  "errorGraphNotFoundTitle": "グラフが見つかりません",
+  "errorGraphNotFoundMessage": "Pixela上でグラフが削除された可能性があります。このカードも削除しますか？",
 
   "dialogRecordedTitle": "記録しました",
   "dialogRecordedMessage": "{value} を記録しました",

@@ -167,6 +167,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get errorGraphNotFoundTitle => 'Graph Not Found';
+
+  @override
+  String get errorGraphNotFoundMessage =>
+      'This graph may have been deleted on Pixela. Would you like to delete this card too?';
+
+  @override
   String get dialogRecordedTitle => 'Recorded';
 
   @override

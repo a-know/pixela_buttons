@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:pixela_buttons/l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -7,6 +8,7 @@ import '../../core/api/pixela_client.dart';
 import '../../core/models/card_config.dart';
 import '../../core/storage/card_storage.dart';
 import '../../core/theme/app_theme.dart';
+import '../main_shell.dart';
 import 'record_dialog.dart';
 
 class CardWidget extends StatefulWidget {
@@ -89,11 +91,46 @@ class _CardWidgetState extends State<CardWidget> {
         _fetchSvg(isDark);
       }
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.errorRecord(e.toString()))),
-        );
+      if (!context.mounted) return;
+      if (e is DioException && e.response?.statusCode == 404) {
+        await _handleGraphNotFound(context);
+      } else {
+        final l10n = AppLocalizations.of(context)!;
+        final msg = (e is DioException && e.response?.statusCode != null)
+            ? l10n.errorGeneric(e.response!.statusCode.toString())
+            : l10n.errorUnknown(e.toString());
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
       }
+    }
+  }
+
+  Future<void> _handleGraphNotFound(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    final delete = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.errorGraphNotFoundTitle),
+        content: Text(l10n.errorGraphNotFoundMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.buttonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(l10n.buttonDelete),
+          ),
+        ],
+      ),
+    );
+    if (delete == true) {
+      final cards = await CardStorage.loadCards();
+      await CardStorage.saveCards(cards.where((c) => c.id != card.id).toList());
+      homeTabNotifier.value++;
     }
   }
 

@@ -164,6 +164,13 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get errorGraphNotFoundTitle => 'グラフが見つかりません';
+
+  @override
+  String get errorGraphNotFoundMessage =>
+      'Pixela上でグラフが削除された可能性があります。このカードも削除しますか？';
+
+  @override
   String get dialogRecordedTitle => '記録しました';
 
   @override

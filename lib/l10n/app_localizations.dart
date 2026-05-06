@@ -374,6 +374,18 @@ abstract class AppLocalizations {
   /// **'Error: {detail}'**
   String errorRecord(String detail);
 
+  /// No description provided for @errorGraphNotFoundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Graph Not Found'**
+  String get errorGraphNotFoundTitle;
+
+  /// No description provided for @errorGraphNotFoundMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This graph may have been deleted on Pixela. Would you like to delete this card too?'**
+  String get errorGraphNotFoundMessage;
+
   /// No description provided for @dialogRecordedTitle.
   ///
   /// In en, this message translates to:
