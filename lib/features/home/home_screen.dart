@@ -53,7 +53,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _reorder(int oldIndex, int newIndex) async {
-    if (newIndex > oldIndex) newIndex--;
     final updated = List<CardConfig>.from(_cards);
     final item = updated.removeAt(oldIndex);
     updated.insert(newIndex, item);
@@ -97,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.only(bottom: 88),
               buildDefaultDragHandles: false,
               itemCount: _cards.length,
-              onReorder: _reorder,
+              onReorderItem: _reorder,
               itemBuilder: (ctx, i) {
                 final card = _cards[i];
                 return KeyedSubtree(
