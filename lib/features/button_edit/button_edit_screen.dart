@@ -341,6 +341,8 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: _buttons.length,
+                // Keep compatibility with Flutter 3.41 used by local builds.
+                // ignore: deprecated_member_use
                 onReorder: (oldIdx, newIdx) {
                   setState(() {
                     final item = _buttons.removeAt(oldIdx);
