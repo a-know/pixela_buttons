@@ -110,6 +110,8 @@
   "screenSettings": "設定",
   "labelUsernameItem": "ユーザー名",
   "labelChangeToken": "アプリに保存済みのトークンを変更",
+  "labelReminders": "定時リマインダー",
+  "labelRemindersSubtitle": "記録を促す通知時刻を設定",
   "labelLogout": "ログアウト",
   "dialogChangeTokenTitle": "保存済みトークンを変更",
   "fieldNewToken": "新しいトークン",
@@ -136,5 +138,15 @@
   "labelLanguage": "言語",
   "languageSystem": "システムに合わせる",
   "languageJa": "日本語",
-  "languageEn": "English"
+  "languageEn": "English",
+
+  "screenReminders": "定時リマインダー",
+  "buttonAddReminder": "時刻を追加",
+  "emptyRemindersMessage": "通知時刻がまだありません。\n時刻を追加して、毎日の記録を忘れないようにしましょう。",
+  "reminderLimitReached": "通知時刻は最大{count}件まで設定できます。",
+  "@reminderLimitReached": { "placeholders": { "count": { "type": "int" } } },
+  "reminderDuplicateTime": "同じ時刻がすでに設定されています。",
+  "reminderPermissionDenied": "通知が許可されていません。端末の設定から通知を許可してください。",
+  "reminderNotificationTitle": "Pixela Buttons",
+  "reminderNotificationBody": "今日の記録を残しましょう。"
 }

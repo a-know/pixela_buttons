@@ -698,6 +698,18 @@ abstract class AppLocalizations {
   /// **'Change saved token'**
   String get labelChangeToken;
 
+  /// No description provided for @labelReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled reminders'**
+  String get labelReminders;
+
+  /// No description provided for @labelRemindersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set times to be reminded to record'**
+  String get labelRemindersSubtitle;
+
   /// No description provided for @labelLogout.
   ///
   /// In en, this message translates to:
@@ -829,6 +841,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'English'**
   String get languageEn;
+
+  /// No description provided for @screenReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled Reminders'**
+  String get screenReminders;
+
+  /// No description provided for @buttonAddReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Add time'**
+  String get buttonAddReminder;
+
+  /// No description provided for @emptyRemindersMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No reminder times yet.\nAdd a time so you don\'t forget your daily record.'**
+  String get emptyRemindersMessage;
+
+  /// No description provided for @reminderLimitReached.
+  ///
+  /// In en, this message translates to:
+  /// **'You can set up to {count} reminder times.'**
+  String reminderLimitReached(int count);
+
+  /// No description provided for @reminderDuplicateTime.
+  ///
+  /// In en, this message translates to:
+  /// **'A reminder is already set for this time.'**
+  String get reminderDuplicateTime;
+
+  /// No description provided for @reminderPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are not allowed. Enable them in your device settings.'**
+  String get reminderPermissionDenied;
+
+  /// No description provided for @reminderNotificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pixela Buttons'**
+  String get reminderNotificationTitle;
+
+  /// No description provided for @reminderNotificationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s time to make today\'s record.'**
+  String get reminderNotificationBody;
 }
 
 class _AppLocalizationsDelegate

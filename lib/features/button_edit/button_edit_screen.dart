@@ -341,9 +341,10 @@ class _ButtonEditScreenState extends State<ButtonEditScreen> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: _buttons.length,
-                onReorderItem: (oldIdx, newIdx) {
+                onReorder: (oldIdx, newIdx) {
                   setState(() {
                     final item = _buttons.removeAt(oldIdx);
+                    if (newIdx > oldIdx) newIdx--;
                     _buttons.insert(newIdx, item);
                   });
                 },
