@@ -55,6 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _reorder(int oldIndex, int newIndex) async {
     final updated = List<CardConfig>.from(_cards);
     final item = updated.removeAt(oldIndex);
+    if (newIndex > oldIndex) newIndex--;
     updated.insert(newIndex, item);
     await CardStorage.saveCards(updated);
     setState(() => _cards = updated);
@@ -96,7 +97,9 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.only(bottom: 88),
               buildDefaultDragHandles: false,
               itemCount: _cards.length,
-              onReorderItem: _reorder,
+              // Keep compatibility with Flutter 3.41 used by local builds.
+              // ignore: deprecated_member_use
+              onReorder: _reorder,
               itemBuilder: (ctx, i) {
                 final card = _cards[i];
                 return KeyedSubtree(

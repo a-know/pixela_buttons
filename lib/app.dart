@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pixela_buttons/l10n/app_localizations.dart';
 import 'core/api/pixela_client.dart';
@@ -13,6 +12,7 @@ import 'features/button_edit/button_edit_screen.dart';
 import 'features/main_shell.dart';
 import 'features/onboarding/onboarding_screen.dart';
 import 'features/register/register_screen.dart';
+import 'features/settings/reminder_settings_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -45,10 +45,18 @@ final _router = GoRouter(
       path: '/button-edit',
       builder: (_, state) {
         final extra = state.extra;
-        if (extra is CardConfig) return ButtonEditScreen(existing: extra);
-        if (extra is GraphInfo) return ButtonEditScreen(preSelectedGraph: extra);
+        if (extra is CardConfig) {
+          return ButtonEditScreen(existing: extra);
+        }
+        if (extra is GraphInfo) {
+          return ButtonEditScreen(preSelectedGraph: extra);
+        }
         return const ButtonEditScreen();
       },
+    ),
+    GoRoute(
+      path: '/settings/reminders',
+      builder: (context, _) => const ReminderSettingsScreen(),
     ),
   ],
 );
@@ -127,15 +135,21 @@ class _LoadingScreenState extends State<_LoadingScreen> {
   }
 
   Future<void> _checkAuth() async {
-    final token = await SecureStorage.getToken();
-    final username = await CardStorage.getUsername();
+    String? token;
+    String? username;
+    try {
+      token = await SecureStorage.getToken();
+      username = await CardStorage.getUsername();
+    } catch (error, stackTrace) {
+      debugPrint('Failed to restore the saved session: $error');
+      debugPrintStack(stackTrace: stackTrace);
+    }
     if (mounted) {
       if (token != null && username != null) {
         context.go('/home');
       } else {
         context.go('/onboarding');
       }
-      FlutterNativeSplash.remove();
     }
   }
 

@@ -339,6 +339,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get labelChangeToken => 'アプリに保存済みのトークンを変更';
 
   @override
+  String get labelReminders => '定時リマインダー';
+
+  @override
+  String get labelRemindersSubtitle => '記録を促す通知時刻を設定';
+
+  @override
   String get labelLogout => 'ログアウト';
 
   @override
@@ -409,4 +415,31 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get languageEn => 'English';
+
+  @override
+  String get screenReminders => '定時リマインダー';
+
+  @override
+  String get buttonAddReminder => '時刻を追加';
+
+  @override
+  String get emptyRemindersMessage =>
+      '通知時刻がまだありません。\n時刻を追加して、毎日の記録を忘れないようにしましょう。';
+
+  @override
+  String reminderLimitReached(int count) {
+    return '通知時刻は最大$count件まで設定できます。';
+  }
+
+  @override
+  String get reminderDuplicateTime => '同じ時刻がすでに設定されています。';
+
+  @override
+  String get reminderPermissionDenied => '通知が許可されていません。端末の設定から通知を許可してください。';
+
+  @override
+  String get reminderNotificationTitle => 'Pixela Buttons';
+
+  @override
+  String get reminderNotificationBody => '今日の記録を残しましょう。';
 }

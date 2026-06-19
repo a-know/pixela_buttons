@@ -189,6 +189,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const Divider(),
           ListTile(
+            leading: const Icon(Icons.notifications_outlined),
+            title: Text(l10n.labelReminders),
+            subtitle: Text(l10n.labelRemindersSubtitle),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push('/settings/reminders'),
+          ),
+          const Divider(),
+          ListTile(
             leading: const Icon(Icons.language_outlined),
             title: Text(l10n.labelLanguage),
             trailing: DropdownButton<String?>(

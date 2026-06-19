@@ -186,6 +186,8 @@
   "screenSettings": "Settings",
   "labelUsernameItem": "Username",
   "labelChangeToken": "Change saved token",
+  "labelReminders": "Scheduled reminders",
+  "labelRemindersSubtitle": "Set times to be reminded to record",
   "labelLogout": "Log Out",
   "dialogChangeTokenTitle": "Change Saved Token",
   "fieldNewToken": "New token",
@@ -227,5 +229,15 @@
   "labelLanguage": "Language",
   "languageSystem": "Follow system",
   "languageJa": "日本語",
-  "languageEn": "English"
+  "languageEn": "English",
+
+  "screenReminders": "Scheduled Reminders",
+  "buttonAddReminder": "Add time",
+  "emptyRemindersMessage": "No reminder times yet.\nAdd a time so you don't forget your daily record.",
+  "reminderLimitReached": "You can set up to {count} reminder times.",
+  "@reminderLimitReached": { "placeholders": { "count": { "type": "int" } } },
+  "reminderDuplicateTime": "A reminder is already set for this time.",
+  "reminderPermissionDenied": "Notifications are not allowed. Enable them in your device settings.",
+  "reminderNotificationTitle": "Pixela Buttons",
+  "reminderNotificationBody": "It's time to make today's record."
 }

@@ -344,6 +344,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelChangeToken => 'Change saved token';
 
   @override
+  String get labelReminders => 'Scheduled reminders';
+
+  @override
+  String get labelRemindersSubtitle => 'Set times to be reminded to record';
+
+  @override
   String get labelLogout => 'Log Out';
 
   @override
@@ -415,4 +421,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get languageEn => 'English';
+
+  @override
+  String get screenReminders => 'Scheduled Reminders';
+
+  @override
+  String get buttonAddReminder => 'Add time';
+
+  @override
+  String get emptyRemindersMessage =>
+      'No reminder times yet.\nAdd a time so you don\'t forget your daily record.';
+
+  @override
+  String reminderLimitReached(int count) {
+    return 'You can set up to $count reminder times.';
+  }
+
+  @override
+  String get reminderDuplicateTime =>
+      'A reminder is already set for this time.';
+
+  @override
+  String get reminderPermissionDenied =>
+      'Notifications are not allowed. Enable them in your device settings.';
+
+  @override
+  String get reminderNotificationTitle => 'Pixela Buttons';
+
+  @override
+  String get reminderNotificationBody => 'It\'s time to make today\'s record.';
 }
