@@ -1,0 +1,39 @@
+rules:
+  - id: dart-hardcoded-api-token
+    languages:
+      - dart
+    severity: ERROR
+    message: This looks like a hardcoded secret. Move credentials to secure storage or environment configuration.
+    pattern-regex: (?i)(api[_-]?key|secret|token|password|passwd|pwd)\s*[:=]\s*["'][A-Za-z0-9_./+=-]{16,}["']
+
+  - id: dart-insecure-md5
+    languages:
+      - dart
+    severity: ERROR
+    message: MD5 is not safe for security-sensitive hashing.
+    pattern-either:
+      - pattern: md5.convert(...)
+      - pattern: Hmac(md5, ...)
+
+  - id: dart-insecure-sha1
+    languages:
+      - dart
+    severity: ERROR
+    message: SHA-1 is not safe for security-sensitive hashing.
+    pattern-either:
+      - pattern: sha1.convert(...)
+      - pattern: Hmac(sha1, ...)
+
+  - id: dart-accept-all-certificates
+    languages:
+      - dart
+    severity: ERROR
+    message: Do not accept every TLS certificate. Validate the server certificate instead.
+    pattern: $CLIENT.badCertificateCallback = (...) => true
+
+  - id: generic-hardcoded-secret
+    languages:
+      - generic
+    severity: ERROR
+    message: This looks like a hardcoded secret. Move credentials to secure storage or environment configuration.
+    pattern-regex: (?i)(api[_-]?key|secret|token|password|passwd|pwd)\s*[:=]\s*['"][A-Za-z0-9_./+=-]{16,}['"]
