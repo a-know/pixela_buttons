@@ -117,3 +117,14 @@ flutter build apk --release
 flutter analyze
 flutter test
 ```
+
+## セキュリティチェック
+
+コミット前に、ステージ済みの変更を Semgrep と Gitleaks で検査します。
+
+```bash
+brew install semgrep gitleaks
+git config core.hooksPath .githooks
+```
+
+設定後は、`git commit` の実行時にセキュリティチェックが自動で行われます。
