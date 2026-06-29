@@ -1,0 +1,12 @@
+appId: ${MAESTRO_APP_ID}
+---
+- launchApp:
+    clearState: true
+- tapOn: "username"
+- inputText: ${PIXELA_E2E_USERNAME}
+- tapOn: "token"
+- inputText: ${PIXELA_E2E_TOKEN}
+- tapOn: "はじめる"
+- extendedWaitUntil:
+    visible: "ボタンを追加"
+    timeout: 15000

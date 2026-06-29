@@ -1,0 +1,14 @@
+appId: ${MAESTRO_APP_ID}
+name: "10 - Request notification permission when adding a reminder"
+---
+- runFlow: _helpers/login_registered_user.yaml
+- tapOn: "設定"
+- tapOn: "定時リマインダー"
+- extendedWaitUntil:
+    visible: "定時リマインダー"
+    timeout: 10000
+- tapOn: "追加"
+- tapOn: "OK"
+- extendedWaitUntil:
+    visible: "通知"
+    timeout: 10000

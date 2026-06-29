@@ -1,0 +1,15 @@
+appId: ${MAESTRO_APP_ID}
+name: "07 - Record a custom value from a card"
+---
+- runFlow: _helpers/create_card_for_registered_graph.yaml
+- tapOn: "カスタム"
+- assertVisible: "カスタム値を入力"
+- tapOn: ${PIXELA_E2E_GRAPH_UNIT}
+- inputText: "2"
+- tapOn: "記録"
+- extendedWaitUntil:
+    visible: "記録しました"
+    timeout: 20000
+- tapOn:
+    text: "OK"
+    optional: true

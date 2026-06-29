@@ -1,0 +1,8 @@
+appId: ${MAESTRO_APP_ID}
+name: "06 - Add a new button card from the home screen"
+---
+- tapOn: "ホーム"
+- runFlow: _helpers/create_card_for_registered_graph.yaml
+- assertVisible: ${PIXELA_E2E_CARD_NAME}
+- assertVisible: "カスタム"
+- assertVisible: "+1"

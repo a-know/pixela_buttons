@@ -244,7 +244,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelFixedButtons => 'Fixed buttons';
 
   @override
-  String get tooltipAddFixedButton => 'Add button';
+  String get tooltipAddFixedButton => 'Add fixed button';
 
   @override
   String get noFixedButtons => 'No buttons';

@@ -1,0 +1,19 @@
+appId: ${MAESTRO_APP_ID}
+name: "01 - Register a new Pixela user"
+---
+- launchApp:
+    clearState: true
+- tapOn: "アカウントをお持ちでない方はこちら"
+- assertVisible: "新規登録"
+- tapOn: "username"
+- inputText: ${PIXELA_E2E_USERNAME}
+- tapOn: "token"
+- inputText: ${PIXELA_E2E_TOKEN}
+- tapOn:
+    id: "agree_terms_checkbox"
+- tapOn:
+    id: "not_minor_checkbox"
+- tapOn: "登録する"
+- extendedWaitUntil:
+    visible: "Pixela Buttons"
+    timeout: 20000

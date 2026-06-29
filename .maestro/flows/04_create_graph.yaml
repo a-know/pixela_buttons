@@ -1,0 +1,16 @@
+appId: ${MAESTRO_APP_ID}
+name: "04 - Create a graph from the graph list"
+---
+- tapOn: "グラフ"
+- tapOn: "グラフを作成"
+- assertVisible: "グラフを作成"
+- tapOn: "グラフID"
+- inputText: ${PIXELA_E2E_GRAPH_ID}
+- tapOn: "グラフ名"
+- inputText: ${PIXELA_E2E_GRAPH_NAME}
+- tapOn: "単位"
+- inputText: ${PIXELA_E2E_GRAPH_UNIT}
+- tapOn: "作成"
+- extendedWaitUntil:
+    visible: ${PIXELA_E2E_GRAPH_NAME}
+    timeout: 20000

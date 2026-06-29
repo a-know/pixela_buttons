@@ -146,7 +146,7 @@
   "emojiNotSet": "Not set",
   "labelButtonColor": "Button color (add)",
   "labelFixedButtons": "Fixed buttons",
-  "tooltipAddFixedButton": "Add button",
+  "tooltipAddFixedButton": "Add fixed button",
   "noFixedButtons": "No buttons",
   "addFixedButtonTitle": "Add fixed button",
   "addFixedButtonHelper": "Positive: add   Negative: subtract",

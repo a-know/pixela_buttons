@@ -1,0 +1,7 @@
+appId: ${MAESTRO_APP_ID}
+name: "05 - Show graphs belonging to the logged-in user"
+---
+- extendedWaitUntil:
+    visible: ${PIXELA_E2E_GRAPH_NAME}
+    timeout: 15000
+- assertVisible: ${PIXELA_E2E_GRAPH_ID}

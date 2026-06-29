@@ -1,0 +1,19 @@
+appId: ${MAESTRO_APP_ID}
+name: "11 - Delete a disposable account and reject future login"
+---
+- runFlow: _helpers/login_registered_user.yaml
+- tapOn: "設定"
+- tapOn: "アカウントを削除"
+- assertVisible: "アカウントを削除"
+- tapOn: "削除する"
+- extendedWaitUntil:
+    visible: "アカウントをお持ちでない方はこちら"
+    timeout: 20000
+- tapOn: "username"
+- inputText: ${PIXELA_E2E_USERNAME}
+- tapOn: "token"
+- inputText: ${PIXELA_E2E_TOKEN}
+- tapOn: "はじめる"
+- extendedWaitUntil:
+    visible: "ユーザー名またはトークンが正しくありません。"
+    timeout: 15000
