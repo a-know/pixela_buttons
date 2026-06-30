@@ -2,7 +2,7 @@ appId: ${MAESTRO_APP_ID}
 name: "11 - Delete a disposable account and reject future login"
 ---
 - runFlow: _helpers/login_registered_user.yaml
-- tapOn: "設定"
+- tapOn: "設定\nタブ: 3/3"
 - tapOn: "アカウントを削除"
 - assertVisible: "アカウントを削除"
 - tapOn: "削除する"

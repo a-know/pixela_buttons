@@ -1,18 +1,18 @@
 appId: ${MAESTRO_APP_ID}
 ---
-- tapOn: "固定値ボタンを追加"
-- tapOn: "グラフ"
+- tapOn: "ボタンを追加"
+- tapOn: "グラフ\nタップして選択"
 - extendedWaitUntil:
-    visible: ${PIXELA_E2E_GRAPH_NAME}
+    visible: ".*${PIXELA_E2E_GRAPH_NAME}.*"
     timeout: 15000
-- tapOn: ${PIXELA_E2E_GRAPH_NAME}
+- tapOn: ".*${PIXELA_E2E_GRAPH_NAME}.*"
 - tapOn: "表示名"
 - eraseText
 - inputText: ${PIXELA_E2E_CARD_NAME}
-- tapOn: "ボタンを追加"
+- tapOn: "固定値ボタンを追加"
 - inputText: "1"
 - tapOn: "追加"
 - tapOn: "保存"
 - extendedWaitUntil:
-    visible: ${PIXELA_E2E_CARD_NAME}
+    visible: ".*${PIXELA_E2E_CARD_NAME}.*"
     timeout: 15000
