@@ -5,7 +5,8 @@ name: "04 - Create a graph from the graph list"
     text: "戻る"
     optional: true
 - tapOn: "グラフ\nタブ: 2/3"
-- tapOn: "グラフを作成"
+- tapOn:
+    id: create_graph_button
 - assertVisible: "グラフを作成"
 - tapOn: "グラフID *"
 - inputText: ${PIXELA_E2E_GRAPH_ID}

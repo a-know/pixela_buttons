@@ -67,7 +67,7 @@ jobs:
 
   maestro-e2e-ios:
     name: Maestro E2E iOS
-    runs-on: macos-latest
+    runs-on: macos-15
     needs: analyze-and-test
     timeout-minutes: 45
     steps:

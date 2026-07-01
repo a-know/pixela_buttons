@@ -70,8 +70,7 @@ class _GraphsScreenState extends State<GraphsScreen> {
       final msg = e is DioException
           ? l10n.errorGeneric(e.response?.statusCode?.toString() ?? '?')
           : l10n.errorUnknown(e.toString());
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(msg)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
     }
   }
 
@@ -91,16 +90,21 @@ class _GraphsScreenState extends State<GraphsScreen> {
     }
   }
 
-  Future<void> _fetchTodayValues(String username, List<Map<String, dynamic>> graphs) async {
-    await Future.wait(graphs.map((g) async {
-      final id = g['id'] as String;
-      try {
-        final value = await pixelaClient.getTodayValue(username, id);
-        if (mounted) setState(() => _todayValues[id] = value);
-      } catch (_) {
-        if (mounted) setState(() => _todayValues[id] = null);
-      }
-    }));
+  Future<void> _fetchTodayValues(
+    String username,
+    List<Map<String, dynamic>> graphs,
+  ) async {
+    await Future.wait(
+      graphs.map((g) async {
+        final id = g['id'] as String;
+        try {
+          final value = await pixelaClient.getTodayValue(username, id);
+          if (mounted) setState(() => _todayValues[id] = value);
+        } catch (_) {
+          if (mounted) setState(() => _todayValues[id] = null);
+        }
+      }),
+    );
   }
 
   String _formatValue(double value) {
@@ -118,16 +122,18 @@ class _GraphsScreenState extends State<GraphsScreen> {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.screenGraphs),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.add_chart),
-            tooltip: AppLocalizations.of(context)!.tooltipCreateGraph,
-            onPressed: () async {
-              final created = await Navigator.of(context).push<bool>(
-                MaterialPageRoute(
-                    builder: (_) => const GraphCreateScreen()),
-              );
-              if (created == true) _fetchGraphs();
-            },
+          Semantics(
+            identifier: 'create_graph_button',
+            child: IconButton(
+              icon: const Icon(Icons.add_chart),
+              tooltip: AppLocalizations.of(context)!.tooltipCreateGraph,
+              onPressed: () async {
+                final created = await Navigator.of(context).push<bool>(
+                  MaterialPageRoute(builder: (_) => const GraphCreateScreen()),
+                );
+                if (created == true) _fetchGraphs();
+              },
+            ),
           ),
         ],
       ),
@@ -136,7 +142,9 @@ class _GraphsScreenState extends State<GraphsScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(AppLocalizations.of(context)!.errorGeneric(_error ?? '')),
+                  Text(
+                    AppLocalizations.of(context)!.errorGeneric(_error ?? ''),
+                  ),
                   const SizedBox(height: 16),
                   FilledButton(
                     onPressed: _fetchGraphs,
@@ -146,21 +154,24 @@ class _GraphsScreenState extends State<GraphsScreen> {
               ),
             )
           : _graphs == null
-              ? const Center(child: CircularProgressIndicator())
-              : RefreshIndicator(
-                  onRefresh: _fetchGraphs,
-                  child: _graphs!.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: _fetchGraphs,
+              child: _graphs!.isEmpty
                   ? SingleChildScrollView(
                       physics: const AlwaysScrollableScrollPhysics(),
                       child: SizedBox(
                         height: 200,
-                        child: Center(child: Text(AppLocalizations.of(context)!.noGraphs)),
+                        child: Center(
+                          child: Text(AppLocalizations.of(context)!.noGraphs),
+                        ),
                       ),
                     )
                   : ListView.separated(
                       physics: const AlwaysScrollableScrollPhysics(),
                       itemCount: _graphs!.length,
-                      separatorBuilder: (context, _) => const Divider(height: 1),
+                      separatorBuilder: (context, _) =>
+                          const Divider(height: 1),
                       itemBuilder: (ctx, i) {
                         final g = _graphs![i];
                         final l10n = AppLocalizations.of(context)!;
@@ -181,20 +192,32 @@ class _GraphsScreenState extends State<GraphsScreen> {
                           ),
                           child: ListTile(
                             leading: CircleAvatar(
-                              backgroundColor: _parseColor(g['color'] as String?),
+                              backgroundColor: _parseColor(
+                                g['color'] as String?,
+                              ),
                               child: _todayValues.containsKey(g['id'])
                                   ? _todayValues[g['id']] != null
-                                      ? FittedBox(
-                                          fit: BoxFit.scaleDown,
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(4),
-                                            child: Text(
-                                              _formatValue(_todayValues[g['id']]!),
-                                              style: const TextStyle(color: Colors.white, fontSize: 14),
+                                        ? FittedBox(
+                                            fit: BoxFit.scaleDown,
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(4),
+                                              child: Text(
+                                                _formatValue(
+                                                  _todayValues[g['id']]!,
+                                                ),
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
                                             ),
-                                          ),
-                                        )
-                                      : const Text('-', style: TextStyle(color: Colors.white))
+                                          )
+                                        : const Text(
+                                            '-',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          )
                                   : const SizedBox(
                                       width: 16,
                                       height: 16,
@@ -230,15 +253,15 @@ class _GraphsScreenState extends State<GraphsScreen> {
                         );
                       },
                     ),
-                ),
+            ),
     );
   }
 
   Widget _typeBadge(BuildContext context, String type) {
     final (bg, fg) = switch (type) {
-      'int'   => (Colors.blue.withAlpha(40), Colors.blue),
+      'int' => (Colors.blue.withAlpha(40), Colors.blue),
       'float' => (Colors.orange.withAlpha(40), Colors.orange.shade800),
-      _       => (Colors.grey.withAlpha(40), Colors.grey),
+      _ => (Colors.grey.withAlpha(40), Colors.grey),
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
