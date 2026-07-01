@@ -5,7 +5,9 @@ name: "07 - Record a custom value from a card"
 - tapOn: "カスタム"
 - assertVisible: "カスタム値を入力"
 - tapOn: ${PIXELA_E2E_GRAPH_UNIT}
-- inputText: "2"
+- inputText:
+    text: "2"
+    waitToSettleTimeoutMs: 1000
 - tapOn: "記録"
 - extendedWaitUntil:
     visible: "記録しました"

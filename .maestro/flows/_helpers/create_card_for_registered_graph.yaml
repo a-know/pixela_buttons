@@ -8,9 +8,13 @@ appId: ${MAESTRO_APP_ID}
 - tapOn: ".*${PIXELA_E2E_GRAPH_NAME}.*"
 - tapOn: "表示名"
 - eraseText
-- inputText: ${PIXELA_E2E_CARD_NAME}
+- inputText:
+    text: ${PIXELA_E2E_CARD_NAME}
+    waitToSettleTimeoutMs: 1000
 - tapOn: "固定値ボタンを追加"
-- inputText: "1"
+- inputText:
+    text: "1"
+    waitToSettleTimeoutMs: 1000
 - tapOn: "追加"
 - tapOn: "保存"
 - extendedWaitUntil:

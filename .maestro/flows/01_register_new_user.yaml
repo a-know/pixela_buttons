@@ -6,9 +6,13 @@ name: "01 - Register a new Pixela user"
 - tapOn: "アカウントをお持ちでない方はこちら"
 - assertVisible: "新規登録"
 - tapOn: "username"
-- inputText: ${PIXELA_E2E_USERNAME}
+- inputText:
+    text: ${PIXELA_E2E_USERNAME}
+    waitToSettleTimeoutMs: 1000
 - tapOn: "token"
-- inputText: ${PIXELA_E2E_TOKEN}
+- inputText:
+    text: ${PIXELA_E2E_TOKEN}
+    waitToSettleTimeoutMs: 1000
 - tapOn:
     id: "agree_terms_checkbox"
 - tapOn:
