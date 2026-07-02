@@ -57,18 +57,21 @@ To run a single flow:
 scripts/maestro_test.sh .maestro/flows/03_login_success.yaml
 ```
 
-## CI
+## Local CI helper
 
-GitHub Actions runs the full suite on an iOS simulator from `ci.yml`.
-The CI job builds the simulator app, installs Maestro, boots an available
-iPhone simulator with Japanese locale settings, installs the app, and then runs:
+GitHub Actions does not run the full Maestro suite because iOS simulator and
+XCTest driver behavior on hosted runners has been unstable for these flows.
+Run the suite locally before releases or when touching registration, login,
+graph, card, reminder, settings, or account-deletion behavior.
+
+For local iOS verification, build the simulator app and run:
 
 ```bash
 scripts/maestro_ci.sh
 ```
 
-The CI suite also creates a disposable Pixela user and deletes it in the final
-flow. If the job is cancelled before the final flow, the temporary Pixela user
+The local suite creates a disposable Pixela user and deletes it in the final
+flow. If the run is cancelled before the final flow, the temporary Pixela user
 may remain and should be cleaned up manually.
 
 ## Notes

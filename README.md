@@ -120,7 +120,7 @@ flutter test
 
 ### Maestro E2E テスト
 
-ネイティブ UI の E2E テストには [Maestro](https://maestro.mobile.dev/) を使います。flow は `.maestro/flows` にあります。
+ネイティブ UI の E2E テストには [Maestro](https://maestro.mobile.dev/) を使います。flow は `.maestro/flows` にあります。GitHub Actions では実行せず、リリース前や関連機能の変更時にローカルで実行します。
 
 ```bash
 # Maestro のインストール
