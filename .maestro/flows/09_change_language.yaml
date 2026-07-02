@@ -1,0 +1,13 @@
+appId: ${MAESTRO_APP_ID}
+name: "09 - Change display language from settings"
+---
+- runFlow: _helpers/login_registered_user.yaml
+- tapOn: "設定\nタブ: 3/3"
+- assertVisible: ".*言語.*"
+- tapOn:
+    point: "91%,48%"
+- tapOn: "English"
+- extendedWaitUntil:
+    visible: ".*Settings.*"
+    timeout: 10000
+- assertVisible: ".*Language.*"

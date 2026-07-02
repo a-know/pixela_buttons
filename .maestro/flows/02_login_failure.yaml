@@ -1,0 +1,13 @@
+appId: ${MAESTRO_APP_ID}
+name: "02 - Reject invalid login credentials"
+---
+- launchApp:
+    clearState: true
+- tapOn: "username"
+- inputText:
+    text: ${PIXELA_E2E_BAD_USERNAME}
+    waitToSettleTimeoutMs: 1000
+- tapOn: "はじめる"
+- assertVisible: "入力してください"
+- assertVisible: "username"
+- assertNotVisible: "ボタンを追加"

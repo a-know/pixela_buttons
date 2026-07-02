@@ -118,6 +118,22 @@ flutter analyze
 flutter test
 ```
 
+### Maestro E2E テスト
+
+ネイティブ UI の E2E テストには [Maestro](https://maestro.mobile.dev/) を使います。flow は `.maestro/flows` にあります。GitHub Actions では実行せず、リリース前や関連機能の変更時にローカルで実行します。
+
+```bash
+# Maestro のインストール
+curl -fsSL "https://get.maestro.mobile.dev" | bash
+
+# iOS シミュレーターで実行する場合。Android は com.aknow.pixela_buttons を指定してください。
+export MAESTRO_APP_ID="com.a-know.pixelaButtons"
+
+scripts/maestro_test.sh
+```
+
+実行前にシミュレーター/エミュレーターを起動し、言語を日本語にしてください。デフォルトでは disposable な Pixela ユーザーを作成し、後続テストで使い回し、最後に削除します。作成・削除を含むテストデータの詳細は `.maestro/README.md` を参照してください。
+
 ## セキュリティチェック
 
 コミット前に、ステージ済みの変更を Semgrep と Gitleaks で検査します。

@@ -1,0 +1,9 @@
+appId: ${MAESTRO_APP_ID}
+name: "05 - Show graphs belonging to the logged-in user"
+---
+- runFlow: _helpers/login_registered_user.yaml
+- tapOn: "グラフ\nタブ: 2/3"
+- extendedWaitUntil:
+    visible: ".*${PIXELA_E2E_GRAPH_NAME}.*"
+    timeout: 15000
+- assertVisible: ".*${PIXELA_E2E_GRAPH_ID}.*"

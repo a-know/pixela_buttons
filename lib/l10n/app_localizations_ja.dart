@@ -241,7 +241,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get labelFixedButtons => '固定値ボタン';
 
   @override
-  String get tooltipAddFixedButton => 'ボタンを追加';
+  String get tooltipAddFixedButton => '固定値ボタンを追加';
 
   @override
   String get noFixedButtons => 'ボタンがありません';

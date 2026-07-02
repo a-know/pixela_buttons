@@ -71,7 +71,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         } else if (e.type == DioExceptionType.connectionError) {
           _errorMessage = l10n.errorNoNetwork;
         } else {
-          _errorMessage = l10n.errorRegisterFailed(e.response?.statusCode?.toString() ?? '?');
+          _errorMessage = l10n.errorRegisterFailed(
+            e.response?.statusCode?.toString() ?? '?',
+          );
         }
       });
     } on Exception catch (e) {
@@ -122,8 +124,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         helperText: l10n.fieldUsernameHelper,
                       ),
                       validator: (v) {
-                        if (v == null || v.trim().isEmpty) return l10n.fieldRequired;
-                        if (!_usernameRegex.hasMatch(v.trim())) return l10n.fieldUsernameError;
+                        if (v == null || v.trim().isEmpty) {
+                          return l10n.fieldRequired;
+                        }
+                        if (!_usernameRegex.hasMatch(v.trim())) {
+                          return l10n.fieldUsernameError;
+                        }
                         return null;
                       },
                     ),
@@ -139,16 +145,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         border: const OutlineInputBorder(),
                         helperText: l10n.fieldTokenHelper,
                         suffixIcon: IconButton(
-                          icon: Icon(_obscureToken
-                              ? Icons.visibility_off
-                              : Icons.visibility),
+                          icon: Icon(
+                            _obscureToken
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
                           onPressed: () =>
                               setState(() => _obscureToken = !_obscureToken),
                         ),
                       ),
                       validator: (v) {
-                        if (v == null || v.trim().isEmpty) return l10n.fieldRequired;
-                        if (!_tokenRegex.hasMatch(v.trim())) return l10n.fieldTokenError;
+                        if (v == null || v.trim().isEmpty) {
+                          return l10n.fieldRequired;
+                        }
+                        if (!_tokenRegex.hasMatch(v.trim())) {
+                          return l10n.fieldTokenError;
+                        }
                         return null;
                       },
                     ),
@@ -156,39 +168,48 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              CheckboxListTile(
-                value: _agreeTerms,
-                onChanged: (v) => setState(() => _agreeTerms = v ?? false),
-                title: RichText(
-                  text: TextSpan(
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    children: [
-                      TextSpan(text: l10n.labelAgreeTerms),
-                      TextSpan(
-                        text: l10n.linkTermsOfService,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
-                          decoration: TextDecoration.underline,
+              Semantics(
+                identifier: 'agree_terms_checkbox',
+                label:
+                    '${l10n.labelAgreeTerms}${l10n.linkTermsOfService}${l10n.labelAgreeTermsSuffix}',
+                child: CheckboxListTile(
+                  value: _agreeTerms,
+                  onChanged: (v) => setState(() => _agreeTerms = v ?? false),
+                  title: RichText(
+                    text: TextSpan(
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      children: [
+                        TextSpan(text: l10n.labelAgreeTerms),
+                        TextSpan(
+                          text: l10n.linkTermsOfService,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () => launchUrl(
+                              Uri.parse(l10n.termsOfServiceUrl),
+                              mode: LaunchMode.externalApplication,
+                            ),
                         ),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () => launchUrl(
-                                Uri.parse(l10n.termsOfServiceUrl),
-                                mode: LaunchMode.externalApplication,
-                              ),
-                      ),
-                      TextSpan(text: l10n.labelAgreeTermsSuffix),
-                    ],
+                        TextSpan(text: l10n.labelAgreeTermsSuffix),
+                      ],
+                    ),
                   ),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  contentPadding: EdgeInsets.zero,
                 ),
-                controlAffinity: ListTileControlAffinity.leading,
-                contentPadding: EdgeInsets.zero,
               ),
-              CheckboxListTile(
-                value: _notMinor,
-                onChanged: (v) => setState(() => _notMinor = v ?? false),
-                title: Text(l10n.labelNotMinor),
-                controlAffinity: ListTileControlAffinity.leading,
-                contentPadding: EdgeInsets.zero,
+              Semantics(
+                identifier: 'not_minor_checkbox',
+                label: l10n.labelNotMinor,
+                child: CheckboxListTile(
+                  value: _notMinor,
+                  onChanged: (v) => setState(() => _notMinor = v ?? false),
+                  title: Text(l10n.labelNotMinor),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  contentPadding: EdgeInsets.zero,
+                ),
               ),
               const SizedBox(height: 24),
               SizedBox(

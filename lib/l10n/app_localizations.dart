@@ -509,7 +509,7 @@ abstract class AppLocalizations {
   /// No description provided for @tooltipAddFixedButton.
   ///
   /// In en, this message translates to:
-  /// **'Add button'**
+  /// **'Add fixed button'**
   String get tooltipAddFixedButton;
 
   /// No description provided for @noFixedButtons.

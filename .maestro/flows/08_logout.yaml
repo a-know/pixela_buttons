@@ -1,0 +1,13 @@
+appId: ${MAESTRO_APP_ID}
+name: "08 - Logout from settings"
+---
+- runFlow: _helpers/login_registered_user.yaml
+- tapOn: "設定\nタブ: 3/3"
+- tapOn: "ログアウト"
+- assertVisible: "ログアウト"
+- tapOn:
+    text: "ログアウト"
+    index: 1
+- extendedWaitUntil:
+    visible: "アカウントをお持ちでない方はこちら"
+    timeout: 10000

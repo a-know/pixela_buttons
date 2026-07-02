@@ -1,0 +1,5 @@
+appId: ${MAESTRO_APP_ID}
+name: "03 - Login with valid credentials"
+---
+- runFlow: _helpers/login_registered_user.yaml
+- assertVisible: "ボタンを追加"

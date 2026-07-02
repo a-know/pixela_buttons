@@ -61,7 +61,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       if (mounted) context.go('/home');
     } on DioException catch (e) {
       setState(() {
-        if (e.response?.statusCode == 400 || e.response?.statusCode == 401) {
+        if (e.response?.statusCode == 400 ||
+            e.response?.statusCode == 401 ||
+            e.response?.statusCode == 404) {
           _errorMessage = l10n.errorInvalidCredentials;
         } else if (e.type == DioExceptionType.connectionTimeout ||
             e.type == DioExceptionType.receiveTimeout) {
@@ -69,7 +71,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         } else if (e.type == DioExceptionType.connectionError) {
           _errorMessage = l10n.errorNoNetwork;
         } else {
-          _errorMessage = l10n.errorGeneric(e.response?.statusCode?.toString() ?? '?');
+          _errorMessage = l10n.errorGeneric(
+            e.response?.statusCode?.toString() ?? '?',
+          );
         }
       });
     } on Exception catch (e) {
@@ -100,8 +104,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               Text(
                 l10n.appTitle,
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  fontWeight: FontWeight.bold,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
@@ -139,8 +143,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         labelText: l10n.fieldUsername,
                         border: const OutlineInputBorder(),
                       ),
-                      validator: (v) =>
-                          v == null || v.trim().isEmpty ? l10n.fieldRequired : null,
+                      validator: (v) => v == null || v.trim().isEmpty
+                          ? l10n.fieldRequired
+                          : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
@@ -153,15 +158,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         labelText: l10n.fieldToken,
                         border: const OutlineInputBorder(),
                         suffixIcon: IconButton(
-                          icon: Icon(_obscureToken
-                              ? Icons.visibility_off
-                              : Icons.visibility),
+                          icon: Icon(
+                            _obscureToken
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
                           onPressed: () =>
                               setState(() => _obscureToken = !_obscureToken),
                         ),
                       ),
-                      validator: (v) =>
-                          v == null || v.trim().isEmpty ? l10n.fieldRequired : null,
+                      validator: (v) => v == null || v.trim().isEmpty
+                          ? l10n.fieldRequired
+                          : null,
                     ),
                     const SizedBox(height: 24),
                     SizedBox(
@@ -172,7 +180,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ? const SizedBox(
                                 height: 20,
                                 width: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
                             : Text(l10n.buttonStart),
                       ),
