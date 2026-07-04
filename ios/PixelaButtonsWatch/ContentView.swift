@@ -34,6 +34,9 @@ struct ContentView: View {
                             Text(card.graphId)
                                 .font(.caption2)
                                 .foregroundStyle(.secondary)
+                            Text(syncStore.todayText(for: card))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
                             if !card.buttons.isEmpty {
                                 HStack(spacing: 6) {
                                     ForEach(card.buttons.prefix(3)) { button in
@@ -69,6 +72,9 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Buttons")
+            .onAppear {
+                syncStore.refreshTodayValues()
+            }
         }
     }
 }

@@ -25,6 +25,7 @@ final class WatchSyncStore: NSObject, ObservableObject {
 
     @Published private(set) var username = ""
     @Published private(set) var cards: [WatchCardConfig] = []
+    @Published private(set) var todayValues: [String: Double] = [:]
     @Published private(set) var recordingButtonId: String?
     @Published private var recordMessage: String?
     @Published private var recordMessageCardId: String?
@@ -65,6 +66,7 @@ final class WatchSyncStore: NSObject, ObservableObject {
         )
         username = payload.username
         cards = payload.cards
+        refreshTodayValues()
         if let data = try? JSONEncoder().encode(payload) {
             UserDefaults.standard.set(data, forKey: storageKey)
         }
@@ -79,6 +81,30 @@ final class WatchSyncStore: NSObject, ObservableObject {
                 self.apply(context: reply)
             }
         }, errorHandler: nil)
+    }
+
+    func refreshTodayValues() {
+        guard let session, session.activationState == .activated, session.isReachable else {
+            return
+        }
+        for card in cards {
+            Task {
+                await refreshTodayValue(card: card, session: session)
+            }
+        }
+    }
+
+    private func refreshTodayValue(card: WatchCardConfig, session: WCSession) async {
+        do {
+            let reply = try await sendTodayValueMessage(session: session, card: card)
+            guard reply["ok"] as? Bool == true,
+                  let value = (reply["value"] as? NSNumber)?.doubleValue
+            else {
+                return
+            }
+            todayValues[card.id] = value
+        } catch {
+        }
     }
 
     func record(card: WatchCardConfig, button: WatchButtonConfig) async {
@@ -105,6 +131,7 @@ final class WatchSyncStore: NSObject, ObservableObject {
                 throw WatchRecordError.remote(reply["error"] as? String)
             }
             recordMessage = "Recorded \(Self.formatted(button.value)) \(card.unit)"
+            await refreshTodayValue(card: card, session: session)
             WKInterfaceDevice.current().play(.success)
         } catch {
             recordMessage = error.localizedDescription
@@ -118,6 +145,14 @@ final class WatchSyncStore: NSObject, ObservableObject {
 
     func recordMessage(for card: WatchCardConfig) -> String? {
         recordMessageCardId == card.id ? recordMessage : nil
+    }
+
+    func todayText(for card: WatchCardConfig) -> String {
+        let prefix = Self.todayPrefix
+        if let value = todayValues[card.id] {
+            return "\(prefix): \(Self.formatted(value)) \(card.unit)"
+        }
+        return "\(prefix): -- \(card.unit)"
     }
 
     private func sendRecordMessage(
@@ -138,12 +173,32 @@ final class WatchSyncStore: NSObject, ObservableObject {
         }
     }
 
+    private func sendTodayValueMessage(
+        session: WCSession,
+        card: WatchCardConfig
+    ) async throws -> [String: Any] {
+        try await withCheckedThrowingContinuation { continuation in
+            session.sendMessage([
+                "type": "requestTodayValue",
+                "cardId": card.id,
+            ], replyHandler: { reply in
+                continuation.resume(returning: reply)
+            }, errorHandler: { error in
+                continuation.resume(throwing: error)
+            })
+        }
+    }
+
     private static func recordingId(card: WatchCardConfig, button: WatchButtonConfig) -> String {
         "\(card.id):\(button.id)"
     }
 
     static func formatted(_ value: Double) -> String {
         value == value.rounded(.towardZero) ? String(Int(value)) : String(value)
+    }
+
+    private static var todayPrefix: String {
+        Locale.current.language.languageCode?.identifier == "ja" ? "今日" : "Today"
     }
 
     private static func cards(from dictionaries: [[String: Any]]) -> [WatchCardConfig] {
@@ -195,6 +250,7 @@ extension WatchSyncStore: WCSessionDelegate {
                 self.apply(context: session.receivedApplicationContext)
             }
             self.requestLatestCards()
+            self.refreshTodayValues()
         }
     }
 

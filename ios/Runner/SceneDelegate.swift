@@ -236,6 +236,31 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
     )
   }
 
+  private func todayValue(message: [String: Any]) async throws -> Double {
+    guard let cardId = message["cardId"] as? String else {
+      throw WatchRecordError.invalidMessage
+    }
+
+    let credentials = restoreCredentials()
+    guard !credentials.username.isEmpty, !credentials.token.isEmpty else {
+      throw WatchRecordError.missingCredentials
+    }
+
+    let context = restoreContext() ?? session?.applicationContext ?? [:]
+    guard let cards = context["cards"] as? [[String: Any]],
+          let card = cards.first(where: { $0["id"] as? String == cardId }),
+          let graphId = card["graphId"] as? String
+    else {
+      throw WatchRecordError.cardNotFound
+    }
+
+    return try await fetchPixelaTodayValue(
+      username: credentials.username,
+      token: credentials.token,
+      graphId: graphId
+    )
+  }
+
   private func sendPixelaRecord(username: String, token: String, graphId: String, value: Double) async throws {
     let escapedUsername = username.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? username
     let escapedGraphId = graphId.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? graphId
@@ -270,6 +295,56 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
       }
       throw WatchRecordError.requestFailed(responseMessage(from: data, statusCode: httpResponse.statusCode))
     }
+  }
+
+  private func fetchPixelaTodayValue(username: String, token: String, graphId: String) async throws -> Double {
+    let escapedUsername = username.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? username
+    let escapedGraphId = graphId.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? graphId
+    guard let url = URL(string: "https://pixe.la/v1/users/\(escapedUsername)/graphs/\(escapedGraphId)/today") else {
+      throw WatchRecordError.invalidURL
+    }
+
+    var request = URLRequest(url: url)
+    request.httpMethod = "GET"
+    request.setValue(token, forHTTPHeaderField: "X-USER-TOKEN")
+    request.setValue("PixelaButtons WatchConnectivity", forHTTPHeaderField: "User-Agent")
+
+    let maxRetries = 30
+    for attempt in 0...maxRetries {
+      let (data, response) = try await URLSession.shared.data(for: request)
+      guard let httpResponse = response as? HTTPURLResponse else {
+        throw WatchRecordError.requestFailed("No HTTP response.")
+      }
+      if (200..<300).contains(httpResponse.statusCode) {
+        return try todayValue(from: data)
+      }
+      if httpResponse.statusCode == 503,
+         attempt < maxRetries,
+         isRejectedResponse(data) {
+        try await Task.sleep(nanoseconds: 500_000_000)
+        continue
+      }
+      throw WatchRecordError.requestFailed(responseMessage(from: data, statusCode: httpResponse.statusCode))
+    }
+
+    throw WatchRecordError.requestFailed("Pixela API request failed.")
+  }
+
+  private func todayValue(from data: Data) throws -> Double {
+    guard let object = try? JSONSerialization.jsonObject(with: data),
+          let dictionary = object as? [String: Any],
+          let quantity = dictionary["quantity"]
+    else {
+      throw WatchRecordError.requestFailed("Pixela today value response was invalid.")
+    }
+    if let number = quantity as? NSNumber {
+      return number.doubleValue
+    }
+    if let string = quantity as? String,
+       let value = Double(string) {
+      return value
+    }
+    throw WatchRecordError.requestFailed("Pixela today value response was invalid.")
   }
 
   private func quantityString(_ value: Double) -> String {
@@ -333,6 +408,21 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
         do {
           try await recordButton(message: message)
           replyHandler(["ok": true])
+        } catch {
+          replyHandler([
+            "ok": false,
+            "error": error.localizedDescription,
+          ])
+        }
+      }
+    case "requestTodayValue":
+      Task {
+        do {
+          let value = try await todayValue(message: message)
+          replyHandler([
+            "ok": true,
+            "value": value,
+          ])
         } catch {
           replyHandler([
             "ok": false,
