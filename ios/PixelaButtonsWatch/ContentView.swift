@@ -61,10 +61,9 @@ struct ContentView: View {
                                     }
                                 }
                             }
-                            if let recordMessage = syncStore.recordMessage(for: card) {
-                                Text(recordMessage)
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
+                            if let feedback = syncStore.recordFeedback(for: card) {
+                                RecordFeedbackView(feedback: feedback)
+                                    .transition(.scale(scale: 0.95).combined(with: .opacity))
                             }
                         }
                     }
@@ -76,6 +75,28 @@ struct ContentView: View {
                 syncStore.refreshTodayValues()
             }
         }
+    }
+}
+
+private struct RecordFeedbackView: View {
+    let feedback: WatchRecordFeedback
+
+    var body: some View {
+        HStack(spacing: 5) {
+            Image(systemName: feedback.isSuccess ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
+                .font(.caption.weight(.semibold))
+            Text(feedback.message)
+                .font(.caption.weight(.semibold))
+                .lineLimit(2)
+                .minimumScaleFactor(0.8)
+        }
+        .foregroundStyle(.white)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 5)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(feedback.isSuccess ? Color.green : Color.red)
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .accessibilityElement(children: .combine)
     }
 }
 

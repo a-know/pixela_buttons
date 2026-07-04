@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import WatchKit
 import WatchConnectivity
 
@@ -19,6 +20,13 @@ struct WatchCardConfig: Identifiable, Codable, Equatable {
     let buttons: [WatchButtonConfig]
 }
 
+struct WatchRecordFeedback: Identifiable, Equatable {
+    let id = UUID()
+    let cardId: String
+    let message: String
+    let isSuccess: Bool
+}
+
 @MainActor
 final class WatchSyncStore: NSObject, ObservableObject {
     static let shared = WatchSyncStore()
@@ -27,11 +35,11 @@ final class WatchSyncStore: NSObject, ObservableObject {
     @Published private(set) var cards: [WatchCardConfig] = []
     @Published private(set) var todayValues: [String: Double] = [:]
     @Published private(set) var recordingButtonId: String?
-    @Published private var recordMessage: String?
-    @Published private var recordMessageCardId: String?
+    @Published private var recordFeedback: WatchRecordFeedback?
 
     private let storageKey = "watch_card_sync_payload"
     private var session: WCSession?
+    private var feedbackDismissTask: Task<Void, Never>?
 
     private override init() {
         super.init()
@@ -116,14 +124,17 @@ final class WatchSyncStore: NSObject, ObservableObject {
         }
         let recordingId = Self.recordingId(card: card, button: button)
         recordingButtonId = recordingId
-        recordMessage = nil
-        recordMessageCardId = card.id
+        recordFeedback = nil
         defer {
             recordingButtonId = nil
         }
 
         guard let session, session.activationState == .activated, session.isReachable else {
-            recordMessage = "Open Pixela Buttons on iPhone and try again."
+            showRecordFeedback(
+                cardId: card.id,
+                message: "Open Pixela Buttons on iPhone and try again.",
+                isSuccess: false
+            )
             WKInterfaceDevice.current().play(.failure)
             return
         }
@@ -133,11 +144,19 @@ final class WatchSyncStore: NSObject, ObservableObject {
             guard reply["ok"] as? Bool == true else {
                 throw WatchRecordError.remote(reply["error"] as? String)
             }
-            recordMessage = "Recorded \(Self.formatted(button.value)) \(card.unit)"
+            showRecordFeedback(
+                cardId: card.id,
+                message: "Recorded \(Self.formatted(button.value)) \(card.unit)",
+                isSuccess: true
+            )
             await refreshTodayValue(card: card, session: session)
             WKInterfaceDevice.current().play(.success)
         } catch {
-            recordMessage = error.localizedDescription
+            showRecordFeedback(
+                cardId: card.id,
+                message: error.localizedDescription,
+                isSuccess: false
+            )
             WKInterfaceDevice.current().play(.failure)
         }
     }
@@ -146,8 +165,8 @@ final class WatchSyncStore: NSObject, ObservableObject {
         recordingButtonId == Self.recordingId(card: card, button: button)
     }
 
-    func recordMessage(for card: WatchCardConfig) -> String? {
-        recordMessageCardId == card.id ? recordMessage : nil
+    func recordFeedback(for card: WatchCardConfig) -> WatchRecordFeedback? {
+        recordFeedback?.cardId == card.id ? recordFeedback : nil
     }
 
     func todayText(for card: WatchCardConfig) -> String {
@@ -194,6 +213,25 @@ final class WatchSyncStore: NSObject, ObservableObject {
 
     private static func recordingId(card: WatchCardConfig, button: WatchButtonConfig) -> String {
         "\(card.id):\(button.id)"
+    }
+
+    private func showRecordFeedback(cardId: String, message: String, isSuccess: Bool) {
+        feedbackDismissTask?.cancel()
+        let feedback = WatchRecordFeedback(cardId: cardId, message: message, isSuccess: isSuccess)
+        withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+            recordFeedback = feedback
+        }
+        feedbackDismissTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 2_500_000_000)
+            await MainActor.run {
+                guard self?.recordFeedback?.id == feedback.id else {
+                    return
+                }
+                withAnimation(.easeOut(duration: 0.2)) {
+                    self?.recordFeedback = nil
+                }
+            }
+        }
     }
 
     static func formatted(_ value: Double) -> String {
