@@ -55,7 +55,7 @@ struct ContentView: View {
                                             }
                                         }
                                         .buttonStyle(.borderedProminent)
-                                        .tint(.green)
+                                        .tint(buttonTint(card: card, button: button))
                                         .controlSize(.small)
                                         .disabled(syncStore.recordingButtonId != nil)
                                     }
@@ -75,6 +75,11 @@ struct ContentView: View {
                 syncStore.refreshTodayValues()
             }
         }
+    }
+
+    private func buttonTint(card: WatchCardConfig, button: WatchButtonConfig) -> Color {
+        let color = Color.watchHex(card.color) ?? .green
+        return button.value >= 0 ? color : color.darkened()
     }
 }
 
@@ -102,4 +107,28 @@ private struct RecordFeedbackView: View {
 
 #Preview {
     ContentView()
+}
+
+private extension Color {
+    static func watchHex(_ hex: String) -> Color? {
+        let value = hex.trimmingCharacters(in: CharacterSet(charactersIn: "#"))
+        guard value.count == 6, let rgb = Int(value, radix: 16) else {
+            return nil
+        }
+        return Color(
+            red: Double((rgb >> 16) & 0xFF) / 255.0,
+            green: Double((rgb >> 8) & 0xFF) / 255.0,
+            blue: Double(rgb & 0xFF) / 255.0
+        )
+    }
+
+    func darkened(amount: Double = 0.3) -> Color {
+        let resolved = self.resolve(in: EnvironmentValues())
+        return Color(
+            red: max(0, Double(resolved.red) - amount),
+            green: max(0, Double(resolved.green) - amount),
+            blue: max(0, Double(resolved.blue) - amount),
+            opacity: Double(resolved.opacity)
+        )
+    }
 }
