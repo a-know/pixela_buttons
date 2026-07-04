@@ -253,16 +253,50 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
       "quantity": quantityString(abs(value)),
     ])
 
-    let (_, response) = try await URLSession.shared.data(for: request)
-    guard let httpResponse = response as? HTTPURLResponse,
-          (200..<300).contains(httpResponse.statusCode)
-    else {
-      throw WatchRecordError.requestFailed
+    let maxRetries = 30
+    for attempt in 0...maxRetries {
+      let (data, response) = try await URLSession.shared.data(for: request)
+      guard let httpResponse = response as? HTTPURLResponse else {
+        throw WatchRecordError.requestFailed("No HTTP response.")
+      }
+      if (200..<300).contains(httpResponse.statusCode) {
+        return
+      }
+      if httpResponse.statusCode == 503,
+         attempt < maxRetries,
+         isRejectedResponse(data) {
+        try await Task.sleep(nanoseconds: 500_000_000)
+        continue
+      }
+      throw WatchRecordError.requestFailed(responseMessage(from: data, statusCode: httpResponse.statusCode))
     }
   }
 
   private func quantityString(_ value: Double) -> String {
     value == value.rounded(.towardZero) ? String(Int(value)) : String(value)
+  }
+
+  private func isRejectedResponse(_ data: Data) -> Bool {
+    guard let object = try? JSONSerialization.jsonObject(with: data),
+          let dictionary = object as? [String: Any]
+    else {
+      return false
+    }
+    return dictionary["isRejected"] as? Bool == true
+  }
+
+  private func responseMessage(from data: Data, statusCode: Int) -> String {
+    if let object = try? JSONSerialization.jsonObject(with: data),
+       let dictionary = object as? [String: Any],
+       let message = dictionary["message"] as? String,
+       !message.isEmpty {
+      return "Pixela API \(statusCode): \(message)"
+    }
+    if let text = String(data: data, encoding: .utf8),
+       !text.isEmpty {
+      return "Pixela API \(statusCode): \(text)"
+    }
+    return "Pixela API request failed with status \(statusCode)."
   }
 
   func session(
@@ -317,7 +351,7 @@ private enum WatchRecordError: LocalizedError {
   case missingCredentials
   case cardNotFound
   case invalidURL
-  case requestFailed
+  case requestFailed(String)
 
   var errorDescription: String? {
     switch self {
@@ -329,8 +363,8 @@ private enum WatchRecordError: LocalizedError {
       return "Card setting was not found on iPhone."
     case .invalidURL:
       return "Invalid Pixela API URL."
-    case .requestFailed:
-      return "Pixela record request failed."
+    case .requestFailed(let message):
+      return message
     }
   }
 }
