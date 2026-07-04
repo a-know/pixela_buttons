@@ -1,4 +1,5 @@
 import SwiftUI
+import WatchKit
 
 @main
 struct PixelaButtonsWatchApp: App {
@@ -6,5 +7,10 @@ struct PixelaButtonsWatchApp: App {
         WindowGroup {
             ContentView()
         }
+
+        WKNotificationScene(
+            controller: ReminderNotificationController.self,
+            category: "record_reminder"
+        )
     }
 }

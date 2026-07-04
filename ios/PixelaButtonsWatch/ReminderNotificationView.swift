@@ -1,0 +1,43 @@
+import SwiftUI
+import UserNotifications
+import WatchKit
+
+struct ReminderNotificationView: View {
+    let title: String
+    let message: String
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: "square.grid.2x2.fill")
+                .font(.system(size: 28, weight: .semibold))
+                .foregroundStyle(.green)
+
+            Text(title.isEmpty ? "Pixela Buttons" : title)
+                .font(.headline)
+                .multilineTextAlignment(.center)
+
+            Text(message.isEmpty ? "Open Pixela Buttons" : message)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .padding()
+    }
+}
+
+final class ReminderNotificationController: WKUserNotificationHostingController<ReminderNotificationView> {
+    private var notificationTitle = "Pixela Buttons"
+    private var notificationBody = "Open Pixela Buttons"
+
+    override var body: ReminderNotificationView {
+        ReminderNotificationView(
+            title: notificationTitle,
+            message: notificationBody
+        )
+    }
+
+    override func didReceive(_ notification: UNNotification) {
+        notificationTitle = notification.request.content.title
+        notificationBody = notification.request.content.body
+    }
+}

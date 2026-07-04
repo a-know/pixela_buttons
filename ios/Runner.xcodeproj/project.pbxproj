@@ -22,6 +22,7 @@
 		B12000000000000000000003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B12000000000000000000013 /* Assets.xcassets */; };
 		B12000000000000000000004 /* PixelaButtonsWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = B12000000000000000000010 /* PixelaButtonsWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B12000000000000000000005 /* WatchSyncStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12000000000000000000014 /* WatchSyncStore.swift */; };
+		B12000000000000000000006 /* ReminderNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12000000000000000000015 /* ReminderNotificationView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,6 +91,7 @@
 		B12000000000000000000012 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B12000000000000000000013 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B12000000000000000000014 /* WatchSyncStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSyncStore.swift; sourceTree = "<group>"; };
+		B12000000000000000000015 /* ReminderNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderNotificationView.swift; sourceTree = "<group>"; };
 		BE51F956BA18E886D573983C /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		D0E3DB67E7A2A3ECAB343691 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		DB933AB13EFD93138A243D9D /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -210,6 +212,7 @@
 				B12000000000000000000011 /* PixelaButtonsWatchApp.swift */,
 				B12000000000000000000012 /* ContentView.swift */,
 				B12000000000000000000014 /* WatchSyncStore.swift */,
+				B12000000000000000000015 /* ReminderNotificationView.swift */,
 				B12000000000000000000013 /* Assets.xcassets */,
 			);
 			path = PixelaButtonsWatch;
@@ -471,6 +474,7 @@
 				B12000000000000000000001 /* PixelaButtonsWatchApp.swift in Sources */,
 				B12000000000000000000002 /* ContentView.swift in Sources */,
 				B12000000000000000000005 /* WatchSyncStore.swift in Sources */,
+				B12000000000000000000006 /* ReminderNotificationView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
