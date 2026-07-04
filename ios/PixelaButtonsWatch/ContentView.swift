@@ -16,7 +16,7 @@ struct ContentView: View {
                         Text("Pixela Buttons")
                             .font(.headline)
 
-                        Text("Waiting for cards")
+                        Text("Set up cards on your iPhone")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
