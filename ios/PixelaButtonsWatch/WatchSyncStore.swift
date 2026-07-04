@@ -1,4 +1,5 @@
 import Foundation
+import WatchKit
 import WatchConnectivity
 
 struct WatchButtonConfig: Identifiable, Codable, Equatable {
@@ -24,6 +25,9 @@ final class WatchSyncStore: NSObject, ObservableObject {
 
     @Published private(set) var username = ""
     @Published private(set) var cards: [WatchCardConfig] = []
+    @Published private(set) var recordingButtonId: String?
+    @Published private var recordMessage: String?
+    @Published private var recordMessageCardId: String?
 
     private let storageKey = "watch_card_sync_payload"
     private var session: WCSession?
@@ -75,6 +79,71 @@ final class WatchSyncStore: NSObject, ObservableObject {
                 self.apply(context: reply)
             }
         }, errorHandler: nil)
+    }
+
+    func record(card: WatchCardConfig, button: WatchButtonConfig) async {
+        guard recordingButtonId == nil else {
+            return
+        }
+        let recordingId = Self.recordingId(card: card, button: button)
+        recordingButtonId = recordingId
+        recordMessage = nil
+        recordMessageCardId = card.id
+        defer {
+            recordingButtonId = nil
+        }
+
+        guard let session, session.activationState == .activated, session.isReachable else {
+            recordMessage = "Open Pixela Buttons on iPhone and try again."
+            WKInterfaceDevice.current().play(.failure)
+            return
+        }
+
+        do {
+            let reply = try await sendRecordMessage(session: session, card: card, button: button)
+            guard reply["ok"] as? Bool == true else {
+                throw WatchRecordError.remote(reply["error"] as? String)
+            }
+            recordMessage = "Recorded \(Self.formatted(button.value)) \(card.unit)"
+            WKInterfaceDevice.current().play(.success)
+        } catch {
+            recordMessage = error.localizedDescription
+            WKInterfaceDevice.current().play(.failure)
+        }
+    }
+
+    func isRecording(card: WatchCardConfig, button: WatchButtonConfig) -> Bool {
+        recordingButtonId == Self.recordingId(card: card, button: button)
+    }
+
+    func recordMessage(for card: WatchCardConfig) -> String? {
+        recordMessageCardId == card.id ? recordMessage : nil
+    }
+
+    private func sendRecordMessage(
+        session: WCSession,
+        card: WatchCardConfig,
+        button: WatchButtonConfig
+    ) async throws -> [String: Any] {
+        try await withCheckedThrowingContinuation { continuation in
+            session.sendMessage([
+                "type": "recordButton",
+                "cardId": card.id,
+                "buttonId": button.id,
+            ], replyHandler: { reply in
+                continuation.resume(returning: reply)
+            }, errorHandler: { error in
+                continuation.resume(throwing: error)
+            })
+        }
+    }
+
+    private static func recordingId(card: WatchCardConfig, button: WatchButtonConfig) -> String {
+        "\(card.id):\(button.id)"
+    }
+
+    static func formatted(_ value: Double) -> String {
+        value == value.rounded(.towardZero) ? String(Int(value)) : String(value)
     }
 
     private static func cards(from dictionaries: [[String: Any]]) -> [WatchCardConfig] {
@@ -151,4 +220,15 @@ extension WatchSyncStore: WCSessionDelegate {
 private struct SyncPayload: Codable {
     let username: String
     let cards: [WatchCardConfig]
+}
+
+private enum WatchRecordError: LocalizedError {
+    case remote(String?)
+
+    var errorDescription: String? {
+        switch self {
+        case .remote(let message):
+            return message ?? "Record request failed."
+        }
+    }
 }

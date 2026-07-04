@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../models/card_config.dart';
+import '../storage/secure_storage.dart';
 
 class WatchSyncService {
   static const _channel = MethodChannel('com.a-know.pixelaButtons/watch_sync');
@@ -13,8 +14,10 @@ class WatchSyncService {
     if (defaultTargetPlatform != TargetPlatform.iOS) return;
 
     try {
+      final token = await SecureStorage.getToken();
       await _channel.invokeMethod<void>('syncCards', {
         'username': username ?? '',
+        'token': token ?? '',
         'cards': cards.map((card) => card.toJson()).toList(),
       });
     } on PlatformException catch (error) {

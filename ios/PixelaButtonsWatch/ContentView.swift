@@ -37,14 +37,31 @@ struct ContentView: View {
                             if !card.buttons.isEmpty {
                                 HStack(spacing: 6) {
                                     ForEach(card.buttons.prefix(3)) { button in
-                                        Text(button.value, format: .number)
-                                            .font(.caption.weight(.semibold))
-                                            .lineLimit(1)
-                                            .padding(.horizontal, 10)
-                                            .padding(.vertical, 5)
-                                            .background(.green.opacity(0.22), in: Capsule())
+                                        Button {
+                                            Task {
+                                                await syncStore.record(card: card, button: button)
+                                            }
+                                        } label: {
+                                            if syncStore.isRecording(card: card, button: button) {
+                                                ProgressView()
+                                                    .controlSize(.mini)
+                                            } else {
+                                                Text(WatchSyncStore.formatted(button.value))
+                                                    .font(.caption.weight(.semibold))
+                                                    .lineLimit(1)
+                                            }
+                                        }
+                                        .buttonStyle(.borderedProminent)
+                                        .tint(.green)
+                                        .controlSize(.small)
+                                        .disabled(syncStore.recordingButtonId != nil)
                                     }
                                 }
+                            }
+                            if let recordMessage = syncStore.recordMessage(for: card) {
+                                Text(recordMessage)
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
                             }
                         }
                     }
