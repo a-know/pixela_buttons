@@ -13,6 +13,10 @@ platform :ios do
 
     sync_code_signing(
       type: "appstore",
+      app_identifier: [
+        "com.a-know.pixelaButtons",
+        "com.a-know.pixelaButtons.watchkitapp",
+      ],
       api_key: api_key,
       readonly: is_ci,
     )
@@ -25,14 +29,32 @@ platform :ios do
     update_code_signing_settings(
       use_automatic_signing: false,
       path: "ios/Runner.xcodeproj",
+      targets: ["Runner"],
+      build_configurations: ["Release"],
       code_sign_identity: "iPhone Distribution",
       profile_name: "match AppStore com.a-know.pixelaButtons",
+    )
+
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: "ios/Runner.xcodeproj",
+      targets: ["PixelaButtonsWatch"],
+      build_configurations: ["Release"],
+      code_sign_identity: "iPhone Distribution",
+      profile_name: "match AppStore com.a-know.pixelaButtons.watchkitapp",
     )
 
     build_ios_app(
       workspace: "ios/Runner.xcworkspace",
       scheme: "Runner",
       export_method: "app-store",
+      export_options: {
+        signingStyle: "manual",
+        provisioningProfiles: {
+          "com.a-know.pixelaButtons" => "match AppStore com.a-know.pixelaButtons",
+          "com.a-know.pixelaButtons.watchkitapp" => "match AppStore com.a-know.pixelaButtons.watchkitapp",
+        },
+      },
       output_directory: "build/ios/ipa",
       output_name: "pixela_buttons",
       xcargs: "ENABLE_USER_SCRIPT_SANDBOXING=NO",

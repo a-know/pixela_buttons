@@ -3,5 +3,8 @@ git_url("https://github.com/a-know/pixela-buttons-certs")
 
 storage_mode("git")
 type("appstore")
-app_identifier(["com.a-know.pixelaButtons"])
+app_identifier([
+  "com.a-know.pixelaButtons",
+  "com.a-know.pixelaButtons.watchkitapp",
+])
 username("a.know.dev@gmail.com")
