@@ -8,9 +8,10 @@ struct ContentView: View {
             Group {
                 if syncStore.cards.isEmpty {
                     VStack(spacing: 10) {
-                        Image(systemName: "square.grid.2x2.fill")
-                            .font(.system(size: 30, weight: .semibold))
-                            .foregroundStyle(.green)
+                        Image("PixelaMono")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 44, height: 44)
 
                         Text("Pixela Buttons")
                             .font(.headline)
