@@ -57,15 +57,18 @@ final class WatchSyncStore: NSObject, ObservableObject {
         }
         username = payload.username
         cards = payload.cards
+        todayValues = payload.todayValues
     }
 
     private func apply(context: [String: Any]) {
         let payload = SyncPayload(
             username: context["username"] as? String ?? "",
-            cards: Self.cards(from: context["cards"] as? [[String: Any]] ?? [])
+            cards: Self.cards(from: context["cards"] as? [[String: Any]] ?? []),
+            todayValues: Self.todayValues(from: context["todayValues"] as? [String: Any] ?? [:])
         )
         username = payload.username
         cards = payload.cards
+        todayValues.merge(payload.todayValues) { _, new in new }
         refreshTodayValues()
         if let data = try? JSONEncoder().encode(payload) {
             UserDefaults.standard.set(data, forKey: storageKey)
@@ -98,7 +101,7 @@ final class WatchSyncStore: NSObject, ObservableObject {
         do {
             let reply = try await sendTodayValueMessage(session: session, card: card)
             guard reply["ok"] as? Bool == true,
-                  let value = (reply["value"] as? NSNumber)?.doubleValue
+                  let value = Self.doubleValue(from: reply["value"])
             else {
                 return
             }
@@ -197,6 +200,19 @@ final class WatchSyncStore: NSObject, ObservableObject {
         value == value.rounded(.towardZero) ? String(Int(value)) : String(value)
     }
 
+    private static func doubleValue(from value: Any?) -> Double? {
+        if let value = value as? Double {
+            return value
+        }
+        if let value = value as? NSNumber {
+            return value.doubleValue
+        }
+        if let value = value as? String {
+            return Double(value)
+        }
+        return nil
+    }
+
     private static var todayPrefix: String {
         Locale.current.language.languageCode?.identifier == "ja" ? "今日" : "Today"
     }
@@ -232,6 +248,15 @@ final class WatchSyncStore: NSObject, ObservableObject {
                 graphType: dictionary["graphType"] as? String,
                 buttons: buttons
             )
+        }
+    }
+
+    private static func todayValues(from dictionary: [String: Any]) -> [String: Double] {
+        dictionary.reduce(into: [String: Double]()) { result, item in
+            guard let value = doubleValue(from: item.value) else {
+                return
+            }
+            result[item.key] = value
         }
     }
 }
@@ -271,11 +296,35 @@ extension WatchSyncStore: WCSessionDelegate {
             self.apply(context: userInfo)
         }
     }
+
+    nonisolated func sessionReachabilityDidChange(_ session: WCSession) {
+        guard session.isReachable else {
+            return
+        }
+        Task { @MainActor in
+            self.requestLatestCards()
+            self.refreshTodayValues()
+        }
+    }
 }
 
 private struct SyncPayload: Codable {
     let username: String
     let cards: [WatchCardConfig]
+    let todayValues: [String: Double]
+
+    init(username: String, cards: [WatchCardConfig], todayValues: [String: Double]) {
+        self.username = username
+        self.cards = cards
+        self.todayValues = todayValues
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        username = try container.decode(String.self, forKey: .username)
+        cards = try container.decode([WatchCardConfig].self, forKey: .cards)
+        todayValues = try container.decodeIfPresent([String: Double].self, forKey: .todayValues) ?? [:]
+    }
 }
 
 private enum WatchRecordError: LocalizedError {

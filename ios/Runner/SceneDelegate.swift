@@ -83,12 +83,67 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
     }
 
     try send(context, using: session)
+    Task {
+      await refreshAndSendTodayValues(for: context)
+    }
   }
 
   private func send(_ context: [String: Any], using session: WCSession) throws {
     try session.updateApplicationContext(context)
     session.transferUserInfo(context)
     pendingContext = nil
+  }
+
+  private func refreshAndSendTodayValues(for context: [String: Any]? = nil) async {
+    let baseContext = context ?? restoreContext() ?? session?.applicationContext ?? [:]
+    guard let enrichedContext = await contextWithTodayValues(baseContext) else {
+      return
+    }
+    store(enrichedContext)
+
+    guard let session, session.activationState == .activated else {
+      pendingContext = enrichedContext
+      return
+    }
+    do {
+      try send(enrichedContext, using: session)
+    } catch {
+      pendingContext = enrichedContext
+    }
+  }
+
+  private func contextWithTodayValues(_ context: [String: Any]) async -> [String: Any]? {
+    guard let cards = context["cards"] as? [[String: Any]], !cards.isEmpty else {
+      return context
+    }
+
+    let credentials = restoreCredentials()
+    guard !credentials.username.isEmpty, !credentials.token.isEmpty else {
+      return context
+    }
+
+    var todayValues: [String: Any] = context["todayValues"] as? [String: Any] ?? [:]
+    for card in cards {
+      guard let cardId = card["id"] as? String,
+            let graphId = card["graphId"] as? String
+      else {
+        continue
+      }
+      do {
+        todayValues[cardId] = try await fetchPixelaTodayValue(
+          username: credentials.username,
+          token: credentials.token,
+          graphId: graphId
+        )
+      } catch {
+        continue
+      }
+    }
+
+    var enrichedContext = context
+    enrichedContext["todayValues"] = todayValues
+    enrichedContext["updatedAt"] = Date().timeIntervalSince1970
+    return enrichedContext
   }
 
   private func makeContext(from payload: [String: Any]) -> [String: Any] {
@@ -234,6 +289,7 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
       graphId: graphId,
       value: value
     )
+    await refreshAndSendTodayValues()
   }
 
   private func todayValue(message: [String: Any]) async throws -> Double {
@@ -384,6 +440,9 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
     }
     do {
       try send(pendingContext, using: session)
+      Task {
+        await refreshAndSendTodayValues(for: pendingContext)
+      }
     } catch {
       self.pendingContext = pendingContext
     }
