@@ -8,6 +8,7 @@ import 'features/button_edit/graph_select_screen.dart';
 import 'core/storage/card_storage.dart';
 import 'core/storage/secure_storage.dart';
 import 'core/theme/app_theme.dart';
+import 'core/watch/watch_sync_service.dart';
 import 'features/button_edit/button_edit_screen.dart';
 import 'features/main_shell.dart';
 import 'features/onboarding/onboarding_screen.dart';
@@ -23,24 +24,14 @@ final _router = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/loading',
   routes: [
-    GoRoute(
-      path: '/loading',
-      builder: (context, _) => const _LoadingScreen(),
-    ),
+    GoRoute(path: '/loading', builder: (context, _) => const _LoadingScreen()),
     GoRoute(
       path: '/onboarding',
-      builder: (_, state) => OnboardingScreen(
-        errorMessage: state.extra as String?,
-      ),
+      builder: (_, state) =>
+          OnboardingScreen(errorMessage: state.extra as String?),
     ),
-    GoRoute(
-      path: '/register',
-      builder: (context, _) => const RegisterScreen(),
-    ),
-    GoRoute(
-      path: '/home',
-      builder: (context, _) => const MainShell(),
-    ),
+    GoRoute(path: '/register', builder: (context, _) => const RegisterScreen()),
+    GoRoute(path: '/home', builder: (context, _) => const MainShell()),
     GoRoute(
       path: '/button-edit',
       builder: (_, state) {
@@ -111,10 +102,7 @@ class _PixelaButtonsAppState extends State<PixelaButtonsApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('en'),
-        Locale('ja'),
-      ],
+      supportedLocales: const [Locale('en'), Locale('ja')],
       routerConfig: _router,
     );
   }
@@ -144,6 +132,10 @@ class _LoadingScreenState extends State<_LoadingScreen> {
       debugPrint('Failed to restore the saved session: $error');
       debugPrintStack(stackTrace: stackTrace);
     }
+    if (token != null && username != null) {
+      final cards = await CardStorage.loadCards();
+      await WatchSyncService.syncCards(username: username, cards: cards);
+    }
     if (mounted) {
       if (token != null && username != null) {
         context.go('/home');
@@ -155,8 +147,6 @@ class _LoadingScreenState extends State<_LoadingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: CircularProgressIndicator()),
-    );
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }
