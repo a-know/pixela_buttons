@@ -35,13 +35,14 @@ struct ContentView: View {
                                 .font(.caption2)
                                 .foregroundStyle(.secondary)
                             if !card.buttons.isEmpty {
-                                HStack {
+                                HStack(spacing: 6) {
                                     ForEach(card.buttons.prefix(3)) { button in
                                         Text(button.value, format: .number)
-                                            .font(.caption2)
-                                            .padding(.horizontal, 6)
-                                            .padding(.vertical, 3)
-                                            .background(.green.opacity(0.18), in: Capsule())
+                                            .font(.caption.weight(.semibold))
+                                            .lineLimit(1)
+                                            .padding(.horizontal, 10)
+                                            .padding(.vertical, 5)
+                                            .background(.green.opacity(0.22), in: Capsule())
                                     }
                                 }
                             }
