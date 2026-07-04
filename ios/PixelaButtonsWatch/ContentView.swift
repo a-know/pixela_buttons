@@ -38,28 +38,33 @@ struct ContentView: View {
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                             if !card.buttons.isEmpty {
-                                HStack(spacing: 6) {
-                                    ForEach(card.buttons.prefix(3)) { button in
-                                        Button {
-                                            Task {
-                                                await syncStore.record(card: card, button: button)
+                                ScrollView(.horizontal) {
+                                    HStack(spacing: 6) {
+                                        ForEach(card.buttons) { button in
+                                            Button {
+                                                Task {
+                                                    await syncStore.record(card: card, button: button)
+                                                }
+                                            } label: {
+                                                if syncStore.isRecording(card: card, button: button) {
+                                                    ProgressView()
+                                                        .controlSize(.mini)
+                                                        .frame(minWidth: 28)
+                                                } else {
+                                                    Text(WatchSyncStore.formatted(button.value))
+                                                        .font(.caption.weight(.semibold))
+                                                        .lineLimit(1)
+                                                        .frame(minWidth: 28)
+                                                }
                                             }
-                                        } label: {
-                                            if syncStore.isRecording(card: card, button: button) {
-                                                ProgressView()
-                                                    .controlSize(.mini)
-                                            } else {
-                                                Text(WatchSyncStore.formatted(button.value))
-                                                    .font(.caption.weight(.semibold))
-                                                    .lineLimit(1)
-                                            }
+                                            .buttonStyle(.borderedProminent)
+                                            .tint(buttonTint(card: card, button: button))
+                                            .controlSize(.small)
+                                            .disabled(syncStore.recordingButtonId != nil)
                                         }
-                                        .buttonStyle(.borderedProminent)
-                                        .tint(buttonTint(card: card, button: button))
-                                        .controlSize(.small)
-                                        .disabled(syncStore.recordingButtonId != nil)
                                     }
                                 }
+                                .scrollIndicators(.hidden)
                             }
                             if let feedback = syncStore.recordFeedback(for: card) {
                                 RecordFeedbackView(feedback: feedback)
