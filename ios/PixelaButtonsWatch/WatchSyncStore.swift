@@ -40,6 +40,7 @@ final class WatchSyncStore: NSObject, ObservableObject {
     private let storageKey = "watch_card_sync_payload"
     private var session: WCSession?
     private var feedbackDismissTask: Task<Void, Never>?
+    private let messageTimeoutSeconds: TimeInterval = 8
 
     private override init() {
         super.init()
@@ -182,32 +183,58 @@ final class WatchSyncStore: NSObject, ObservableObject {
         card: WatchCardConfig,
         button: WatchButtonConfig
     ) async throws -> [String: Any] {
-        try await withCheckedThrowingContinuation { continuation in
-            session.sendMessage([
+        try await sendMessageWithTimeout(
+            session: session,
+            message: [
                 "type": "recordButton",
                 "cardId": card.id,
                 "buttonId": button.id,
-            ], replyHandler: { reply in
-                continuation.resume(returning: reply)
-            }, errorHandler: { error in
-                continuation.resume(throwing: error)
-            })
-        }
+            ]
+        )
     }
 
     private func sendTodayValueMessage(
         session: WCSession,
         card: WatchCardConfig
     ) async throws -> [String: Any] {
-        try await withCheckedThrowingContinuation { continuation in
-            session.sendMessage([
+        try await sendMessageWithTimeout(
+            session: session,
+            message: [
                 "type": "requestTodayValue",
                 "cardId": card.id,
-            ], replyHandler: { reply in
-                continuation.resume(returning: reply)
+            ]
+        )
+    }
+
+    private func sendMessageWithTimeout(session: WCSession, message: [String: Any]) async throws -> [String: Any] {
+        try await withCheckedThrowingContinuation { continuation in
+            let lock = NSLock()
+            var didResume = false
+
+            func resume(_ result: Result<[String: Any], Error>) {
+                lock.lock()
+                defer { lock.unlock() }
+                guard !didResume else {
+                    return
+                }
+                didResume = true
+                switch result {
+                case .success(let reply):
+                    continuation.resume(returning: reply)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+
+            session.sendMessage(message, replyHandler: { reply in
+                resume(.success(reply))
             }, errorHandler: { error in
-                continuation.resume(throwing: error)
+                resume(.failure(error))
             })
+
+            DispatchQueue.global().asyncAfter(deadline: .now() + messageTimeoutSeconds) {
+                resume(.failure(WatchRecordError.timeout))
+            }
         }
     }
 
@@ -367,11 +394,14 @@ private struct SyncPayload: Codable {
 
 private enum WatchRecordError: LocalizedError {
     case remote(String?)
+    case timeout
 
     var errorDescription: String? {
         switch self {
         case .remote(let message):
             return message ?? "Record request failed."
+        case .timeout:
+            return "iPhone did not respond. Open Pixela Buttons on iPhone and try again."
         }
     }
 }

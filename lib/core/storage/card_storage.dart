@@ -14,10 +14,14 @@ class CardStorage {
     final prefs = await SharedPreferences.getInstance();
     final json = prefs.getString(_cardsKey(username));
     if (json == null) return [];
-    final list = jsonDecode(json) as List<dynamic>;
-    return list
-        .map((e) => CardConfig.fromJson(e as Map<String, dynamic>))
-        .toList();
+    try {
+      final list = jsonDecode(json) as List<dynamic>;
+      return list
+          .map((e) => CardConfig.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } catch (_) {
+      return [];
+    }
   }
 
   static Future<void> saveCards(List<CardConfig> cards) async {
