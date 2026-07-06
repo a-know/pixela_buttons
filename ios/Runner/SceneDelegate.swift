@@ -55,6 +55,7 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
   private var pendingContext: [String: Any]?
   private let storageKey = "watch_card_sync_context"
   private let usernameKey = "watch_card_sync_username"
+  private let flutterUsernameKey = "flutter.pixela_username"
   private let tokenService = "com.a-know.pixelaButtons.watchSync"
   private let tokenAccount = "pixela_token"
 
@@ -161,6 +162,28 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
       "cards": cards,
       "updatedAt": Date().timeIntervalSince1970,
     ]
+  }
+
+  private func loggedOutContext() -> [String: Any] {
+    [
+      "username": "",
+      "cards": [],
+      "todayValues": [String: Any](),
+      "todayValueDates": [String: Any](),
+      "updatedAt": Date().timeIntervalSince1970,
+    ]
+  }
+
+  private func isFlutterSessionLoggedOut() -> Bool {
+    let username = UserDefaults.standard.string(forKey: flutterUsernameKey) ?? ""
+    return username.isEmpty
+  }
+
+  private func clearStoredSession() -> [String: Any] {
+    let context = loggedOutContext()
+    storeCredentials(username: "", token: "")
+    store(context)
+    return context
   }
 
   private func todayDateStamp(for card: [String: Any]) -> String {
@@ -493,7 +516,11 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
   ) {
     switch message["type"] as? String {
     case "requestCards":
-      replyHandler(restoreContext() ?? session.applicationContext)
+      if isFlutterSessionLoggedOut() {
+        replyHandler(clearStoredSession())
+      } else {
+        replyHandler(restoreContext() ?? session.applicationContext)
+      }
     case "recordButton":
       Task {
         do {

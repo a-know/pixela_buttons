@@ -138,6 +138,8 @@ class _LoadingScreenState extends State<_LoadingScreen> {
     if (token != null && username != null) {
       final cards = await CardStorage.loadCards();
       await WatchSyncService.syncCards(username: username, cards: cards);
+    } else {
+      await WatchSyncService.syncCards(username: null, cards: const []);
     }
     if (mounted) {
       if (token != null && username != null) {
