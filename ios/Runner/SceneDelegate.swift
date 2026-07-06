@@ -123,6 +123,7 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
     }
 
     var todayValues: [String: Any] = context["todayValues"] as? [String: Any] ?? [:]
+    var todayValueDates: [String: Any] = context["todayValueDates"] as? [String: Any] ?? [:]
     for card in cards {
       guard let cardId = card["id"] as? String,
             let graphId = card["graphId"] as? String
@@ -135,13 +136,17 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
           token: credentials.token,
           graphId: graphId
         )
+        todayValueDates[cardId] = todayDateStamp(for: card)
       } catch {
+        todayValues.removeValue(forKey: cardId)
+        todayValueDates.removeValue(forKey: cardId)
         continue
       }
     }
 
     var enrichedContext = context
     enrichedContext["todayValues"] = todayValues
+    enrichedContext["todayValueDates"] = todayValueDates
     enrichedContext["updatedAt"] = Date().timeIntervalSince1970
     return enrichedContext
   }
@@ -156,6 +161,18 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
       "cards": cards,
       "updatedAt": Date().timeIntervalSince1970,
     ]
+  }
+
+  private func todayDateStamp(for card: [String: Any]) -> String {
+    let formatter = DateFormatter()
+    formatter.calendar = Calendar(identifier: .gregorian)
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.dateFormat = "yyyyMMdd"
+    if let timezone = card["timezone"] as? String,
+       let timeZone = TimeZone(identifier: timezone) {
+      formatter.timeZone = timeZone
+    }
+    return formatter.string(from: Date())
   }
 
   private func propertyListDictionary(from dictionary: [String: Any]) -> [String: Any] {
@@ -315,6 +332,21 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
       token: credentials.token,
       graphId: graphId
     )
+  }
+
+  private func todayValueDate(message: [String: Any]) -> String {
+    guard let cardId = message["cardId"] as? String else {
+      return todayDateStamp(for: [:])
+    }
+
+    let context = restoreContext() ?? session?.applicationContext ?? [:]
+    guard let cards = context["cards"] as? [[String: Any]],
+          let card = cards.first(where: { $0["id"] as? String == cardId })
+    else {
+      return todayDateStamp(for: [:])
+    }
+
+    return todayDateStamp(for: card)
   }
 
   private func sendPixelaRecord(username: String, token: String, graphId: String, value: Double) async throws {
@@ -478,9 +510,11 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
       Task {
         do {
           let value = try await todayValue(message: message)
+          let date = todayValueDate(message: message)
           replyHandler([
             "ok": true,
             "value": value,
+            "date": date,
           ])
         } catch {
           replyHandler([

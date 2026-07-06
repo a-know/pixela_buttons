@@ -3,7 +3,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../storage/secure_storage.dart';
 import 'api_endpoints.dart';
 
-typedef OnUnauthorized = void Function();
+typedef OnUnauthorized = Future<void> Function();
 
 class PixelaClient {
   late final Dio _dio;
@@ -39,7 +39,7 @@ class PixelaClient {
       DioException err, ErrorInterceptorHandler handler) async {
     if (err.response?.statusCode == 401) {
       await SecureStorage.deleteToken();
-      onUnauthorized?.call();
+      await onUnauthorized?.call();
       handler.reject(err);
       return;
     }

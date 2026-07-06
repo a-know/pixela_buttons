@@ -81,11 +81,14 @@ class _PixelaButtonsAppState extends State<PixelaButtonsApp> {
 
   void _onLocaleChanged() => setState(() {});
 
-  void _onUnauthorized() {
+  Future<void> _onUnauthorized() async {
     final ctx = _rootNavigatorKey.currentContext;
-    if (ctx == null) return;
-    final msg = AppLocalizations.of(ctx)?.tokenInvalidBanner ?? '';
-    ctx.go('/onboarding', extra: msg);
+    final msg = ctx == null
+        ? ''
+        : AppLocalizations.of(ctx)?.tokenInvalidBanner ?? '';
+    await CardStorage.clearUsername();
+    if (!mounted) return;
+    _router.go('/onboarding', extra: msg);
   }
 
   @override

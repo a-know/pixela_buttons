@@ -34,6 +34,7 @@ final class WatchSyncStore: NSObject, ObservableObject {
     @Published private(set) var username = ""
     @Published private(set) var cards: [WatchCardConfig] = []
     @Published private(set) var todayValues: [String: Double] = [:]
+    @Published private(set) var todayValueDates: [String: String] = [:]
     @Published private(set) var recordingButtonId: String?
     @Published private var recordFeedback: WatchRecordFeedback?
 
@@ -66,20 +67,29 @@ final class WatchSyncStore: NSObject, ObservableObject {
         }
         username = payload.username
         cards = payload.cards
-        todayValues = payload.todayValues
+        todayValueDates = payload.todayValueDates
+        todayValues = Self.currentTodayValues(payload.todayValues, dates: payload.todayValueDates, cards: payload.cards)
     }
 
     private func apply(context: [String: Any]) {
         let payload = SyncPayload(
             username: context["username"] as? String ?? "",
             cards: Self.cards(from: context["cards"] as? [[String: Any]] ?? []),
-            todayValues: Self.todayValues(from: context["todayValues"] as? [String: Any] ?? [:])
+            todayValues: Self.todayValues(from: context["todayValues"] as? [String: Any] ?? [:]),
+            todayValueDates: Self.todayValueDates(from: context["todayValueDates"] as? [String: Any] ?? [:])
         )
         username = payload.username
         cards = payload.cards
-        todayValues.merge(payload.todayValues) { _, new in new }
+        todayValueDates = payload.todayValueDates
+        todayValues = Self.currentTodayValues(payload.todayValues, dates: payload.todayValueDates, cards: payload.cards)
         refreshTodayValues()
-        if let data = try? JSONEncoder().encode(payload) {
+        let storedPayload = SyncPayload(
+            username: payload.username,
+            cards: payload.cards,
+            todayValues: todayValues,
+            todayValueDates: todayValueDates
+        )
+        if let data = try? JSONEncoder().encode(storedPayload) {
             UserDefaults.standard.set(data, forKey: storageKey)
         }
     }
@@ -114,7 +124,12 @@ final class WatchSyncStore: NSObject, ObservableObject {
             else {
                 return
             }
+            let date = reply["date"] as? String ?? Self.todayDateStamp(for: card)
             todayValues[card.id] = value
+            todayValueDates[card.id] = date
+            if date != Self.todayDateStamp(for: card) {
+                todayValues.removeValue(forKey: card.id)
+            }
         } catch {
         }
     }
@@ -172,7 +187,8 @@ final class WatchSyncStore: NSObject, ObservableObject {
 
     func todayText(for card: WatchCardConfig) -> String {
         let prefix = Self.todayPrefix
-        if let value = todayValues[card.id] {
+        if todayValueDates[card.id] == Self.todayDateStamp(for: card),
+           let value = todayValues[card.id] {
             return "\(prefix): \(Self.formatted(value)) \(card.unit)"
         }
         return "\(prefix): -- \(card.unit)"
@@ -324,6 +340,43 @@ final class WatchSyncStore: NSObject, ObservableObject {
             result[item.key] = value
         }
     }
+
+    private static func todayValueDates(from dictionary: [String: Any]) -> [String: String] {
+        dictionary.reduce(into: [String: String]()) { result, item in
+            guard let value = item.value as? String else {
+                return
+            }
+            result[item.key] = value
+        }
+    }
+
+    private static func currentTodayValues(
+        _ values: [String: Double],
+        dates: [String: String],
+        cards: [WatchCardConfig]
+    ) -> [String: Double] {
+        let cardsById = Dictionary(uniqueKeysWithValues: cards.map { ($0.id, $0) })
+        return values.reduce(into: [String: Double]()) { result, item in
+            guard let card = cardsById[item.key],
+                  dates[item.key] == todayDateStamp(for: card)
+            else {
+                return
+            }
+            result[item.key] = item.value
+        }
+    }
+
+    private static func todayDateStamp(for card: WatchCardConfig) -> String {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyyMMdd"
+        if let timezone = card.timezone,
+           let timeZone = TimeZone(identifier: timezone) {
+            formatter.timeZone = timeZone
+        }
+        return formatter.string(from: Date())
+    }
 }
 
 extension WatchSyncStore: WCSessionDelegate {
@@ -377,11 +430,18 @@ private struct SyncPayload: Codable {
     let username: String
     let cards: [WatchCardConfig]
     let todayValues: [String: Double]
+    let todayValueDates: [String: String]
 
-    init(username: String, cards: [WatchCardConfig], todayValues: [String: Double]) {
+    init(
+        username: String,
+        cards: [WatchCardConfig],
+        todayValues: [String: Double],
+        todayValueDates: [String: String]
+    ) {
         self.username = username
         self.cards = cards
         self.todayValues = todayValues
+        self.todayValueDates = todayValueDates
     }
 
     init(from decoder: Decoder) throws {
@@ -389,6 +449,7 @@ private struct SyncPayload: Codable {
         username = try container.decode(String.self, forKey: .username)
         cards = try container.decode([WatchCardConfig].self, forKey: .cards)
         todayValues = try container.decodeIfPresent([String: Double].self, forKey: .todayValues) ?? [:]
+        todayValueDates = try container.decodeIfPresent([String: String].self, forKey: .todayValueDates) ?? [:]
     }
 }
 
