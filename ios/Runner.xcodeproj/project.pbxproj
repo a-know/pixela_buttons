@@ -253,6 +253,7 @@
 				B12000000000000000000070 /* Embed Watch Content */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				C6B20BE0FD639CDD1FB424D8 /* [CP] Embed Pods Frameworks */,
+				B12000000000000000000071 /* Code Sign Embedded Frameworks */,
 			);
 			buildRules = (
 			);
@@ -445,6 +446,21 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		B12000000000000000000071 /* Code Sign Embedded Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Code Sign Embedded Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\n\nif [ \"${CODE_SIGNING_ALLOWED}\" = \"NO\" ] || [ -z \"${EXPANDED_CODE_SIGN_IDENTITY}\" ]; then\n  exit 0\nfi\n\nFRAMEWORKS_DIR=\"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\"\nif [ ! -d \"${FRAMEWORKS_DIR}\" ]; then\n  exit 0\nfi\n\nfind \"${FRAMEWORKS_DIR}\" -maxdepth 1 -type d -name \"*.framework\" -exec /usr/bin/codesign --force --sign \"${EXPANDED_CODE_SIGN_IDENTITY}\" --timestamp=none --preserve-metadata=identifier,entitlements {} \\;\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

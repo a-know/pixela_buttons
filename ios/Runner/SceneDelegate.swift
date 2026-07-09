@@ -176,7 +176,8 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
 
   private func isFlutterSessionLoggedOut() -> Bool {
     let username = UserDefaults.standard.string(forKey: flutterUsernameKey) ?? ""
-    return username.isEmpty
+    let credentials = restoreCredentials()
+    return username.isEmpty || credentials.username.isEmpty || credentials.token.isEmpty
   }
 
   private func clearStoredSession() -> [String: Any] {
@@ -268,6 +269,7 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
       kSecClass as String: kSecClassGenericPassword,
       kSecAttrService as String: tokenService,
       kSecAttrAccount as String: tokenAccount,
+      kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
       kSecValueData as String: data,
     ]
     SecItemAdd(query as CFDictionary, nil)
@@ -309,6 +311,7 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
 
     let credentials = restoreCredentials()
     guard !credentials.username.isEmpty, !credentials.token.isEmpty else {
+      publishLoggedOutContext()
       throw WatchRecordError.missingCredentials
     }
 
@@ -339,6 +342,7 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
 
     let credentials = restoreCredentials()
     guard !credentials.username.isEmpty, !credentials.token.isEmpty else {
+      publishLoggedOutContext()
       throw WatchRecordError.missingCredentials
     }
 
@@ -485,6 +489,32 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
     return "Pixela API request failed with status \(statusCode)."
   }
 
+  private func publishLoggedOutContext() {
+    let context = clearStoredSession()
+    guard let session, session.activationState == .activated else {
+      pendingContext = context
+      return
+    }
+    do {
+      try send(context, using: session)
+    } catch {
+      pendingContext = context
+    }
+  }
+
+  private func watchReply(for error: Error) -> [String: Any] {
+    var reply: [String: Any] = [
+      "ok": false,
+      "error": error.localizedDescription,
+    ]
+    if let recordError = error as? WatchRecordError,
+       case .missingCredentials = recordError {
+      reply["loggedOut"] = true
+      reply["context"] = loggedOutContext()
+    }
+    return reply
+  }
+
   func session(
     _ session: WCSession,
     activationDidCompleteWith activationState: WCSessionActivationState,
@@ -527,10 +557,7 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
           try await recordButton(message: message)
           replyHandler(["ok": true])
         } catch {
-          replyHandler([
-            "ok": false,
-            "error": error.localizedDescription,
-          ])
+          replyHandler(watchReply(for: error))
         }
       }
     case "requestTodayValue":
@@ -544,10 +571,7 @@ private final class WatchSyncHandler: NSObject, WCSessionDelegate {
             "date": date,
           ])
         } catch {
-          replyHandler([
-            "ok": false,
-            "error": error.localizedDescription,
-          ])
+          replyHandler(watchReply(for: error))
         }
       }
     default:

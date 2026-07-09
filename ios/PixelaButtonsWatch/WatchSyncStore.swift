@@ -119,6 +119,9 @@ final class WatchSyncStore: NSObject, ObservableObject {
     private func refreshTodayValue(card: WatchCardConfig, session: WCSession) async {
         do {
             let reply = try await sendTodayValueMessage(session: session, card: card)
+            if applySessionState(from: reply) {
+                return
+            }
             guard reply["ok"] as? Bool == true,
                   let value = Self.doubleValue(from: reply["value"])
             else {
@@ -157,6 +160,15 @@ final class WatchSyncStore: NSObject, ObservableObject {
 
         do {
             let reply = try await sendRecordMessage(session: session, card: card, button: button)
+            if applySessionState(from: reply) {
+                showRecordFeedback(
+                    cardId: card.id,
+                    message: "Open Pixela Buttons on iPhone and sign in again.",
+                    isSuccess: false
+                )
+                WKInterfaceDevice.current().play(.failure)
+                return
+            }
             guard reply["ok"] as? Bool == true else {
                 throw WatchRecordError.remote(reply["error"] as? String)
             }
@@ -252,6 +264,23 @@ final class WatchSyncStore: NSObject, ObservableObject {
                 resume(.failure(WatchRecordError.timeout))
             }
         }
+    }
+
+    private func applySessionState(from reply: [String: Any]) -> Bool {
+        guard reply["loggedOut"] as? Bool == true else {
+            return false
+        }
+        if let context = reply["context"] as? [String: Any] {
+            apply(context: context)
+        } else {
+            apply(context: [
+                "username": "",
+                "cards": [],
+                "todayValues": [:],
+                "todayValueDates": [:],
+            ])
+        }
+        return true
     }
 
     private static func recordingId(card: WatchCardConfig, button: WatchButtonConfig) -> String {

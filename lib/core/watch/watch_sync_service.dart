@@ -15,10 +15,17 @@ class WatchSyncService {
 
     try {
       final token = await SecureStorage.getToken();
+      final hasSession =
+          username != null &&
+          username.isNotEmpty &&
+          token != null &&
+          token.isNotEmpty;
       await _channel.invokeMethod<void>('syncCards', {
-        'username': username ?? '',
-        'token': token ?? '',
-        'cards': cards.map((card) => card.toJson()).toList(),
+        'username': hasSession ? username : '',
+        'token': hasSession ? token : '',
+        'cards': hasSession
+            ? cards.map((card) => card.toJson()).toList()
+            : const [],
       });
     } on PlatformException catch (error) {
       debugPrint('Failed to sync cards to Apple Watch: $error');
