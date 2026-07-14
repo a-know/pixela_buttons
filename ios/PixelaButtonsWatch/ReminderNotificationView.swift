@@ -8,9 +8,11 @@ struct ReminderNotificationView: View {
 
     var body: some View {
         VStack(spacing: 8) {
-            Image(systemName: "square.grid.2x2.fill")
-                .font(.system(size: 28, weight: .semibold))
-                .foregroundStyle(.green)
+            Image("PixelaMono")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 32, height: 32)
+                .accessibilityHidden(true)
 
             Text(title.isEmpty ? "Pixela Buttons" : title)
                 .font(.headline)
