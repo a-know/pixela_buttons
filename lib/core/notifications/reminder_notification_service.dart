@@ -11,6 +11,7 @@ class ReminderNotificationService {
   static final instance = ReminderNotificationService._();
 
   static const _channelId = 'record_reminders';
+  static const reminderCategoryIdentifier = 'record_reminder';
   static const _notificationIdOffset = 1000;
 
   final _plugin = FlutterLocalNotificationsPlugin();
@@ -30,6 +31,9 @@ class ReminderNotificationService {
         requestAlertPermission: false,
         requestBadgePermission: false,
         requestSoundPermission: false,
+        notificationCategories: [
+          DarwinNotificationCategory(reminderCategoryIdentifier),
+        ],
       ),
     );
     await _plugin.initialize(settings: settings);
@@ -90,7 +94,9 @@ class ReminderNotificationService {
             importance: Importance.high,
             priority: Priority.high,
           ),
-          iOS: DarwinNotificationDetails(),
+          iOS: DarwinNotificationDetails(
+            categoryIdentifier: reminderCategoryIdentifier,
+          ),
         ),
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
         matchDateTimeComponents: DateTimeComponents.time,

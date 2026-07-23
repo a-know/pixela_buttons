@@ -22,11 +22,12 @@ class CardConfig {
     this.timezone,
     this.graphType,
     List<ButtonConfig>? buttons,
-  })  : id = id ?? const Uuid().v4(),
-        buttons = buttons ?? [];
+  }) : id = id ?? const Uuid().v4(),
+       buttons = buttons ?? [];
 
   factory CardConfig.fromJson(Map<String, dynamic> json) {
     final tz = json['timezone'] as String?;
+    final buttons = json['buttons'] as List<dynamic>? ?? const [];
     return CardConfig(
       id: json['id'] as String,
       graphId: json['graphId'] as String,
@@ -36,23 +37,23 @@ class CardConfig {
       unit: json['unit'] as String,
       timezone: (tz != null && tz.isNotEmpty) ? tz : null,
       graphType: json['graphType'] as String?,
-      buttons: (json['buttons'] as List<dynamic>)
+      buttons: buttons
           .map((b) => ButtonConfig.fromJson(b as Map<String, dynamic>))
           .toList(),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'graphId': graphId,
-        'displayName': displayName,
-        'emoji': emoji,
-        'color': color,
-        'unit': unit,
-        'timezone': timezone,
-        'graphType': graphType,
-        'buttons': buttons.map((b) => b.toJson()).toList(),
-      };
+    'id': id,
+    'graphId': graphId,
+    'displayName': displayName,
+    'emoji': emoji,
+    'color': color,
+    'unit': unit,
+    'timezone': timezone,
+    'graphType': graphType,
+    'buttons': buttons.map((b) => b.toJson()).toList(),
+  };
 
   CardConfig copyWith({
     String? graphId,

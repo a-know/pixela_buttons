@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/card_config.dart';
+import '../watch/watch_sync_service.dart';
 
 class CardStorage {
   static const _usernameKey = 'pixela_username';
@@ -13,8 +14,14 @@ class CardStorage {
     final prefs = await SharedPreferences.getInstance();
     final json = prefs.getString(_cardsKey(username));
     if (json == null) return [];
-    final list = jsonDecode(json) as List<dynamic>;
-    return list.map((e) => CardConfig.fromJson(e as Map<String, dynamic>)).toList();
+    try {
+      final list = jsonDecode(json) as List<dynamic>;
+      return list
+          .map((e) => CardConfig.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } catch (_) {
+      return [];
+    }
   }
 
   static Future<void> saveCards(List<CardConfig> cards) async {
@@ -22,7 +29,10 @@ class CardStorage {
     if (username == null || username.isEmpty) return;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
-        _cardsKey(username), jsonEncode(cards.map((c) => c.toJson()).toList()));
+      _cardsKey(username),
+      jsonEncode(cards.map((c) => c.toJson()).toList()),
+    );
+    await WatchSyncService.syncCards(username: username, cards: cards);
   }
 
   static Future<String?> getUsername() async {
@@ -33,11 +43,13 @@ class CardStorage {
   static Future<void> saveUsername(String username) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_usernameKey, username);
+    await WatchSyncService.syncCards(username: username, cards: const []);
   }
 
   static Future<void> clearUsername() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_usernameKey);
+    await WatchSyncService.syncCards(username: null, cards: const []);
   }
 
   static const _localeKey = 'app_locale';

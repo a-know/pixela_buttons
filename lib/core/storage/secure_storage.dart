@@ -4,13 +4,24 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SecureStorage {
-  static const _storage = FlutterSecureStorage();
+  static const _storage = FlutterSecureStorage(
+    iOptions: IOSOptions(
+      accessibility: KeychainAccessibility.first_unlock_this_device,
+    ),
+  );
+  static const _legacyStorage = FlutterSecureStorage();
   static const _tokenKey = 'pixela_token';
   static const _debugFallbackKey = 'pixela_token_debug_fallback';
 
   static Future<String?> getToken() async {
     try {
-      return await _storage.read(key: _tokenKey);
+      final token = await _storage.read(key: _tokenKey);
+      if (token != null) return token;
+      final legacyToken = await _legacyStorage.read(key: _tokenKey);
+      if (legacyToken != null) {
+        await saveToken(legacyToken);
+      }
+      return legacyToken;
     } on PlatformException catch (error) {
       if (!_canUseDebugFallback(error)) rethrow;
       final prefs = await SharedPreferences.getInstance();
@@ -20,6 +31,7 @@ class SecureStorage {
 
   static Future<void> saveToken(String token) async {
     try {
+      await _legacyStorage.delete(key: _tokenKey);
       await _storage.write(key: _tokenKey, value: token);
     } on PlatformException catch (error) {
       if (!_canUseDebugFallback(error)) rethrow;
@@ -31,6 +43,7 @@ class SecureStorage {
   static Future<void> deleteToken() async {
     try {
       await _storage.delete(key: _tokenKey);
+      await _legacyStorage.delete(key: _tokenKey);
     } on PlatformException catch (error) {
       if (!_canUseDebugFallback(error)) rethrow;
     }
