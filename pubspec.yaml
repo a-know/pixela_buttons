@@ -40,7 +40,7 @@ dependencies:
   go_router: ^17.2.2
   uuid: ^4.5.1
   url_launcher: ^6.3.1
-  flex_color_picker: ^3.6.0
+  flex_color_picker: ^4.0.0
   emoji_picker_flutter: ^4.4.0
   flutter_svg: ^2.2.4
   timezone: ^0.11.0
