@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/api/pixela_client.dart';
 import '../../core/storage/card_storage.dart';
 import '../../core/storage/secure_storage.dart';
+import '../../widgets/adaptive_form_scroll_view.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final String? errorMessage;
@@ -88,123 +89,137 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 48),
-              Image.asset(
-                MediaQuery.platformBrightnessOf(context) == Brightness.dark
-                    ? 'assets/images/pixela_icon_monochrome.png'
-                    : 'assets/images/pixela_icon_color.png',
-                height: 64,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isCompactHeight = constraints.maxHeight < 600;
+            return AdaptiveFormScrollView(
+              scrollViewKey: const ValueKey('onboarding_scroll_view'),
+              contentKey: const ValueKey('onboarding_content'),
+              padding: EdgeInsets.symmetric(
+                horizontal: 24,
+                vertical: isCompactHeight ? 12 : 24,
               ),
-              const SizedBox(height: 16),
-              Text(
-                l10n.appTitle,
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n.appTagline,
-                style: Theme.of(context).textTheme.bodyMedium,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 40),
-              if (_errorMessage != null)
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.errorContainer,
-                    borderRadius: BorderRadius.circular(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(height: isCompactHeight ? 12 : 48),
+                  Image.asset(
+                    MediaQuery.platformBrightnessOf(context) == Brightness.dark
+                        ? 'assets/images/pixela_icon_monochrome.png'
+                        : 'assets/images/pixela_icon_color.png',
+                    height: isCompactHeight ? 48 : 64,
                   ),
-                  child: Text(
-                    _errorMessage!,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onErrorContainer,
+                  SizedBox(height: isCompactHeight ? 12 : 16),
+                  Text(
+                    l10n.appTitle,
+                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
+                    textAlign: TextAlign.center,
                   ),
-                ),
-              Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: _usernameController,
-                      keyboardType: TextInputType.visiblePassword,
-                      autocorrect: false,
-                      enableSuggestions: false,
-                      decoration: InputDecoration(
-                        labelText: l10n.fieldUsername,
-                        border: const OutlineInputBorder(),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.appTagline,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: isCompactHeight ? 24 : 40),
+                  if (_errorMessage != null)
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.errorContainer,
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      validator: (v) => v == null || v.trim().isEmpty
-                          ? l10n.fieldRequired
-                          : null,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _tokenController,
-                      obscureText: _obscureToken,
-                      keyboardType: TextInputType.visiblePassword,
-                      autocorrect: false,
-                      enableSuggestions: false,
-                      decoration: InputDecoration(
-                        labelText: l10n.fieldToken,
-                        border: const OutlineInputBorder(),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscureToken
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                          ),
-                          onPressed: () =>
-                              setState(() => _obscureToken = !_obscureToken),
+                      child: Text(
+                        _errorMessage!,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onErrorContainer,
                         ),
                       ),
-                      validator: (v) => v == null || v.trim().isEmpty
-                          ? l10n.fieldRequired
-                          : null,
                     ),
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton(
-                        onPressed: _isLoading ? null : _save,
-                        child: _isLoading
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Text(l10n.buttonStart),
-                      ),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          key: const ValueKey('onboarding_username_field'),
+                          controller: _usernameController,
+                          keyboardType: TextInputType.visiblePassword,
+                          autocorrect: false,
+                          enableSuggestions: false,
+                          decoration: InputDecoration(
+                            labelText: l10n.fieldUsername,
+                            border: const OutlineInputBorder(),
+                          ),
+                          validator: (v) => v == null || v.trim().isEmpty
+                              ? l10n.fieldRequired
+                              : null,
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          key: const ValueKey('onboarding_token_field'),
+                          controller: _tokenController,
+                          obscureText: _obscureToken,
+                          keyboardType: TextInputType.visiblePassword,
+                          autocorrect: false,
+                          enableSuggestions: false,
+                          decoration: InputDecoration(
+                            labelText: l10n.fieldToken,
+                            border: const OutlineInputBorder(),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscureToken
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                              ),
+                              onPressed: () => setState(
+                                () => _obscureToken = !_obscureToken,
+                              ),
+                            ),
+                          ),
+                          validator: (v) => v == null || v.trim().isEmpty
+                              ? l10n.fieldRequired
+                              : null,
+                        ),
+                        const SizedBox(height: 24),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton(
+                            key: const ValueKey('onboarding_start_button'),
+                            onPressed: _isLoading ? null : _save,
+                            child: _isLoading
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Text(l10n.buttonStart),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextButton(
+                    onPressed: () => context.push('/register'),
+                    child: Text(l10n.linkCreateAccount),
+                  ),
+                  TextButton.icon(
+                    onPressed: () => launchUrl(
+                      Uri.parse(l10n.urlAboutPixela),
+                      mode: LaunchMode.externalApplication,
+                    ),
+                    icon: const Icon(Icons.help_outline, size: 18),
+                    label: Text(l10n.linkAboutPixela),
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              TextButton(
-                onPressed: () => context.push('/register'),
-                child: Text(l10n.linkCreateAccount),
-              ),
-              TextButton.icon(
-                onPressed: () => launchUrl(
-                  Uri.parse(l10n.urlAboutPixela),
-                  mode: LaunchMode.externalApplication,
-                ),
-                icon: const Icon(Icons.help_outline, size: 18),
-                label: Text(l10n.linkAboutPixela),
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
