@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/api/pixela_client.dart';
 import '../../core/storage/card_storage.dart';
 import '../../core/storage/secure_storage.dart';
+import '../../widgets/adaptive_form_scroll_view.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -89,7 +90,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.screenRegister)),
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: AdaptiveFormScrollView(
+          scrollViewKey: const ValueKey('register_scroll_view'),
+          contentKey: const ValueKey('register_content'),
           padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -114,6 +117,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: Column(
                   children: [
                     TextFormField(
+                      key: const ValueKey('register_username_field'),
                       controller: _usernameController,
                       keyboardType: TextInputType.visiblePassword,
                       autocorrect: false,
@@ -135,6 +139,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
+                      key: const ValueKey('register_token_field'),
                       controller: _tokenController,
                       obscureText: _obscureToken,
                       keyboardType: TextInputType.visiblePassword,
@@ -215,6 +220,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(
+                  key: const ValueKey('register_button'),
                   onPressed: _isLoading ? null : _register,
                   child: _isLoading
                       ? const SizedBox(
