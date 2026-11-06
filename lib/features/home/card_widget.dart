@@ -5,13 +5,13 @@ import 'package:intl/intl.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:pixela_buttons/l10n/app_localizations.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/api/api_endpoints.dart';
 import '../../core/api/pixela_client.dart';
 import '../../core/models/card_config.dart';
 import '../../core/storage/card_storage.dart';
 import '../../core/theme/app_theme.dart';
+import '../../widgets/responsive_svg_picture.dart';
 import '../main_shell.dart';
 import 'record_dialog.dart';
 
@@ -65,7 +65,11 @@ class _CardWidgetState extends State<CardWidget> {
   Future<void> _fetchSvg(bool isDark) async {
     try {
       final username = await CardStorage.getUsername() ?? '';
-      final svg = await pixelaClient.getGraphSvg(username, card.graphId, darkMode: isDark);
+      final svg = await pixelaClient.getGraphSvg(
+        username,
+        card.graphId,
+        darkMode: isDark,
+      );
       if (mounted) setState(() => _svgData = svg);
     } catch (_) {}
   }
@@ -81,16 +85,30 @@ class _CardWidgetState extends State<CardWidget> {
     }
   }
 
-  Future<void> _record(BuildContext context, double value, {DateTime? date}) async {
+  Future<void> _record(
+    BuildContext context,
+    double value, {
+    DateTime? date,
+  }) async {
     final username = await CardStorage.getUsername() ?? '';
     try {
       final recordedAt = date ?? DateTime.now();
       if (date != null) {
         final yyyyMMdd = DateFormat('yyyyMMdd').format(date);
         if (value >= 0) {
-          await pixelaClient.addPixelOnDate(username, card.graphId, yyyyMMdd, value);
+          await pixelaClient.addPixelOnDate(
+            username,
+            card.graphId,
+            yyyyMMdd,
+            value,
+          );
         } else {
-          await pixelaClient.subtractPixelOnDate(username, card.graphId, yyyyMMdd, value.abs());
+          await pixelaClient.subtractPixelOnDate(
+            username,
+            card.graphId,
+            yyyyMMdd,
+            value.abs(),
+          );
         }
       } else {
         if (value >= 0) {
@@ -100,10 +118,20 @@ class _CardWidgetState extends State<CardWidget> {
         }
       }
       HapticFeedback.mediumImpact();
-      if (context.mounted) await RecordDialog.show(context, card, value, recordedAt, card.timezone, specificDate: date);
+      if (context.mounted) {
+        await RecordDialog.show(
+          context,
+          card,
+          value,
+          recordedAt,
+          card.timezone,
+          specificDate: date,
+        );
+      }
       _fetchTodayValue();
       if (context.mounted) {
-        final isDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+        final isDark =
+            MediaQuery.platformBrightnessOf(context) == Brightness.dark;
         _fetchSvg(isDark);
       }
     } catch (e) {
@@ -115,7 +143,9 @@ class _CardWidgetState extends State<CardWidget> {
         final msg = (e is DioException && e.response?.statusCode != null)
             ? l10n.errorGeneric(e.response!.statusCode.toString())
             : l10n.errorUnknown(e.toString());
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(msg)));
       }
     }
   }
@@ -168,8 +198,9 @@ class _CardWidgetState extends State<CardWidget> {
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.calendar_today_outlined),
                 title: Text(
-                  DateFormat.yMMMd(Localizations.localeOf(ctx).languageCode)
-                      .format(selectedDate),
+                  DateFormat.yMMMd(
+                    Localizations.localeOf(ctx).languageCode,
+                  ).format(selectedDate),
                 ),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () async {
@@ -179,7 +210,9 @@ class _CardWidgetState extends State<CardWidget> {
                     firstDate: DateTime(2000),
                     lastDate: DateTime(2100),
                   );
-                  if (picked != null) setDialogState(() => selectedDate = picked);
+                  if (picked != null) {
+                    setDialogState(() => selectedDate = picked);
+                  }
                 },
               ),
               const SizedBox(height: 8),
@@ -204,7 +237,9 @@ class _CardWidgetState extends State<CardWidget> {
             FilledButton(
               onPressed: () {
                 final v = double.tryParse(controller.text);
-                if (v != null) Navigator.of(ctx).pop((value: v, date: selectedDate));
+                if (v != null) {
+                  Navigator.of(ctx).pop((value: v, date: selectedDate));
+                }
               },
               child: Text(l10n.buttonRecord),
             ),
@@ -219,9 +254,9 @@ class _CardWidgetState extends State<CardWidget> {
 
   Widget _typeBadge(BuildContext context, String type) {
     final (bg, fg) = switch (type) {
-      'int'   => (Colors.blue.withAlpha(40), Colors.blue),
+      'int' => (Colors.blue.withAlpha(40), Colors.blue),
       'float' => (Colors.orange.withAlpha(40), Colors.orange.shade800),
-      _       => (Colors.grey.withAlpha(40), Colors.grey),
+      _ => (Colors.grey.withAlpha(40), Colors.grey),
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -241,13 +276,6 @@ class _CardWidgetState extends State<CardWidget> {
     launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
   }
 
-  Size? _parseSvgSize(String svg) {
-    final w = RegExp(r'width="([\d.]+)"').firstMatch(svg)?.group(1);
-    final h = RegExp(r'height="([\d.]+)"').firstMatch(svg)?.group(1);
-    if (w == null || h == null) return null;
-    return Size(double.parse(w), double.parse(h));
-  }
-
   Future<void> _showRetinaPreview(BuildContext context) async {
     final isDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
     final username = await CardStorage.getUsername() ?? '';
@@ -263,8 +291,12 @@ class _CardWidgetState extends State<CardWidget> {
 
     Size? svgSize;
     try {
-      final svg = await pixelaClient.getGraphSvgRetina(username, card.graphId, yyyyMMdd);
-      svgSize = _parseSvgSize(svg);
+      final svg = await pixelaClient.getGraphSvgRetina(
+        username,
+        card.graphId,
+        yyyyMMdd,
+      );
+      svgSize = parseSvgIntrinsicSize(svg);
     } catch (_) {}
 
     if (!context.mounted) return;
@@ -301,15 +333,14 @@ class _CardWidgetState extends State<CardWidget> {
                 ),
                 const SizedBox(width: 8),
                 if (card.emoji.isNotEmpty)
-                  Text(card.emoji,
-                      style: const TextStyle(fontSize: 20)),
+                  Text(card.emoji, style: const TextStyle(fontSize: 20)),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     card.displayName,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 FutureBuilder<String?>(
@@ -330,7 +361,10 @@ class _CardWidgetState extends State<CardWidget> {
                     final l10n = AppLocalizations.of(ctx)!;
                     return [
                       PopupMenuItem(value: 'edit', child: Text(l10n.menuEdit)),
-                      PopupMenuItem(value: 'delete', child: Text(l10n.menuDelete)),
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Text(l10n.menuDelete),
+                      ),
                     ];
                   },
                 ),
@@ -344,23 +378,21 @@ class _CardWidgetState extends State<CardWidget> {
                 onLongPress: () => _showRetinaPreview(context),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: SizedBox(
-                    height: 80,
-                    child: _svgData != null
-                    ? SvgPicture.string(
-                        _svgData!,
-                        width: double.infinity,
-                        fit: BoxFit.fitWidth,
-                        placeholderBuilder: (_) => const SizedBox.shrink(),
-                      )
-                    : const Center(
-                        child: SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                  child: _svgData != null
+                      ? ResponsiveSvgPicture(
+                          key: ValueKey('graph_svg_${card.id}'),
+                          svg: _svgData!,
+                        )
+                      : const SizedBox(
+                          height: 80,
+                          child: Center(
+                            child: SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          ),
                         ),
-                      ),
-                  ),
                 ),
               ),
             ),
@@ -371,10 +403,13 @@ class _CardWidgetState extends State<CardWidget> {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 spacing: 6,
                 children: [
-                  if (card.graphType != null) _typeBadge(context, card.graphType!),
+                  if (card.graphType != null)
+                    _typeBadge(context, card.graphType!),
                   Text(
                     _todayValue != null
-                        ? AppLocalizations.of(context)!.labelUnitToday(card.unit, _todayValue!)
+                        ? AppLocalizations.of(
+                            context,
+                          )!.labelUnitToday(card.unit, _todayValue!)
                         : AppLocalizations.of(context)!.labelUnit(card.unit),
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
@@ -405,7 +440,9 @@ class _CardWidgetState extends State<CardWidget> {
                           ),
                           shape: const StadiumBorder(),
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 10),
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
                         ),
                         onPressed: () => _record(context, btn.value),
                         child: Row(
@@ -424,7 +461,9 @@ class _CardWidgetState extends State<CardWidget> {
                       elevation: 3,
                       shape: const StadiumBorder(),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
                     ),
                     onPressed: () => _showCustomDialog(context),
                     icon: const Icon(Icons.edit, size: 14),
@@ -468,15 +507,18 @@ class _RetinaWebViewDialogState extends State<_RetinaWebViewDialog> {
   @override
   void initState() {
     super.initState();
-    final base = '${ApiEndpoints.baseUrl}/v1/users/${widget.username}/graphs/${widget.graphId}/${widget.yyyyMMdd}/retina';
+    final base =
+        '${ApiEndpoints.baseUrl}/v1/users/${widget.username}/graphs/${widget.graphId}/${widget.yyyyMMdd}/retina';
     final url = widget.isDark ? '$base?appearance=dark' : base;
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(NavigationDelegate(
-        onPageFinished: (_) {
-          if (mounted) setState(() => _loading = false);
-        },
-      ))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageFinished: (_) {
+            if (mounted) setState(() => _loading = false);
+          },
+        ),
+      )
       ..loadRequest(Uri.parse(url));
   }
 
@@ -504,7 +546,9 @@ class _RetinaWebViewDialogState extends State<_RetinaWebViewDialog> {
               children: [
                 Expanded(
                   child: Text(
-                    AppLocalizations.of(context)!.retinaDialogTitle(widget.displayName),
+                    AppLocalizations.of(
+                      context,
+                    )!.retinaDialogTitle(widget.displayName),
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
